@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="86" viewBox="0 0 320 86" fill="none" role="img">
+  <rect width="320" height="86" fill="transparent"/>
+  <path d="M16 10a10 10 0 0 1 10-10h40a10 10 0 0 1 0 20H36l-14 12V20A10 10 0 0 1 16 10Z" fill="#1f3d6b"/>
+  <text x="96" y="30" font-family="var(--font-primary), sans-serif" font-size="30" font-weight="700" fill="#1f3d6b">Peer</text>
+  <text x="176" y="30" font-family="var(--font-primary), sans-serif" font-size="30" font-weight="400" fill="#4b9fd5">Reviews</text>
+  <text x="96" y="60" font-family="var(--font-primary), sans-serif" font-size="13" letter-spacing="3" fill="#7c8ba1">PLACEHOLDER MARK</text>
+</svg>

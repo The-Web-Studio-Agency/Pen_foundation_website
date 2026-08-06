@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"console.log\\(require\\('sharp'\\)\\)\")",
+      "Bash(ffmpeg -y -f lavfi -i color=c=0x1f2a2a:s=1280x720:d=6 -vf 'drawtext=text='\\\\''FOUNDATION — SYSTEM'\\\\'':fontcolor=white:fontsize=48:x=\\(w-text_w\\)/2:y=\\(h-text_h\\)/2,format=yuv420p' -c:v libx264 -movflags +faststart -an public/videos/showcase/foundation.mp4 -loglevel error)",
+      "Skill(run)",
+      "Skill(run:*)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/ --max-time 5)",
+      "Bash(ps -p 3800826 -o pid,etime,cmd)",
+      "Bash(kill 3800826)",
+      "Bash(timeout 30 bash -c 'until curl -sf http://localhost:3000 >/dev/null 2>&1; do sleep 1; done')",
+      "Bash(npm ls *)",
+      "Bash(npx --no-install playwright --version)",
+      "Bash(npx --no-install playwright install --dry-run chromium)",
+      "Bash(npx --no-install playwright install chromium --with-deps)",
+      "Bash(npx --no-install playwright install chromium)",
+      "Bash(npm init *)",
+      "Bash(SCRATCH_DIR=/tmp/claude-1000/-home-ridha-TWS-PEN-FOUNDATION/c8b8ff3b-447e-4e4b-a2a4-5c23b9299f3d/scratchpad node /tmp/claude-1000/-home-ridha-TWS-PEN-FOUNDATION/c8b8ff3b-447e-4e4b-a2a4-5c23b9299f3d/scratchpad/shot.mjs)",
+      "Bash(xargs -I{} sh -c 'echo ==={}===; cat {}')",
+      "Bash(identify /home/ridha/TWS/PEN-FOUNDATION/public/media/images/about-mask.png)",
+      "Bash(python3 -c ' *)",
+      "Bash(grep -iE \"^clsx$|^tailwind-merge$\")",
+      "Bash(echo \"exit:$?\")",
+      "Bash(npx playwright *)",
+      "Bash(node -e ' *)",
+      "Bash(npm root *)",
+      "Bash(find / -maxdepth 6 -iname \"playwright\" -type d)",
+      "Bash(command -v playwright)",
+      "Bash(pkill -f \"next start\")",
+      "Bash(ss -ltnp 2>/dev/null | grep -E \":3000|:3001\" ; echo \"---\"; cat /proc/1349430/cmdline 2>/dev/null | tr '\\\\0' ' '; echo; ls -la /proc/1349430/cwd 2>/dev/null)",
+      "Read(//proc/1349430/**)",
+      "Bash(curl -s http://localhost:3000/about -o /dev/null -w \"%{http_code}\\\\n\")",
+      "Bash(echo \"TSC_EXIT:$?\")"
+    ]
+  }
+}

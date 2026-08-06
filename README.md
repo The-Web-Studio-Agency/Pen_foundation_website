@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PEN Foundation
 
-## Getting Started
+Product site for the PEN (Pre-Engineered Nail) Foundation system.
 
-First, run the development server:
+## Stack
+
+- Next.js (App Router) · TypeScript
+- React Three Fiber + drei (3D model viewer on `/technology`)
+- Framer Motion (interactive/animated sections)
+- Tailwind CSS v4 (CSS-first `@theme` tokens in `app/globals.css`)
+
+## Develop
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev     # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+> Note: `next dev` (Turbopack) can crash if the project directory is also used as
+> the system `TMPDIR` (stray socket files break the file watcher). If that
+> happens, use `npm run build && npm start` instead.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+app/                       Next routes (App Router)
+  page.tsx                   Homepage (placeholder)
+  about/ contact/ gallery/   Route segments, each backed by a components/<name>/*Body.tsx
+  journal/ projects/         Route segments with [slug] detail pages
+  technology/                 3D model viewer + spec sheet
+components/
+  home/
+    ui.tsx                    Shared section primitives (Scene, Kicker, Statement, ...)
+    sections/S14_Calculator.tsx  Load calculator, used on /technology
+  hero/
+    experience/PenSystem.tsx   3D precast node + nail geometry (R3F), used by PenModelViewer
+    lib/progressStore.ts       Frame-shared scroll progress store
+    lib/story.ts                Nail geometry + phase constants
+  technology/                PenModelViewer.tsx wraps PenSystem in a standalone R3F canvas
+  about/ contact/ gallery/ journal/ projects/   Per-route body components + data
+  layout/SiteNav.tsx         Persistent nav (hidden on the homepage)
+```
 
-## Learn More
+## Architecture notes
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- The homepage was previously a full scroll-driven WebGL film + 18-section
+  editorial body; that has been stripped back to a placeholder. The surviving
+  pieces (`components/hero/experience/PenSystem.tsx`, `lib/progressStore.ts`,
+  `lib/story.ts`, `components/home/ui.tsx`, `S14_Calculator.tsx`) are kept
+  because `/technology` still depends on them for its 3D model viewer and
+  load calculator.

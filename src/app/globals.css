@@ -1,0 +1,499 @@
+@import 'tailwindcss';
+
+/* Design tokens — Tailwind v4 CSS-first configuration */
+@theme inline {
+  --font-sans: var(--font-suisse), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-serif: var(--font-fraunces), Georgia, serif;
+}
+
+@theme {
+  /* dark tokens — used by the WebGL film (overlay layer) */
+  --color-pen-deep: #060f11; /* film base, near-black */
+  --color-pen-dark: #0a1f24; /* soil-depth brand dark */
+  --color-pen-teal: #057c86; /* brand primary */
+  --color-pen-bright: #3ec6d2; /* brand primary, lifted for dark-bg text */
+  --color-pen-mist: #8fa6aa; /* muted text on dark */
+
+  /* light tokens — the editorial documentary (paper + ink) */
+  --color-paper: #ffffff; /* page base, pure white */
+  --color-paper-alt: #eae7df; /* alternating section */
+  --color-paper-panel: #e4e0d6; /* recessed panel */
+  --color-ink: #14191c; /* primary text, near-black */
+  --color-ink-soft: #5f6764; /* muted body text on light */
+
+  /* PEN brand environments — homepage body */
+  --color-cream: #eeede9; /* editorial / quiet moments */
+  --color-navy: #023e49; /* deep technical / cinematic */
+  --color-charcoal: #2c2c2c; /* cinematic dark */
+  --color-teal: #057c86; /* PEN identity + technical highlight */
+  --color-teal-bright: #2fb7c4; /* teal lifted for dark backgrounds */
+  --color-earth: #6a5947; /* soil / environment mid */
+  --color-earth-deep: #2b2119; /* soil / environment deep */
+  --color-sand: #b8a888; /* soil highlight */
+
+  /* Space the fixed SiteHeader occupies: its 46px top offset plus the 78px
+     pill = 124px. Single source of truth — pages offset their first section by
+     this so content never slides underneath. Mirrored in constants/layout.ts. */
+  --spacing-nav: 7.75rem;
+
+  /* Timing functions used by CSS transitions on the cloned routes. Tailwind
+     turns the `--ease-*` namespace into `ease-soft` / `ease-expo` utilities.
+     They live here, not inline, because `arch:check` fails the build on a
+     cubic-bezier literal written anywhere outside the motion system — a
+     duplicated curve is a design-system fork nobody notices. The JS-side
+     equivalents for Framer Motion are in src/lib/motion/easing.ts. */
+  --ease-soft: cubic-bezier(0.39, 0.575, 0.565, 1);
+  --ease-expo: cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+/* The reference site gates every hover state behind this query so touch
+   devices never get stuck in a hovered style. `fine:` mirrors it exactly. */
+@custom-variant fine (@media (hover: hover) and (pointer: fine));
+
+/* overflow-x: clip (not hidden) on BOTH elements. `hidden` on body alone gets
+   propagated/ignored depending on html's value and still left a few px of
+   horizontal scroll from full-bleed children; `clip` reliably clips without
+   creating a scroll container, so the sticky TOC in Article.tsx keeps working. */
+html {
+  background: #ffffff;
+  overflow-x: clip;
+}
+
+body {
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Editorial serif for every heading, site-wide (overridable via font-sans/font-mono utilities) */
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-serif);
+  }
+}
+
+::selection {
+  background-color: #057c86;
+  color: #ffffff;
+}
+
+/* slim scrollbar tuned for the light frame */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(5, 124, 134, 0.35);
+  border-radius: 2px;
+}
+
+.grid-background {
+  background-image:
+    linear-gradient(rgba(2, 62, 73, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(2, 62, 73, 0.08) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+/* Subtle grain overlay for large quiet hero fields */
+.noise {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.12'/%3E%3C/svg%3E");
+}
+
+/* ---------------------------------------------------------------------------
+   About page (/about) — background + shape motifs.
+   Scoped to .about-clone or to the classes only that route's components use.
+   --------------------------------------------------------------------------- */
+
+/* Dotted grid with crosshair intersections — the section backdrop motif. */
+.dot-grid-bg {
+  background-image:
+    radial-gradient(circle, rgba(5, 36, 36, 0.2) 0 1.1px, transparent 1.5px),
+    linear-gradient(to right, rgba(5, 36, 36, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(5, 36, 36, 0.05) 1px, transparent 1px);
+  background-size: 65px 65px;
+  background-position:
+    -32.5px -32.5px,
+    0 0,
+    0 0;
+}
+
+/* Diagonal corner cutouts on media containers. */
+.notch-corner {
+  clip-path: polygon(0 40px, 40px 0, 100% 0, 100% 100%, 0 100%);
+}
+/* Oversized centred display heading. Mirrors the reference about page's fluid
+   scale: weight 400, line-height 1, tracking tightening as the size grows.
+   Lands at ~86px on a 1820px viewport, floors at 70px, ceilings at 120px. */
+.display-title {
+  font-size: min(2.5rem, 10.256vw);
+  font-weight: 400;
+  letter-spacing: min(-0.075rem, -0.308vw);
+  line-height: 1;
+}
+@media (min-width: 768px) {
+  .display-title {
+    font-size: min(3.125rem, 12.821vw);
+  }
+}
+@media (min-width: 1024px) {
+  .display-title {
+    font-size: max(4.375rem, min(4.688vw, 120px));
+    letter-spacing: min(-0.141vw, -3.6px);
+  }
+}
+
+/* Editorial full-bleed. Pulls a child of the centred max-w-[1700px] shell out
+   to the viewport edge on ONE side, leaving the other side's spacing intact.
+   The offset is the centring gutter plus the shell's own horizontal padding.
+   Overshoots by the scrollbar width (100vw includes it) — body's overflow-x:
+   hidden clips that, which is what keeps the edge truly flush rather than
+   landing a few px short. */
+.bleed {
+  --shell-max: 1700px;
+  --shell-pad: 1.5rem; /* matches px-6 */
+  --bleed: calc(max((100vw - var(--shell-max)) / 2, 0px) + var(--shell-pad));
+}
+@media (min-width: 1024px) {
+  .bleed {
+    --shell-pad: 3rem; /* matches lg:px-12 */
+  }
+}
+.bleed-l {
+  margin-left: calc(var(--bleed) * -1);
+}
+.bleed-r {
+  margin-right: calc(var(--bleed) * -1);
+}
+
+/* Full branded silhouette — stepped top-left corner plus the paired side
+   notches. Richer than .notch-corner's single bevel; stretches to the box.
+   Default asset is download.svg (step top-left, notch right). */
+.notch-mask {
+  -webkit-mask-image: url('/media/images/download.svg');
+  mask-image: url('/media/images/download.svg');
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+/* download.svg's path runs x=70→1254 inside a 1324-wide viewBox, so the mask
+   carries ~5.29% of transparency on each side. A box flush with the viewport
+   therefore still renders a visible gap. These variants scale the mask to
+   105.91% and position it so the silhouette's edge meets the element's edge on
+   the bleeding side, while the opposite side keeps its normal 5.29% inset.
+   (Percentage mask-position aligns P% of the image with P% of the box, hence
+   94.7% / 5.2% rather than a plain offset.) */
+/* Mirrored silhouette for media sitting on the RIGHT of a row: right.svg is
+   download.svg flipped via translate(1324 0) scale(-1 1), so the step lands
+   top-right and the notch on the left. Its path mirrors to the same 70→1254
+   bounds, so the .notch-bleed-* offsets below apply unchanged. */
+.notch-mask-right {
+  -webkit-mask-image: url('/media/images/right.svg');
+  mask-image: url('/media/images/right.svg');
+}
+
+.notch-bleed-l,
+.notch-bleed-r {
+  -webkit-mask-size: 105.91% 100%;
+  mask-size: 105.91% 100%;
+}
+.notch-bleed-l {
+  -webkit-mask-position: 94.7% 0;
+  mask-position: 94.7% 0;
+}
+.notch-bleed-r {
+  -webkit-mask-position: 5.2% 0;
+  mask-position: 5.2% 0;
+}
+.notch-corner-sm {
+  clip-path: polygon(0 18px, 18px 0, 100% 0, 100% 100%, 0 100%);
+}
+
+/* Small discrete teal accent glows behind the team CTA — points, not a wash. */
+.glow-dot {
+  background-repeat: no-repeat;
+  background-image:
+    radial-gradient(circle, rgba(5, 124, 134, 0.8) 0%, rgba(5, 124, 134, 0) 70%),
+    radial-gradient(circle, rgba(5, 124, 134, 0.55) 0%, rgba(5, 124, 134, 0) 70%);
+  background-size:
+    120px 120px,
+    90px 90px;
+  background-position:
+    16% 24%,
+    73% 82%;
+  filter: blur(6px);
+}
+
+/* The About clone is a sans-serif design — opt it out of the site-wide serif
+   heading rule in @layer base above (unlayered rules beat layered ones). */
+.about-clone :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-sans);
+}
+
+/* ---------------------------------------------------------------------------
+   Contact page (/contact) — clone tokens, typography scale and motifs.
+   Scoped the same way /about is: to .contact-clone, or to the classes only
+   that route's components use. Only what /contact actually references was
+   ported; the clone's nav, footer and shadcn token blocks were not.
+   --------------------------------------------------------------------------- */
+
+:root {
+  /* Palette, verbatim from the reference site's :root. */
+  --c-gray: #454742;
+  --c-dark-gray: #7f7f7f;
+  --c-light-gray: #c2c2c2;
+  --c-light-light-gray: #ddd;
+  --c-white: #fff;
+  --c-dirty-white: #f0f0f0;
+  /* The clone palette's accent slot. Was --c-lime #abff02; now PEN teal so the
+     ported routes share the one site accent. */
+  --c-accent: #057c86;
+  --c-dark-green: #052424;
+  --c-dark-green-20: rgba(5, 36, 36, 0.2);
+  --c-dark-green-15: rgba(5, 36, 36, 0.15);
+  --c-dark-green-05: rgba(5, 36, 36, 0.05);
+}
+
+/* Typography scale transcribed from the reference site. Deliberately plain
+   classes rather than Tailwind utilities: the scale is built from min()/max()
+   clamps that have no utility equivalent. */
+@layer components {
+  .title-h2 {
+    font-size: min(2rem, 8.205vw);
+    letter-spacing: min(-0.039375rem, -0.164vw);
+    line-height: 1.2;
+  }
+  .title-h3 {
+    font-size: min(1.5rem, 6.154vw);
+    letter-spacing: min(-0.0225rem, -0.092vw);
+    line-height: 146%;
+  }
+  .body-1 {
+    font-size: min(1.4375rem, 5.897vw);
+    letter-spacing: min(-0.014375rem, -0.059vw);
+    line-height: 1.26;
+  }
+  .body-3 {
+    font-size: 1.25rem;
+    letter-spacing: -0.0125rem;
+    line-height: 1.46;
+  }
+  .body-4 {
+    font-size: 1.125rem;
+    letter-spacing: 0.0225rem;
+    line-height: 1.4;
+  }
+  .label-3 {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.18em;
+    line-height: 0.81;
+  }
+  .label-4 {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.18em;
+    line-height: 0.81;
+  }
+
+  @media (min-width: 1024px) {
+    .title-h2 {
+      font-size: min(2.396vw, 61.3333333333px);
+      letter-spacing: min(-0.024vw, -0.6133333333px);
+      line-height: 0.96;
+    }
+    .title-h3 {
+      font-size: min(1.563vw, 40px);
+      letter-spacing: min(-0.016vw, -0.4px);
+    }
+    .body-1 {
+      font-size: min(1.198vw, 30.6666666667px);
+      letter-spacing: min(-0.012vw, -0.3066666667px);
+    }
+  }
+}
+
+/* Signature animation: headings reveal one character at a time, warming from a
+   faint gray through lime to the final dark green. Keyframes are the reference
+   site's; the per-character stagger is applied inline by RevealText. */
+@keyframes color-transition {
+  0% {
+    color: var(--c-light-light-gray);
+  }
+  30% {
+    color: var(--color-teal);
+  }
+  100% {
+    color: var(--c-dark-green);
+  }
+}
+
+/* Light-on-dark variant of the ramp, for the reveal in the footer CTA. */
+@keyframes color-transition-on-dark {
+  0% {
+    color: rgba(255, 255, 255, 0.2);
+  }
+  30% {
+    color: var(--color-teal-bright);
+  }
+  100% {
+    color: var(--c-white);
+  }
+}
+
+.reveal-char {
+  display: inline-block;
+  white-space: pre;
+  color: var(--c-light-light-gray);
+}
+
+.reveal-char[data-on-dark='true'] {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.reveal-active .reveal-char {
+  animation: color-transition 850ms linear both;
+}
+
+.reveal-active .reveal-char[data-on-dark='true'] {
+  animation-name: color-transition-on-dark;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-char {
+    color: var(--c-dark-green);
+    animation: none !important;
+  }
+  .reveal-char[data-on-dark='true'] {
+    color: var(--c-white);
+  }
+}
+
+/* Faint line grid behind the dark form panels and the divider band. The
+   original paints it on a <canvas>; a repeating gradient is equivalent. */
+.bg-grid-canvas {
+  background-image:
+    linear-gradient(to right, currentColor 1px, transparent 1px),
+    linear-gradient(to bottom, currentColor 1px, transparent 1px);
+  background-size: 74px 74px;
+}
+
+/* The carousel rail and FAQ tab strip scroll natively without a visible bar. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Like the About clone, this is a sans-serif design — opt it out of the
+   site-wide serif heading rule in @layer base above (unlayered rules beat
+   layered ones). */
+.contact-clone :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-sans);
+}
+
+/* Lenis smooth scrolling */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------------------
+   Grid beam — a single bright light that travels across a grid surface.
+   Decorative only: `aria-hidden` at the call site, and it stops entirely under
+   prefers-reduced-motion rather than merely slowing down.
+
+   It is a sibling of the grid layer, never a child: both hero grids sit inside
+   an `opacity-20` wrapper, and a beam nested in that would inherit the same
+   20% and stop reading as light.
+   --------------------------------------------------------------------------- */
+@keyframes grid-beam-sweep {
+  0% {
+    transform: translateX(-15%);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(115%);
+    opacity: 0;
+  }
+}
+
+.grid-beam {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Two travelling layers: a wide, faint halo and a crisp core, animated in
+   lockstep so the pair reads as one light rather than a blurred smear. */
+.grid-beam::before,
+.grid-beam::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+  animation: grid-beam-sweep var(--grid-beam-duration, 9s) linear infinite;
+  animation-delay: var(--grid-beam-delay, 0s);
+}
+
+/* Halo — soft falloff either side of the core. */
+.grid-beam::before {
+  width: 180px;
+  margin-left: -89px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--grid-beam-color, var(--color-teal)) 22%, transparent) 50%,
+    transparent
+  );
+  filter: blur(6px);
+}
+
+/* Core — the light itself, faded out at both ends so it never reads as a rule. */
+.grid-beam::after {
+  width: 3px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--grid-beam-color, var(--color-teal)) 25%,
+    var(--grid-beam-color, var(--color-teal)) 75%,
+    transparent
+  );
+  box-shadow: 0 0 10px 0 var(--grid-beam-color, var(--color-teal));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grid-beam::before,
+  .grid-beam::after {
+    animation: none;
+  }
+}
