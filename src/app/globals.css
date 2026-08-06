@@ -45,6 +45,8 @@
      equivalents for Framer Motion are in src/lib/motion/easing.ts. */
   --ease-soft: cubic-bezier(0.39, 0.575, 0.565, 1);
   --ease-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  /* Sharp symmetric in-out — the underline wipe on section links. */
+  --ease-wipe: cubic-bezier(0.85, 0, 0.15, 1);
 }
 
 /* The reference site gates every hover state behind this query so touch
@@ -232,9 +234,11 @@ body {
   filter: blur(6px);
 }
 
-/* The About clone is a sans-serif design — opt it out of the site-wide serif
-   heading rule in @layer base above (unlayered rules beat layered ones). */
-.about-clone :is(h1, h2, h3, h4, h5, h6) {
+/* The ported routes are sans-serif designs — opt them out of the site-wide
+   serif heading rule in @layer base above (unlayered rules beat layered ones).
+   One selector list rather than a rule per route: they were diverging copies,
+   and a route added without its own rule silently rendered in Fraunces. */
+:is(.about-clone, .contact-clone, .home-clone) :is(h1, h2, h3, h4, h5, h6) {
   font-family: var(--font-sans);
 }
 
@@ -398,9 +402,6 @@ body {
 /* Like the About clone, this is a sans-serif design — opt it out of the
    site-wide serif heading rule in @layer base above (unlayered rules beat
    layered ones). */
-.contact-clone :is(h1, h2, h3, h4, h5, h6) {
-  font-family: var(--font-sans);
-}
 
 /* Lenis smooth scrolling */
 html.lenis,
@@ -495,5 +496,127 @@ html.lenis body {
   .grid-beam::before,
   .grid-beam::after {
     animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Typography scale + page gutter, transcribed from the reference site.
+
+   Ported with the homepage, but NOT homepage-only: the already-integrated
+   contact, footer and resources components reference these same classes and
+   had been rendering unstyled without them. Kept as plain classes rather than
+   Tailwind utilities because the scale is built from min()/max() clamps that
+   have no utility equivalent.
+   --------------------------------------------------------------------------- */
+:root {
+  --font-mono-stack: var(--font-geist-mono), ui-monospace, monospace;
+  --spacing-gutter: 5.128vw;
+}
+@media (min-width: 768px) {
+  :root {
+    --spacing-gutter: min(3.646vw, 93.3333333333px);
+  }
+}
+
+@layer components {
+  .title-si {
+    font-size: min(2.5rem, 10.256vw);
+    font-weight: 400;
+    letter-spacing: min(-0.075rem, -0.308vw);
+    line-height: 1;
+  }
+  .title-h2 {
+    font-size: min(2rem, 8.205vw);
+    letter-spacing: min(-0.039375rem, -0.164vw);
+    line-height: 1.2;
+  }
+  .title-h3 {
+    font-size: min(1.5rem, 6.154vw);
+    letter-spacing: min(-0.0225rem, -0.092vw);
+    line-height: 146%;
+  }
+  .title-h4 {
+    font-size: min(1.25rem, 5.128vw);
+    letter-spacing: min(-0.01875rem, -0.077vw);
+    line-height: 1.46;
+  }
+  .body-1 {
+    font-size: min(1.4375rem, 5.897vw);
+    letter-spacing: min(-0.014375rem, -0.059vw);
+    line-height: 1.26;
+  }
+  .body-2 {
+    font-size: 1.25rem;
+    letter-spacing: -0.01em;
+    line-height: 1.26;
+  }
+  .body-3 {
+    font-size: 1.25rem;
+    letter-spacing: -0.0125rem;
+    line-height: 1.46;
+  }
+  .body-4 {
+    font-size: 1.125rem;
+    letter-spacing: 0.0225rem;
+    line-height: 1.4;
+  }
+  .label-1 {
+    font-family: var(--font-mono-stack);
+    font-size: 0.9375rem;
+    letter-spacing: -0.02em;
+    line-height: 0.81;
+  }
+  .label-2 {
+    font-family: var(--font-mono-stack);
+    font-size: 0.9375rem;
+    letter-spacing: 0.05em;
+    line-height: 1.1;
+  }
+  .label-3 {
+    font-family: var(--font-mono-stack);
+    font-size: 0.8125rem;
+    letter-spacing: 0.18em;
+    line-height: 0.81;
+  }
+  .label-4 {
+    font-family: var(--font-mono-stack);
+    font-size: 0.6875rem;
+    letter-spacing: 0.18em;
+    line-height: 0.81;
+  }
+
+  @media (min-width: 768px) {
+    .title-si {
+      font-size: min(3.125rem, 12.821vw);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .title-si {
+      font-size: max(4.375rem, min(4.688vw, 120px));
+      letter-spacing: min(-0.141vw, -3.6px);
+    }
+    .title-h2 {
+      font-size: min(2.396vw, 61.3333333333px);
+      letter-spacing: min(-0.024vw, -0.6133333333px);
+      line-height: 0.96;
+    }
+    .title-h3,
+    .title-h4 {
+      font-size: min(1.563vw, 40px);
+      letter-spacing: min(-0.016vw, -0.4px);
+    }
+    .body-1 {
+      font-size: min(1.198vw, 30.6666666667px);
+      letter-spacing: min(-0.012vw, -0.3066666667px);
+    }
+    .label-2 {
+      line-height: 0.81;
+    }
+  }
+
+  /* Horizontal page gutter shared by every section */
+  .site-gutter {
+    padding-inline: var(--spacing-gutter);
   }
 }
