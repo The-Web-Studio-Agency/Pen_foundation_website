@@ -21,7 +21,7 @@ export function TestimonialSection() {
             height={86}
             className="block h-auto max-h-15 w-auto max-w-[13.75rem] object-contain lg:max-h-[5.375rem] lg:max-w-[15.375rem]"
           />
-          <span aria-hidden className="hidden h-12 w-px bg-[#05242433] lg:block lg:h-[3.8125rem]" />
+          <span aria-hidden className="hidden h-12 w-px bg-[#012c3233] lg:block lg:h-[3.8125rem]" />
           <div className="flex items-center gap-3 lg:gap-4">
             <span
               className="inline-flex gap-0.5 text-[#ffc83d]"

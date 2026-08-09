@@ -3,75 +3,61 @@
 import { ContactForm } from '@/components/contact/ContactForm';
 import { RevealText } from '@/components/motion';
 import { homeForm } from '@/content/data/homepage';
-import { cn } from '@/lib/utils';
 
 /**
- * The closing contact block, measured at 925px tall.
+ * The closing contact block: eyebrow, heading, one line of intent, then the
+ * form on its own.
  *
- * The original tags this instance `--pt-none --pb-none`, so the section
- * contributes no vertical padding of its own — the blocks either side own the
- * spacing. The form card itself is the contact page's `ContactForm` unchanged:
- * the reference uses one component in both places, and so does this.
+ * The supporting column the reference put beside the card — bullets, trust
+ * label, logo row — is gone. The page has already made every one of those
+ * arguments by the time a reader arrives here, so the block asks rather than
+ * re-sells. The single intro line stays because it does something the bullets
+ * did not: it says what submitting the form actually starts, which is the last
+ * thing a visitor wants to know before committing.
+ *
+ * With nothing beside it the card is centred and given its own width instead
+ * of the two-column split's: `max-w-[64rem]` overrides the caps ContactForm
+ * carries for /contact, where it is the narrow half of a split. Everything on
+ * this section shares that one measure, so heading and card share an axis and
+ * both edges line up.
+ *
+ * The FAQ now follows this block, so the extra closing space that used to sit
+ * here moved with it — the footer-lip clearance belongs to whichever section
+ * is last, and that is no longer this one.
+ *
+ * `id="contact"` so anything on the page can jump straight to the form.
  */
 export function HomeFormSection() {
   const [firstLine, secondLine] = homeForm.titleLines;
 
   return (
-    <section className="site-gutter w-full bg-[var(--c-white)] py-0">
-      <h2 className="title-si mx-auto max-w-[min(70rem,90vw)] pt-24 text-center text-balance">
-        <RevealText text={firstLine} className="block" />
-        {/* +1 for the break, so the wave carries on into the second line. */}
-        <RevealText text={secondLine} indexOffset={firstLine.length + 1} className="block" />
-      </h2>
+    <section
+      id="contact"
+      className="site-gutter flex min-h-svh w-full scroll-mt-nav flex-col justify-center bg-[var(--c-white)] pt-0 pb-8"
+    >
+      <div className="mx-auto flex w-full max-w-[64rem] flex-col items-center">
+        <h2 className="title-si pt-24 text-center text-balance">
+          <RevealText text={firstLine} className="block" />
+          {/* +1 for the break, so the wave carries on into the second line. */}
+          <RevealText text={secondLine} indexOffset={firstLine.length + 1} className="block" />
+        </h2>
 
-      <div
-        className={cn(
-          'mx-auto mt-20 grid w-full max-w-[85rem] items-start gap-12',
-          'lg:grid-cols-[45fr_55fr] lg:gap-16',
-        )}
-      >
-        <div className="flex flex-col">
-          <p className="body-3 text-[var(--c-dark-green)]">{homeForm.intro}</p>
+        <p className="body-3 mt-8 max-w-2xl text-center text-[var(--c-dark-green)]/70">
+          {homeForm.intro}
+        </p>
 
-          {/* The lime rule runs the height of the list; each item carries its
-           * own lime dot, as on the reference. */}
-          <ul className="mt-10 flex flex-col gap-5 border-l-[3px] border-[var(--c-accent)] pl-6">
-            {homeForm.bullets.map((bullet) => (
-              <li
-                key={bullet}
-                className="flex items-baseline gap-4 text-[1.4375rem] leading-[1.26] text-[var(--c-dark-green)]"
-              >
-                <span
-                  aria-hidden
-                  className="size-[0.4375rem] shrink-0 rounded-full bg-[var(--c-accent)]"
-                />
-                {bullet}
-              </li>
-            ))}
-          </ul>
+        {/* Narrower than the 64rem measure the heading and intro share, so the
+            card reads as a form rather than a full-width panel.
 
-          <p className="mt-16 text-[1.25rem] text-[var(--c-light-gray)]">{homeForm.trustLabel}</p>
-
-          <ul
-            aria-label="Placeholder customer logos"
-            className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-6"
-          >
-            {homeForm.logos.map((logo, index) => (
-              <li key={`${logo.src}-${index}`}>
-                {/* eslint-disable-next-line @next/next/no-img-element -- SVG
-                    placeholder; the optimiser refuses SVG by default. */}
-                <img
-                  src={logo.src}
-                  alt=""
-                  aria-hidden
-                  className="h-8 w-auto opacity-60 grayscale"
-                />
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <ContactForm />
+            All three breakpoints have to be restated: ContactForm carries its
+            own `xl:max-w-[33.75rem]` and `min-[1680px]:max-w-[40rem]` caps for
+            /contact, and twMerge keeps only the last max-width it sees at each
+            breakpoint — setting the base alone would leave those two winning
+            on wide screens. */}
+        <ContactForm
+          submitLabel={homeForm.submitLabel}
+          className="mt-14 max-w-[54rem] min-[1680px]:max-w-[54rem] xl:max-w-[54rem]"
+        />
       </div>
     </section>
   );

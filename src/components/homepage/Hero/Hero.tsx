@@ -33,10 +33,9 @@ import { cn } from '@/lib/utils';
  * per-frame opacity can be a MotionValue and never triggers a React render.
  */
 
-/** Exported frames of the original's canvas sequence. */
-const FRAME_COUNT = 24;
-/** Held still when the visitor has asked for reduced motion — mid-sequence. */
-const STATIC_FRAME_INDEX = 12;
+/** Background film behind the scrubbed headings. */
+const HERO_VIDEO = '/media/videos/hero.mp4';
+
 /** Distance, in pixels, an incoming heading travels up as it fades in. */
 const HEADING_RISE = 40;
 /** Share of a heading's window spent fading in, and again spent fading out. */
@@ -57,12 +56,6 @@ const HEADING_CLASS = cn(
   'lg:w-auto lg:text-[min(5.729vw,146.6666666667px)]',
   'lg:tracking-[min(-0.057vw,-1.4666666667px)]',
 );
-
-const FRAME_CLASS = 'absolute inset-0 size-full object-cover';
-
-function frameSrc(index: number) {
-  return `/media/images/homepage/hero-frame-${String(index).padStart(2, '0')}.svg`;
-}
 
 /**
  * Pairs each line with the number of characters that precede it, so a
@@ -91,28 +84,6 @@ function indicatorTint(index: number, total: number) {
   return `rgb(${r}, ${g}, ${b})`;
 }
 
-function SequenceFrame({ progress, index }: { progress: MotionValue<number>; index: number }) {
-  // Progress is cut into FRAME_COUNT equal slices, so the sequence advances
-  // continuously with the scroll rather than in step with the four headings.
-  const opacity = useTransform(progress, (value) =>
-    Math.min(FRAME_COUNT - 1, Math.floor(value * FRAME_COUNT)) === index ? 1 : 0,
-  );
-
-  return (
-    <motion.img
-      src={frameSrc(index)}
-      alt=""
-      width={1440}
-      height={900}
-      loading="eager"
-      decoding="async"
-      draggable={false}
-      style={{ opacity }}
-      className={FRAME_CLASS}
-    />
-  );
-}
-
 interface SequenceHeadingProps {
   progress: MotionValue<number>;
   lines: string[];
@@ -135,10 +106,16 @@ function SequenceHeading({ progress, lines, index, count, revealed }: SequenceHe
 
   // The first heading is legible at rest — the page lands on it and its own
   // character reveal is the entrance. The rest fade and rise into their window.
+  //
+  // The trailing `1 -> 0` keyframe on the first heading is load-bearing: its
+  // ramp used to end at `end`, with nothing anchoring the value past that, so
+  // once scrolled beyond its window the opacity climbed back toward 1 and the
+  // opening question reappeared underneath every later heading. Holding it at
+  // 0 through the end of the range is what keeps the stack from colliding.
   const opacity = useTransform(
     progress,
-    isFirst ? [start, end - fade, end] : [start, start + fade, end - fade, end],
-    isFirst ? [1, 1, 0] : [0, 1, 1, 0],
+    isFirst ? [start, end - fade, end, 1] : [start, start + fade, end - fade, end],
+    isFirst ? [1, 1, 0, 0] : [0, 1, 1, 0],
   );
   const y = useTransform(progress, [start, start + fade], [isFirst ? 0 : HEADING_RISE, 0]);
 
@@ -216,15 +193,20 @@ export function Hero() {
     return (
       <section className="relative overflow-clip bg-[var(--c-white)]">
         <div className="relative h-[100svh] w-full">
+          {/* Background film. Replaces the 24-frame stack the reference
+              cross-faded on scroll; the headings above still scrub. Decorative,
+              so aria-hidden and untabbable. */}
           <div aria-hidden className="absolute inset-0">
-            <motion.img
-              src={frameSrc(STATIC_FRAME_INDEX)}
-              alt=""
-              width={1440}
-              height={900}
-              draggable={false}
-              className={FRAME_CLASS}
-            />
+            <video
+              muted
+              loop
+              playsInline
+              preload="auto"
+              tabIndex={-1}
+              className="pointer-events-none absolute inset-0 size-full object-cover"
+            >
+              <source src={HERO_VIDEO} type="video/mp4" />
+            </video>
           </div>
           <div className="pointer-events-none absolute inset-0 z-[1] flex touch-none items-center justify-center select-none">
             <h1 className={HEADING_CLASS}>
@@ -249,10 +231,21 @@ export function Hero() {
           stage below spends pinned. */}
       <div ref={sizerRef} className="h-[300svh] w-full">
         <div className="sticky top-0 h-[100svh] w-full overflow-clip">
+          {/* Background film. Replaces the 24-frame stack the reference
+              cross-faded on scroll; the headings above still scrub. Decorative,
+              so aria-hidden and untabbable. */}
           <div aria-hidden className="absolute inset-0">
-            {Array.from({ length: FRAME_COUNT }, (_, index) => (
-              <SequenceFrame key={index} progress={scrollYProgress} index={index} />
-            ))}
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+              tabIndex={-1}
+              className="pointer-events-none absolute inset-0 size-full object-cover"
+            >
+              <source src={HERO_VIDEO} type="video/mp4" />
+            </video>
           </div>
 
           {/* `.homepage-scroll-content`: sits over the frames and stays inert. */}

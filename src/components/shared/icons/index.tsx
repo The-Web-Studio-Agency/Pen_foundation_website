@@ -119,6 +119,21 @@ export function PlusIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+/** Tick for the comparison matrix. Same 24-box and 1.5 stroke as PlusIcon. */
+export function CheckIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <path
+        d="m5 12.5 4.5 4.5L19 7.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function StarIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
@@ -173,3 +188,58 @@ export const contactWayIcons = {
   sparkle: SparkleIcon,
   calculator: CalculatorIcon,
 } as const;
+
+export function ClockIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      aria-hidden
+      {...props}
+    >
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3.5 2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function RupeeIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      aria-hidden
+      {...props}
+    >
+      <path
+        d="M7 5h10M7 9h10M15 5c0 4-3.2 5.4-6.4 5.4H7l7.6 8.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function LeafIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      aria-hidden
+      {...props}
+    >
+      <path
+        d="M5 19c0-7 5-12 14-12 0 9-5 13-11 13H5Z"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M5 19c3-4 6-6 10-7.5" strokeLinecap="round" />
+    </svg>
+  );
+}

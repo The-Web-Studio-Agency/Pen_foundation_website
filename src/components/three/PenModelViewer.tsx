@@ -19,9 +19,11 @@ export function PenModelViewer() {
   }, []);
 
   return (
-    <div className="aspect-[16/10] w-full overflow-hidden rounded-sm bg-neutral-900">
+    <div className="aspect-[16/10] w-full overflow-hidden rounded-sm bg-ink">
       <Canvas camera={{ position: [3, 1.6, 3], fov: 36 }} dpr={[1, 1.75]} shadows>
-        <color attach="background" args={['#0c1518']} />
+        {/* Matches --color-ink; the wrapper paints the same dark so the canvas
+            has no seam before WebGL takes over. Three needs a literal here. */}
+        <color attach="background" args={['#012c32']} />
         <ambientLight intensity={0.5} color="#cfe3e6" />
         <directionalLight position={[5, 6, 3]} intensity={1.6} color="#fff1e2" castShadow />
         <directionalLight position={[-6, 3, -4]} intensity={1.1} color="#7ee7f0" />

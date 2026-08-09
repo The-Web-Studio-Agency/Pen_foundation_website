@@ -65,7 +65,7 @@ export function Calculator() {
                     }}
                     className={`border px-5 py-2.5 font-mono text-[11px] tracking-[0.2em] uppercase transition-colors ${
                       type === t
-                        ? 'border-neutral-800 bg-neutral-900 text-white'
+                        ? 'border-ink bg-ink text-white'
                         : 'border-ink/20 text-ink/60 hover:border-ink/50'
                     }`}
                   >
@@ -87,7 +87,7 @@ export function Calculator() {
                 value={points}
                 onChange={(e) => setPoints(Number(e.target.value))}
                 aria-label="Number of foundation points"
-                className="mt-4 w-full accent-neutral-800"
+                className="mt-4 w-full accent-ink"
               />
             </div>
 
@@ -100,7 +100,7 @@ export function Calculator() {
                     onClick={() => setSoil(s)}
                     className={`border px-5 py-2.5 font-mono text-[11px] tracking-[0.2em] uppercase transition-colors ${
                       soil === s
-                        ? 'border-neutral-800 text-neutral-500'
+                        ? 'border-ink text-neutral-500'
                         : 'border-ink/20 text-ink/50 hover:border-ink/50'
                     }`}
                   >
@@ -126,7 +126,7 @@ export function Calculator() {
             </div>
 
             <div className="mt-10 flex flex-wrap items-center gap-4 border-t border-ink/12 pt-8">
-              <span className="border border-neutral-800/40 px-4 py-2 font-mono text-[10px] tracking-[0.2em] text-neutral-500 uppercase">
+              <span className="border border-ink/40 px-4 py-2 font-mono text-[10px] tracking-[0.2em] text-neutral-500 uppercase">
                 ~93% less cement
               </span>
               <span className="border border-ink/20 px-4 py-2 font-mono text-[10px] tracking-[0.2em] text-ink/60 uppercase">
@@ -141,7 +141,7 @@ export function Calculator() {
 
             <a
               href="#contact"
-              className="mt-8 inline-block bg-neutral-900 px-8 py-4 font-mono text-xs tracking-[0.25em] text-white uppercase transition-colors hover:bg-neutral-700"
+              className="mt-8 inline-block bg-ink px-8 py-4 font-mono text-xs tracking-[0.25em] text-white uppercase transition-colors hover:bg-ink/80"
             >
               Get an exact site assessment →
             </a>

@@ -1,10 +1,14 @@
 import {
+  CertificateSection,
+  DocumentsSection,
   FeaturedResourceGrid,
   ResourcesCarousel,
   TabbedAccordion,
   TestimonialSection,
+  blogGrid,
   comparisonCarousel,
   exploreGrid,
+  galleryCarousel,
   videoGrid,
 } from '@/features/resources';
 import { NotchedBand } from '@/components/shared/shapes/NotchedBand';
@@ -55,7 +59,16 @@ export default function ResourcesPage() {
       </NotchedBand>
 
       <ResourcesCarousel section={comparisonCarousel} />
+
+      {/* Anchor targets for the header's Resources dropdown. Blogs and Gallery
+          are previews: both read from the same records /research and /gallery
+          render, and every card links through to the full route. */}
+      <CertificateSection />
       <TabbedAccordion />
+      <DocumentsSection />
+      <FeaturedResourceGrid grid={blogGrid} id="blogs" />
+      <ResourcesCarousel section={galleryCarousel} id="gallery" />
+
       <TestimonialSection />
     </div>
   );

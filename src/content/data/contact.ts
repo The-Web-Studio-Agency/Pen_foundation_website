@@ -1,3 +1,4 @@
+import { siteConfig } from '@/config/site';
 import type { ContactWay, FormFieldDef, HeroContent, PromoBanner } from '@/types/contact';
 
 /**
@@ -32,8 +33,19 @@ export const hero: HeroContent = {
 
   phoneLabel: 'Prefer speaking with an engineer?',
 
-  phoneNumber: '+91 (123) 456-7890',
+  // The real number, from the company brochure and `siteConfig.phone`. This
+  // was a placeholder, which meant the one non-form conversion path on both
+  // /contact and the homepage dialled nowhere.
+  phoneNumber: siteConfig.phone,
 };
+/**
+ * Name and phone are the only required fields — everything else is optional,
+ * so a visitor can send an enquiry with just a way to call them back. The
+ * required pair leads the form so the two starred fields sit on one row.
+ *
+ * Shared by /contact and the homepage's closing form; both show the same
+ * fields and the same requiredness.
+ */
 export const formFields: FormFieldDef[] = [
   {
     name: 'name',
@@ -44,18 +56,18 @@ export const formFields: FormFieldDef[] = [
     span: 'half',
   },
   {
-    name: 'role',
-    label: 'Role or position',
-    placeholder: 'Project manager',
-    type: 'text',
+    name: 'phone',
+    label: 'Phone number',
+    placeholder: '+91 98765 43210',
+    type: 'tel',
     required: true,
     span: 'half',
   },
   {
-    name: 'phone',
-    label: 'Phone number',
-    placeholder: '(+91) 123-456-7890',
-    type: 'tel',
+    name: 'role',
+    label: 'Role or position',
+    placeholder: 'Project manager',
+    type: 'text',
     span: 'half',
   },
   {
@@ -63,7 +75,6 @@ export const formFields: FormFieldDef[] = [
     label: 'Email',
     placeholder: 'name@email.com',
     type: 'email',
-    required: true,
     span: 'half',
   },
   {
@@ -71,7 +82,6 @@ export const formFields: FormFieldDef[] = [
     label: 'Company name',
     placeholder: 'Acme',
     type: 'text',
-    required: true,
     span: 'full',
   },
   {
@@ -79,13 +89,13 @@ export const formFields: FormFieldDef[] = [
     label: 'How Can We Help?',
     placeholder: 'Select options',
     type: 'select',
-    required: true,
     span: 'full',
     options: [
-      'Schedule a 30-minute meeting with a yard expert',
-      'Schedule a product demo',
-      'Arrange an ROI consultation',
-      'Set up a 2-day proof of value on site',
+      'Request a structural consultation',
+      'Check if PEN works for my plot',
+      'Calculate my MW commissioning advantage',
+      'Plan an eco-resort foundation',
+      'Request technical documentation',
       'Something else',
     ],
   },
@@ -111,7 +121,7 @@ export const contactWays: ContactWay[] = [
     id: 'survey',
     variant: 'link',
     theme: 'dark',
-    title: 'Download the 2026 State of the Yard Survey',
+    title: 'Download the NIT Calicut field test report',
     href: '#',
     icon: 'survey',
     notch: { edge: 'left', center: '50%' },
@@ -131,7 +141,8 @@ export const contactWays: ContactWay[] = [
     variant: 'link',
     theme: 'light',
     title: 'Calculate your ROI',
-    description: 'Enter your yard size, throughput, and dwell time to estimate your ROI.',
+    description:
+      'Enter your plot size, soil type, and structure to estimate load capacity and installation time.',
     href: '#',
     icon: 'calculator',
     notch: { edge: 'bottom', center: 'calc(30% + 138px)' },

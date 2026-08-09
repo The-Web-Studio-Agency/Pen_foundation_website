@@ -23,7 +23,7 @@ export function GalleryBody() {
   };
 
   return (
-    <div className="relative min-h-screen bg-neutral-950">
+    <div className="relative min-h-screen bg-ink">
       <div className="mx-auto max-w-[1500px] px-6 pt-[calc(var(--spacing-nav)+2.5rem)] md:px-16">
         <Kicker n="—" label="The archive" className="text-ink-soft" />
         <div className="mt-6 flex flex-wrap gap-2">

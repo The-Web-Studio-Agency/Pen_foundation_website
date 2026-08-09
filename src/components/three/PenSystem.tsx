@@ -148,7 +148,7 @@ export function PenSystem() {
           {/* dark bore at the mouth */}
           <mesh position={s.mouth} quaternion={s.quaternion}>
             <cylinderGeometry args={[0.072, 0.072, 0.025, 20]} />
-            <meshStandardMaterial color="#0a0f11" roughness={1} metalness={0} />
+            <meshStandardMaterial color="#012c32" roughness={1} metalness={0} />
           </mesh>
         </group>
       ))}

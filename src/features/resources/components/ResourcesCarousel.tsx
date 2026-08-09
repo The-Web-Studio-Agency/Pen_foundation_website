@@ -15,7 +15,7 @@ const SLIDE_STEP = 350 + 24;
  * (so trackpads and touch work as expected); the buttons just nudge the rail by
  * one slide and disable themselves at each end.
  */
-export function ResourcesCarousel({ section }: { section: CarouselSection }) {
+export function ResourcesCarousel({ section, id }: { section: CarouselSection; id?: string }) {
   const railRef = useRef<HTMLDivElement>(null);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
@@ -54,7 +54,7 @@ export function ResourcesCarousel({ section }: { section: CarouselSection }) {
   );
 
   return (
-    <section className="py-15 lg:py-[5.625rem]">
+    <section id={id} className={cn('py-15 lg:py-[5.625rem]', id && 'scroll-mt-nav')}>
       <div className="flex flex-col gap-6">
         <header className="flex flex-wrap items-end justify-between gap-4 px-5 lg:px-[4.375rem]">
           <div className="flex flex-col gap-1">

@@ -28,7 +28,13 @@ function tile(cell: number, stroke: string, lineOpacity: number) {
   return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
 }
 
-/** Fades the motif out at the top and bottom edges, as the original does. */
+/**
+ * Fades the motif out at the top and bottom edges, as the original does.
+ *
+ * The `black` stops are an alpha stencil, not a paint — this feeds
+ * `mask-image`, where black means "keep". It is not part of the site palette
+ * and must not be swapped for the site dark.
+ */
 const EDGE_MASK = 'linear-gradient(to bottom, transparent, black 12%, black 88%, transparent)';
 
 export interface DotGridProps {
@@ -44,7 +50,7 @@ export function DotGrid({ onDark = false, className }: DotGridProps) {
   // Literal hex, not var(--c-accent): this is interpolated into an inline SVG
   // data URI, which is a separate document and cannot see the host page's
   // custom properties. Keep in sync with --c-accent in globals.css.
-  const stroke = onDark ? '#057c86' : '#052424';
+  const stroke = onDark ? '#057c86' : '#012c32';
   const lineOpacity = onDark ? 0.18 : 0.12;
   const layer = {
     backgroundPosition: 'center',

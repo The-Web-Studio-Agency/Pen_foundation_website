@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import { cn } from '@/lib/utils';
-import { navActions, navDirectLinks, navMenus } from '@/config/navigation';
+import { navActions, primaryNav } from '@/config/navigation';
 import { ChevronDownIcon, PhoneIcon } from '@/components/shared/icons';
 import { Logo } from '@/components/shared/icons/Logo';
 
@@ -27,7 +27,10 @@ export function SiteHeader() {
   const [activeIndex, setActiveIndex] = useState(0);
   const pathname = usePathname();
 
-  const activeMenu = navMenus.find((m) => m.label === openMenu);
+  const activeMenu = primaryNav.find((item) => item.label === openMenu && item.items);
+  // Narrowed once here: `items` is optional on NavItem, and `find` cannot carry
+  // the "has items" guard through to the JSX below.
+  const activeItems = activeMenu?.items ?? [];
 
   /** A menu is current when the route sits under any of its destinations. */
   const isCurrent = (href: string) => {
@@ -44,7 +47,7 @@ export function SiteHeader() {
         className="w-full max-w-[960px]"
         onMouseLeave={() => setOpenMenu(null)}
       >
-        <div className="inner flex h-[78px] items-center justify-between gap-6 rounded-lg bg-black/30 px-6 backdrop-blur-[30px]">
+        <div className="inner flex h-[78px] items-center justify-between gap-6 rounded-lg bg-ink/30 px-6 backdrop-blur-[30px]">
           <Link
             href="/"
             aria-label="PEN Foundation — home"
@@ -54,48 +57,49 @@ export function SiteHeader() {
           </Link>
 
           <nav aria-label="Primary" className="flex items-center gap-1">
-            {navMenus.map((menu) => (
-              <div
-                key={menu.label}
-                onMouseEnter={() => {
-                  setOpenMenu(menu.label);
-                  setActiveIndex(0);
-                }}
-              >
-                <button
-                  type="button"
-                  aria-expanded={openMenu === menu.label}
+            {primaryNav.map((item) =>
+              item.items ? (
+                <div
+                  key={item.label}
+                  onMouseEnter={() => {
+                    setOpenMenu(item.label);
+                    setActiveIndex(0);
+                  }}
+                >
+                  <button
+                    type="button"
+                    aria-expanded={openMenu === item.label}
+                    className={cn(
+                      'flex items-center gap-1 rounded-md px-3 py-2 text-sm transition-colors hover:text-white',
+                      openMenu === item.label || item.items.some((i) => isCurrent(i.href))
+                        ? 'text-white'
+                        : 'text-white/90',
+                    )}
+                  >
+                    {item.label}
+                    <ChevronDownIcon
+                      className={cn(
+                        'transition-transform duration-200',
+                        openMenu === item.label && 'rotate-180',
+                      )}
+                    />
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  aria-current={pathname === item.href ? 'page' : undefined}
+                  onMouseEnter={() => setOpenMenu(null)}
                   className={cn(
-                    'flex items-center gap-1 rounded-md px-3 py-2 text-sm transition-colors hover:text-white',
-                    openMenu === menu.label || menu.items.some((i) => isCurrent(i.href))
-                      ? 'text-white'
-                      : 'text-white/90',
+                    'rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                    pathname === item.href ? 'text-teal-bright' : 'text-white/90 hover:text-white',
                   )}
                 >
-                  {menu.label}
-                  <ChevronDownIcon
-                    className={cn(
-                      'transition-transform duration-200',
-                      openMenu === menu.label && 'rotate-180',
-                    )}
-                  />
-                </button>
-              </div>
-            ))}
-
-            {navDirectLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                aria-current={pathname === link.href ? 'page' : undefined}
-                className={cn(
-                  'rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                  pathname === link.href ? 'text-teal-bright' : 'text-white/90 hover:text-white',
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
+                  {item.label}
+                </Link>
+              ),
+            )}
           </nav>
 
           <div className="flex items-center gap-3">
@@ -113,8 +117,8 @@ export function SiteHeader() {
                 className={cn(
                   buttonBase,
                   action.emphasis === 'primary'
-                    ? 'bg-teal text-white hover:bg-[#052424] hover:text-teal-bright'
-                    : 'bg-white text-[#052424] hover:bg-[#052424] hover:text-teal-bright',
+                    ? 'bg-teal text-white hover:bg-[#012c32] hover:text-teal-bright'
+                    : 'bg-white text-[#012c32] hover:bg-[#012c32] hover:text-teal-bright',
                 )}
               >
                 {action.label}
@@ -133,7 +137,7 @@ export function SiteHeader() {
               className="mt-2 flex overflow-hidden rounded-lg bg-[#3a3d34] text-white shadow-xl"
             >
               <ul className="w-1/2 divide-y divide-white/10 py-2">
-                {activeMenu.items.map((item, i) => (
+                {activeItems.map((item, i) => (
                   <li key={item.label}>
                     <button
                       type="button"
@@ -150,12 +154,12 @@ export function SiteHeader() {
                 ))}
               </ul>
               <div className="w-1/2 border-l border-white/10 p-6">
-                <p className="text-lg font-semibold">{activeMenu.items[activeIndex]?.label}</p>
+                <p className="text-lg font-semibold">{activeItems[activeIndex]?.label}</p>
                 <p className="mt-2 text-sm text-white/70">
-                  {activeMenu.items[activeIndex]?.description}
+                  {activeItems[activeIndex]?.description}
                 </p>
                 <Link
-                  href={activeMenu.items[activeIndex]?.href ?? '#'}
+                  href={activeItems[activeIndex]?.href ?? '#'}
                   className="mt-4 inline-block text-sm font-medium text-teal-bright"
                 >
                   Read More ↗

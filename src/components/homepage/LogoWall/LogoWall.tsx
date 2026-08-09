@@ -31,8 +31,25 @@ const DESKTOP_MAX_PER_ROW = 10;
 export interface LogoWallProps {
   /** Omit for the heading-less variant. */
   heading?: string;
+  /**
+   * One supporting line under the heading. Twenty unfamiliar marks do not say
+   * what kind of backing they represent, and the heading alone cannot carry it.
+   *
+   * Sits inside the measured intro block, so the grid's top padding — built
+   * from `--lw-intro-h` — absorbs the extra height on its own.
+   */
+  note?: string;
   cells: { reel: { src: string; alt: string }[] }[];
   className?: string;
+  /**
+   * Cells per row on desktop. Defaults to one row of however many cells there
+   * are (capped at DESKTOP_MAX_PER_ROW), which is right for the full wall but
+   * balloons a short wall: three cells would otherwise be 33% wide each, and
+   * because a cell is `aspect-square` that is also 33% of the width *tall* —
+   * a ~370px box around a 72px logo. Pass a higher number to keep the cells
+   * small and the marks close together.
+   */
+  perRow?: number;
 }
 
 function greatestCommonDivisor(a: number, b: number): number {
@@ -49,7 +66,7 @@ function swapOrder(count: number): number[] {
   return Array.from({ length: count }, (_, step) => (step * stride) % count);
 }
 
-export function LogoWall({ heading, cells, className }: LogoWallProps) {
+export function LogoWall({ heading, note, cells, className, perRow: perRowProp }: LogoWallProps) {
   const introRef = useRef<HTMLDivElement>(null);
   const windowRef = useRef<HTMLDivElement>(null);
   const [indexes, setIndexes] = useState<readonly number[]>(() => cells.map(() => 0));
@@ -98,9 +115,9 @@ export function LogoWall({ heading, cells, className }: LogoWallProps) {
     const observer = new ResizeObserver(sync);
     observer.observe(intro);
     return () => observer.disconnect();
-  }, [heading]);
+  }, [heading, note]);
 
-  const perRow = Math.min(DESKTOP_MAX_PER_ROW, Math.max(cells.length, 1));
+  const perRow = perRowProp ?? Math.min(DESKTOP_MAX_PER_ROW, Math.max(cells.length, 1));
   // Every mark carries the same placeholder alt, so one group label stands in
   // for what would otherwise be forty identical announcements.
   const wallLabel = cells[0]?.reel[0]?.alt ?? 'Logo wall';
@@ -134,6 +151,9 @@ export function LogoWall({ heading, cells, className }: LogoWallProps) {
             )}
           >
             <RevealText as="h2" text={heading} className="title-si" />
+            {note ? (
+              <p className="body-3 mx-auto mt-6 max-w-2xl text-[var(--c-dark-green)]/70">{note}</p>
+            ) : null}
           </div>
         ) : null}
 

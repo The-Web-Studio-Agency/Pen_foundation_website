@@ -19,7 +19,7 @@
   --color-paper: #ffffff; /* page base, pure white */
   --color-paper-alt: #eae7df; /* alternating section */
   --color-paper-panel: #e4e0d6; /* recessed panel */
-  --color-ink: #14191c; /* primary text, near-black */
+  --color-ink: #012c32; /* primary text — the one site dark, see --c-dark-green */
   --color-ink-soft: #5f6764; /* muted body text on light */
 
   /* PEN brand environments — homepage body */
@@ -116,9 +116,9 @@ body {
 /* Dotted grid with crosshair intersections — the section backdrop motif. */
 .dot-grid-bg {
   background-image:
-    radial-gradient(circle, rgba(5, 36, 36, 0.2) 0 1.1px, transparent 1.5px),
-    linear-gradient(to right, rgba(5, 36, 36, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(5, 36, 36, 0.05) 1px, transparent 1px);
+    radial-gradient(circle, rgba(1, 44, 50, 0.2) 0 1.1px, transparent 1.5px),
+    linear-gradient(to right, rgba(1, 44, 50, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(1, 44, 50, 0.05) 1px, transparent 1px);
   background-size: 65px 65px;
   background-position:
     -32.5px -32.5px,
@@ -129,6 +129,28 @@ body {
 /* Diagonal corner cutouts on media containers. */
 .notch-corner {
   clip-path: polygon(0 40px, 40px 0, 100% 0, 100% 100%, 0 100%);
+}
+
+/* The same 40px bevel on each of the four corners, so a grid can point every
+   card's cut at the middle of the block — four inward bevels around a gap read
+   as one diamond cut out of the grid rather than four unrelated cards.
+   `.notch-corner` above stays as-is: it is the plain top-left cutout that
+   existing media containers already use, and it is not a Tailwind utility, so
+   it cannot take a `lg:` prefix.
+   Registered with `@utility` rather than written as plain classes precisely so
+   they can: a two-column grid is one column on a phone, where the pinwheel has
+   nothing to point at and every card wants the same top-left cut. */
+@utility notch-corner-tl {
+  clip-path: polygon(0 40px, 40px 0, 100% 0, 100% 100%, 0 100%);
+}
+@utility notch-corner-tr {
+  clip-path: polygon(0 0, calc(100% - 40px) 0, 100% 40px, 100% 100%, 0 100%);
+}
+@utility notch-corner-br {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 40px), calc(100% - 40px) 100%, 0 100%);
+}
+@utility notch-corner-bl {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 40px 100%, 0 calc(100% - 40px));
 }
 /* Oversized centred display heading. Mirrors the reference about page's fluid
    scale: weight 400, line-height 1, tracking tightening as the size grows.
@@ -202,6 +224,23 @@ body {
   mask-image: url('/media/images/right.svg');
 }
 
+/* Full-width section silhouette: the site's notch profile on the TOP and
+   BOTTOM edges at once, with the shoulders staying square at the far corners.
+   Same white-means-keep convention as download.svg above; the asset draws the
+   two notch bands as evenodd cutouts, so they mask away and the page shows
+   through.
+   This is how a coloured band sits inside the page without a NotchSeparator:
+   the separator pulls a 48px lip over the section above it and only shapes one
+   edge, whereas this shapes both and belongs to the band itself. */
+.section-mask {
+  -webkit-mask-image: url('/media/images/homepage/section.svg');
+  mask-image: url('/media/images/homepage/section.svg');
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
 .notch-bleed-l,
 .notch-bleed-r {
   -webkit-mask-size: 105.91% 100%;
@@ -260,10 +299,19 @@ body {
   /* The clone palette's accent slot. Was --c-lime #abff02; now PEN teal so the
      ported routes share the one site accent. */
   --c-accent: #057c86;
-  --c-dark-green: #052424;
-  --c-dark-green-20: rgba(5, 36, 36, 0.2);
-  --c-dark-green-15: rgba(5, 36, 36, 0.15);
-  --c-dark-green-05: rgba(5, 36, 36, 0.05);
+  /* The one dark on the site. Was the reference's #052424; every near-black
+     surface, rule and body text now resolves here (and to --color-ink, which
+     carries the same value for the editorial routes) so there is a single
+     value to change. The rgba variants below must track it by hand — CSS has
+     no way to derive them from the hex. */
+  --c-dark-green: #012c32;
+  /* The clone referenced a --c-black that its stylesheet never defined, so it
+     resolved to nothing. Pointed at the site dark rather than reintroducing a
+     true black. */
+  --c-black: var(--c-dark-green);
+  --c-dark-green-20: rgba(1, 44, 50, 0.2);
+  --c-dark-green-15: rgba(1, 44, 50, 0.15);
+  --c-dark-green-05: rgba(1, 44, 50, 0.05);
 }
 
 /* Typography scale transcribed from the reference site. Deliberately plain
@@ -427,6 +475,37 @@ html.lenis body {
    an `opacity-20` wrapper, and a beam nested in that would inherit the same
    20% and stop reading as light.
    --------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------
+   Technical grid background — traces travelling along the grid lines.
+
+   One dash period is 900 user units (see TechnicalGridBackground's
+   TRACE_DASH), and the offset moves by exactly that, so the pattern lands back
+   where it started and the loop is seamless with no fade or jump.
+
+   `stroke-dashoffset` rather than a transform: a transform would need the
+   container's width in CSS to know how far to travel, and the dash carries a
+   turning path around its corner for free. Six thin strokes repaint cheaply.
+   --------------------------------------------------------------------------- */
+@keyframes grid-trace-run {
+  to {
+    stroke-dashoffset: -900;
+  }
+}
+
+.grid-trace {
+  animation: grid-trace-run var(--trace-duration, 20s) linear infinite;
+  animation-delay: var(--trace-delay, 0s);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grid-trace {
+    animation: none;
+    /* Without the animation the dash would freeze mid-line as an arbitrary
+       stub, so the trace is hidden and the static grid is left alone. */
+    opacity: 0;
+  }
+}
+
 @keyframes grid-beam-sweep {
   0% {
     transform: translateX(-15%);
@@ -618,5 +697,40 @@ html.lenis body {
   /* Horizontal page gutter shared by every section */
   .site-gutter {
     padding-inline: var(--spacing-gutter);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Sparkling edge — a highlight that travels around a masked shape.
+
+   A CSS mask clips `border` the same way it clips `box-shadow`, so an outline
+   cannot be drawn on a notched element directly. Instead this paints a moving
+   gradient on a plate behind the card; the card sits inset on top, and the
+   sliver left showing around it reads as the border.
+   --------------------------------------------------------------------------- */
+@keyframes sparkle-sweep {
+  to {
+    background-position: 200% 50%;
+  }
+}
+
+.sparkle-edge {
+  background-image: linear-gradient(
+    110deg,
+    var(--c-dark-green-15) 0%,
+    var(--color-teal) 18%,
+    var(--color-teal-bright) 30%,
+    #ffffff 38%,
+    var(--color-teal-bright) 46%,
+    var(--color-teal) 60%,
+    var(--c-dark-green-15) 82%
+  );
+  background-size: 200% 100%;
+  animation: sparkle-sweep 6s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sparkle-edge {
+    animation: none;
   }
 }

@@ -50,7 +50,7 @@ export function SiteFooter() {
     >
       <footer
         className={cn(
-          'relative grid w-full grid-cols-2 overflow-hidden bg-navy text-[var(--c-white)]',
+          'relative grid w-full grid-cols-2 overflow-hidden bg-ink text-[var(--c-white)]',
           'gap-x-[2.564vw] px-5 pt-[7.8125rem] pb-[2.09375rem]',
           'lg:grid-cols-12 lg:gap-x-[min(1.042vw,26.6666px)] lg:px-[4.375rem] lg:pt-[14.375rem] lg:pb-5',
         )}

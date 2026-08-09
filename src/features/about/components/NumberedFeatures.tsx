@@ -6,9 +6,9 @@ import { ScrollRevealText } from '@/components/motion/ScrollRevealText';
 import { GridBeam } from '@/components/shared/backgrounds/GridBeam';
 
 const GRADIENTS = [
-  'linear-gradient(135deg, #0a3a3a 0%, #052424 60%, #1a2f1a 100%)',
-  'linear-gradient(135deg, #1a2f1a 0%, #052424 55%, #0a3a3a 100%)',
-  'linear-gradient(135deg, #052424 0%, #0f2a2a 50%, #223a1a 100%)',
+  'linear-gradient(135deg, #0a3a3a 0%, #012c32 60%, #1a2f1a 100%)',
+  'linear-gradient(135deg, #1a2f1a 0%, #012c32 55%, #0a3a3a 100%)',
+  'linear-gradient(135deg, #012c32 0%, #0f2a2a 50%, #223a1a 100%)',
 ];
 
 export function NumberedFeatures() {

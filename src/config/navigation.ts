@@ -4,9 +4,11 @@ export interface NavMegaMenuItem {
   description: string;
 }
 
-export interface NavMegaMenu {
+export interface NavItem {
   label: string;
-  items: NavMegaMenuItem[];
+  href: string;
+  /** Present when the item opens a dropdown rather than navigating directly. */
+  items?: NavMegaMenuItem[];
 }
 
 export interface FooterLinkColumn {
@@ -23,182 +25,87 @@ export interface FooterLinkColumn {
  * /contact was missing from the header entirely. Adding a route is now one edit.
  */
 
-/** Header mega-menus, in display order. */
-export const navMenus: NavMegaMenu[] = [
-  {
-    label: 'Engineering',
-    items: [
-      {
-        label: 'Overview',
-        href: '/engineering',
-        description:
-          'Understand the engineering principles behind PEN Foundation and how it redefines modern foundation systems.',
-      },
-      {
-        label: 'Biomimetic Design',
-        href: '/engineering#biomimicry',
-        description:
-          'Discover how nature-inspired engineering influenced the design philosophy of PEN Foundation.',
-      },
-      {
-        label: 'Product Anatomy',
-        href: '/engineering#anatomy',
-        description:
-          'Explore every component of the PEN Foundation system and its structural purpose.',
-      },
-      {
-        label: 'Installation',
-        href: '/engineering#installation',
-        description:
-          'Follow the complete installation process from site preparation to construction readiness.',
-      },
-      {
-        label: 'Load Transfer',
-        href: '/engineering#load-transfer',
-        description:
-          'Visualize how structural loads are transferred efficiently through the engineered foundation system.',
-      },
-      {
-        label: 'Soil Interaction',
-        href: '/engineering#soil',
-        description:
-          'Learn how PEN Foundation interacts with different soil conditions and distributes structural forces.',
-      },
-      {
-        label: 'Structural Connections',
-        href: '/engineering#connections',
-        description:
-          'Explore RCC and steel connection systems designed for multiple construction methods.',
-      },
-      {
-        label: 'Engineering Validation',
-        href: '/engineering#validation',
-        description:
-          'Review testing, simulations, and technical validation supporting the PEN Foundation system.',
-      },
-    ],
-  },
-
-  {
-    label: 'Applications',
-    items: [
-      {
-        label: 'Residential Buildings',
-        href: '/applications#residential',
-        description: 'Foundation solutions for independent homes and residential developments.',
-      },
-      {
-        label: 'Commercial Buildings',
-        href: '/applications#commercial',
-        description:
-          'Efficient foundation systems for offices, retail spaces, and mixed-use developments.',
-      },
-      {
-        label: 'Industrial Facilities',
-        href: '/applications#industrial',
-        description:
-          'Engineered foundation solutions for industrial and manufacturing environments.',
-      },
-      {
-        label: 'Resorts & Hospitality',
-        href: '/applications#hospitality',
-        description:
-          'Construction-friendly foundation systems for hospitality and eco-sensitive projects.',
-      },
-      {
-        label: 'Infrastructure',
-        href: '/applications#infrastructure',
-        description: 'Applications for public infrastructure and large-scale engineering projects.',
-      },
-      {
-        label: 'Special Projects',
-        href: '/applications#special',
-        description:
-          'Explore additional construction scenarios where PEN Foundation provides unique advantages.',
-      },
-    ],
-  },
-
-  {
-    label: 'Projects',
-    items: [
-      {
-        label: 'Featured Projects',
-        href: '/projects',
-        description:
-          'Explore completed projects demonstrating the real-world implementation of PEN Foundation.',
-      },
-      {
-        label: 'Residential Projects',
-        href: '/projects?category=residential',
-        description: 'Case studies showcasing residential foundation installations.',
-      },
-      {
-        label: 'Commercial Projects',
-        href: '/projects?category=commercial',
-        description: 'Commercial construction projects built using PEN Foundation.',
-      },
-      {
-        label: 'Hospitality Projects',
-        href: '/projects?category=hospitality',
-        description: 'Hospitality developments utilizing innovative foundation engineering.',
-      },
-      {
-        label: 'Construction Process',
-        href: '/projects#construction',
-        description: 'Visual walkthroughs documenting installation and construction progress.',
-      },
-      {
-        label: 'Project Gallery',
-        href: '/gallery',
-        description: 'Images and videos from active and completed PEN Foundation installations.',
-      },
-    ],
-  },
-
-  {
-    label: 'Research',
-    items: [
-      {
-        label: 'Testing & Validation',
-        href: '/research#testing',
-        description:
-          'Explore engineering tests and field validation carried out on PEN Foundation.',
-      },
-      {
-        label: 'Technical Papers',
-        href: '/research#papers',
-        description: 'Engineering publications and technical documentation.',
-      },
-      {
-        label: 'Simulation',
-        href: '/research#simulation',
-        description: 'Finite element analysis and engineering simulations supporting the design.',
-      },
-      {
-        label: 'Certifications',
-        href: '/research#certifications',
-        description: 'Review certifications, recognition, and supporting documentation.',
-      },
-      {
-        label: 'Downloads',
-        href: '/research#downloads',
-        description: 'Access brochures, datasheets, manuals, and technical resources.',
-      },
-      {
-        label: 'Knowledge Centre',
-        href: '/research/articles',
-        description: 'Engineering articles and educational resources on modern foundation systems.',
-      },
-    ],
-  },
-];
-
 /**
- * Header links that are plain destinations rather than mega-menus.
- * Rendered after the menus, in order.
+ * Primary navigation, in display order.
+ *
+ * One ordered list rather than separate "menus" and "links" arrays: the header
+ * used to render every mega-menu first and every plain link after, so ordering
+ * was a property of which array an item sat in. An item is a dropdown when it
+ * has `items`, and a plain link otherwise.
+ *
+ * Engineering, Applications, Projects and Research were dropped from the header
+ * on request. Their routes still exist and stay reachable from the footer —
+ * `footerColumns` below is the same single source, so nothing became orphaned.
  */
-export const navDirectLinks = [{ label: 'About', href: '/about' }] as const;
+export const primaryNav: NavItem[] = [
+  {
+    label: 'Home',
+    href: '/',
+    // The homepage now carries the whole sales argument, and a visitor who
+    // lands mid-funnel should be able to jump to the part they came for. These
+    // are the section anchors on `/` — same `NavItem` shape and the same
+    // dropdown the Resources item already uses, so the header is unchanged
+    // visually and no new component was needed.
+    items: [
+      {
+        label: 'Technology',
+        href: '/#technology',
+        description:
+          'What the system is: one precast node, four driven nails, and the specification behind them.',
+      },
+      {
+        label: 'Applications',
+        href: '/#applications',
+        description: 'The project types PEN is engineered and sold for today.',
+      },
+      {
+        label: 'Projects',
+        href: '/#projects',
+        description: 'Deployments already in the ground, with the challenge and the outcome.',
+      },
+      {
+        label: 'Validation',
+        href: '/#validation',
+        description: 'The institutes and bodies that tested, mentored and listed the system.',
+      },
+      {
+        label: 'Calculator',
+        href: '/#calculator',
+        description: 'Estimate the programme time and site cost PEN removes from your project.',
+      },
+    ],
+  },
+  { label: 'Works', href: '/projects' },
+  {
+    label: 'Resources',
+    href: '/resources',
+    items: [
+      {
+        label: 'Certificate',
+        href: '/resources#certificate',
+        description:
+          'GRIHA Council certification listing the pre-engineered nail foundation in the GRIHA Product Catalogue.',
+      },
+      {
+        label: 'FAQs',
+        href: '/resources#faqs',
+        description:
+          'Answers to the questions engineers ask most about specification, installation and soil conditions.',
+      },
+      {
+        label: 'Documents',
+        href: '/resources#documents',
+        description: 'Datasheets, certificates and technical documentation available to download.',
+      },
+      {
+        label: 'Blogs',
+        href: '/research',
+        description: 'Engineering articles and research notes on modern foundation systems.',
+      },
+    ],
+  },
+  { label: 'About', href: '/about' },
+];
 
 /** Call-to-action buttons in the header pill. */
 export const navActions = [

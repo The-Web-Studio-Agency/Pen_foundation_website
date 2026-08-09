@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowLeftIcon, ArrowRightIcon } from '@/components/shared/icons';
 import { capabilitySteps } from '@/content/data/homepage';
 import { cn } from '@/lib/utils';
+import type { CapabilityStep } from '@/types/homepage';
 
 /**
  * INTERACTION MODEL: scroll-driven at >=1024px, drag carousel below it — the
@@ -63,6 +64,75 @@ function OdometerDigit({ digit }: { digit: number }) {
         ))}
       </span>
     </span>
+  );
+}
+
+/**
+ * One panel of the media stack. All six are mounted and cross-faded, so video
+ * steps play only while active — otherwise every clip decodes at once — and
+ * carry `preload="metadata"` so an inactive one costs a few kilobytes.
+ *
+ * A video step also carries a `poster`: with `preload="metadata"` the browser
+ * has no frame to paint until the clip is played, so without one an inactive
+ * panel is a blank box behind the cross-fade. The poster is the exported first
+ * frame, so the still and the clip line up.
+ */
+function CapabilityMedia({
+  media,
+  isActive,
+}: {
+  media: CapabilityStep['media'];
+  isActive: boolean;
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (isActive) {
+      // Rejects if the browser blocks playback; nothing to recover, the poster
+      // frame stays up.
+      void video.play().catch(() => undefined);
+      return;
+    }
+    video.pause();
+  }, [isActive]);
+
+  const className = cn(
+    'absolute inset-0 h-full w-full object-cover',
+    'transition-opacity duration-500 ease-[var(--ease-out)] motion-reduce:transition-none',
+    isActive ? 'opacity-100' : 'opacity-0',
+  );
+
+  if (media.src.endsWith('.mp4')) {
+    return (
+      <video
+        ref={videoRef}
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        poster={media.poster}
+        tabIndex={-1}
+        aria-label={media.alt}
+        aria-hidden={!isActive}
+        className={cn(className, 'pointer-events-none')}
+      >
+        <source src={media.src} type="video/mp4" />
+      </video>
+    );
+  }
+
+  return (
+    <Image
+      src={media.src}
+      alt={media.alt}
+      width={400}
+      height={480}
+      sizes="(min-width: 1024px) 52vw, 90vw"
+      aria-hidden={!isActive}
+      className={className}
+    />
   );
 }
 
@@ -197,20 +267,8 @@ export function Capabilities() {
         >
           <div className="relative aspect-[400/480] w-full">
             {capabilitySteps.map((step, index) => (
-              <Image
-                key={step.media.src}
-                src={step.media.src}
-                alt={step.media.alt}
-                width={400}
-                height={480}
-                sizes="(min-width: 1024px) 52vw, 90vw"
-                aria-hidden={index !== current}
-                className={cn(
-                  'absolute inset-0 h-full w-full object-cover',
-                  'transition-opacity duration-500 ease-[var(--ease-out)] motion-reduce:transition-none',
-                  index === current ? 'opacity-100' : 'opacity-0',
-                )}
-              />
+              // Keyed by title, not src: steps may share a clip.
+              <CapabilityMedia key={step.title} media={step.media} isActive={index === current} />
             ))}
 
             <div className="absolute right-5 bottom-10 hidden justify-end gap-x-2.5 lg:flex">

@@ -8,6 +8,7 @@ import {
 } from '@/features/about';
 import { createMetadata } from '@/config/seo';
 import { SectionHeading } from '@/components/typography';
+import { ValuesSection } from '@/components/values';
 import { LogoGrid } from '@/components/shared/grids/LogoGrid';
 import { leadershipTeam } from '@/content/data/people';
 
@@ -24,6 +25,7 @@ export default function AboutPage() {
       <Hero />
       <NumberedFeatures />
       <StoryValues />
+      <ValuesSection />
 
       <section className="py-24">
         <SectionHeading

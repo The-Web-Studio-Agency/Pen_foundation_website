@@ -6,13 +6,7 @@ import { MediaFrame } from '@/components/shared/media/MediaFrame';
 import { Reveal, RevealItem } from '@/components/motion';
 import { Calculator } from './Calculator';
 import { PenModelViewer } from '@/components/three/PenModelViewer';
-
-const PARTS: { n: string; name: string; spec: string }[] = [
-  { n: '01', name: 'Precast node', spec: 'Safety-yellow precast concrete, square frustum' },
-  { n: '02', name: 'Steel cap plate', spec: 'Galvanised, load-bearing interface to structure' },
-  { n: '03', name: 'GI sleeve × 4', spec: 'Ø90 galvanised iron, cast in at 26°' },
-  { n: '04', name: 'Helical nail × 4', spec: 'Driven, not poured — hardened steel tip' },
-];
+import { specification } from '@/content/data/specification';
 
 const VS: { label: string; conventional: string; pen: string }[] = [
   { label: 'Concrete volume', conventional: '100%', pen: '20%' },
@@ -43,26 +37,39 @@ export function EngineeringBody() {
         </div>
       </Section>
 
-      {/* 02 — assembly spec */}
+      {/* 02 — assembly spec.
+          The homepage names these parts in prose and routes here; this is where
+          the figures themselves are printed. They come from the shared
+          `specification` module, transcribed from the brief — the array that
+          used to sit inline here quoted a Ø90 sleeve at 26°, against a
+          specified 32 mm OD pipe at 40–51°. */}
       <Section id="assembly">
         <div className="mx-auto max-w-[1500px]">
           <Reveal>
             <Kicker n="02" label="Assembly" />
           </Reveal>
           <Reveal stagger={0.08} className="mt-12 border-t border-ink/12">
-            {PARTS.map((p) => (
-              <RevealItem key={p.n}>
+            {specification.parts.map((part, index) => (
+              <RevealItem key={part.term}>
                 <div className="grid grid-cols-12 items-baseline gap-4 border-b border-ink/12 py-8">
-                  <Mono className="col-span-2 text-ink/40">{p.n}</Mono>
+                  <Mono className="col-span-2 text-ink/40">
+                    {String(index + 1).padStart(2, '0')}
+                  </Mono>
                   <h3 className="col-span-10 text-2xl font-medium tracking-tight text-ink md:col-span-4 md:text-3xl">
-                    {p.name}
+                    {part.term}
                   </h3>
-                  <Body className="col-span-12 text-ink-soft md:col-span-6 md:col-start-7">
-                    {p.spec}
-                  </Body>
+                  {/* Mono, like every other hard figure on this page: these are
+                      measured values and an IS code, not prose. */}
+                  <Mono className="col-span-12 text-ink-soft md:col-span-6 md:col-start-7">
+                    {part.spec}
+                  </Mono>
                 </div>
               </RevealItem>
             ))}
+          </Reveal>
+
+          <Reveal className="mt-8">
+            <Mono className="text-ink/50">{specification.note}</Mono>
           </Reveal>
         </div>
       </Section>

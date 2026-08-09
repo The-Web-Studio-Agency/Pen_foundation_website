@@ -9,7 +9,7 @@ const REST_COLOR = '#c2c2c2';
 // Brand accent (--color-teal). Interpolated by Framer Motion, so it has to be
 // site's lime. Framer Motion interpolates raw values, so this can't be a var().
 const PEAK_COLOR = '#057c86';
-const SETTLE_COLOR = '#052424';
+const SETTLE_COLOR = '#012c32';
 
 function ScrubbedWord({
   word,

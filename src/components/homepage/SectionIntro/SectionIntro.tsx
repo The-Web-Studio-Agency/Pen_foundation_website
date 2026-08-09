@@ -3,11 +3,11 @@
 import Link from 'next/link';
 
 import { RevealText } from '@/components/motion';
-import { DotGrid } from '@/components/homepage/shared/DotGrid';
+import { TechnicalGridBackground } from '@/components/shared/backgrounds/TechnicalGridBackground';
 import { cn } from '@/lib/utils';
 
 /**
- * The centred label + heading block the page uses twice — once to open the
+ * The centred heading block the page uses twice — once to open the
  * "Built by the Industry" section (621px tall) and once for "How it Works"
  * (810px), where it also carries a link.
  *
@@ -15,41 +15,43 @@ import { cn } from '@/lib/utils';
  * the right and sweeps open from the left on hover, then collapses back the way
  * it came on leave. Gated behind `fine:` so a touch device never sticks in the
  * hovered state, and mirrored on `focus-visible` for keyboard users.
+ *
+ * The backdrop is `TechnicalGridBackground`: the same faint grid with a "+" at
+ * every intersection, plus teal traces running along the lines.
+ *
+ * It replaces the `DotGrid` + `GridBeam` pair that used to sit here. Those were
+ * two components that did not know about each other — the beam was one wide
+ * gradient sweeping over the grid, so it read as a soft glow rather than a line
+ * following a route, and nothing made it land on a grid line. A trace has to be
+ * drawn from the same coordinates as the grid it runs along, which means one
+ * component owning both.
  */
 export interface SectionIntroProps {
-  label: string;
+  /**
+   * Anchor id. The validation chapter's evidence table used to carry
+   * `#validation`; with that section gone, the heading owns it so the header's
+   * Validation link still lands somewhere.
+   */
+  id?: string;
   heading: string;
   linkLabel?: string;
   linkHref?: string;
   className?: string;
 }
 
-export function SectionIntro({
-  label,
-  heading,
-  linkLabel,
-  linkHref,
-  className,
-}: SectionIntroProps) {
+export function SectionIntro({ id, heading, linkLabel, linkHref, className }: SectionIntroProps) {
   return (
     <section
+      id={id}
       className={cn(
-        'relative flex w-full flex-col items-center justify-center overflow-hidden',
+        'relative flex w-full scroll-mt-nav flex-col items-center justify-center overflow-hidden',
         'bg-[var(--c-white)] py-[7.5rem] lg:py-[10rem]',
         className,
       )}
     >
-      <DotGrid />
+      <TechnicalGridBackground />
+
       <div className="site-gutter relative z-[1] flex flex-col items-center gap-8">
-        <p
-          className={cn(
-            'label m-0 text-center uppercase',
-            'text-[1.0625rem] leading-[0.95] tracking-[-0.0106rem]',
-            'lg:text-[1.25rem] lg:tracking-[-0.0125rem]',
-          )}
-        >
-          {label}
-        </p>
         <h2 className="title-si max-w-[min(70rem,90vw)] text-center text-balance">
           <RevealText text={heading} />
         </h2>

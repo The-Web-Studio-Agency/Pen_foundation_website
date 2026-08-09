@@ -79,7 +79,7 @@ export function TabbedAccordion() {
   const activeTab = faqTabs.find((tab) => tab.id === activeId) ?? faqTabs[0];
 
   return (
-    <section className="overflow-x-hidden py-[5.625rem]">
+    <section id="faqs" className="scroll-mt-nav overflow-x-hidden py-[5.625rem]">
       <div
         className={cn(
           'grid grid-cols-1 gap-16 px-5',

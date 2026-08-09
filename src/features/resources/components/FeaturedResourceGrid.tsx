@@ -7,7 +7,7 @@ import type { FeaturedGrid } from '@/types/contact';
  * the page puts its title above the supporting line rather than below the
  * eyebrow, which `titleFirst` handles.
  */
-export function FeaturedResourceGrid({ grid }: { grid: FeaturedGrid }) {
+export function FeaturedResourceGrid({ grid, id }: { grid: FeaturedGrid; id?: string }) {
   const eyebrow = grid.eyebrow ? (
     <p className="body-3 m-0 text-balance text-[var(--c-dark-gray)]">{grid.eyebrow}</p>
   ) : null;
@@ -24,7 +24,14 @@ export function FeaturedResourceGrid({ grid }: { grid: FeaturedGrid }) {
 
   return (
     <section
-      className={cn('px-5 py-15 lg:px-[4.375rem] lg:py-[5.625rem]', !grid.eyebrow && 'text-left')}
+      id={id}
+      className={cn(
+        'px-5 py-15 lg:px-[4.375rem] lg:py-[5.625rem]',
+        // Matches the id-bearing sections further down the page: the fixed
+        // header would otherwise cover the heading an anchor jumps to.
+        id && 'scroll-mt-nav',
+        !grid.eyebrow && 'text-left',
+      )}
     >
       <div
         className={cn(

@@ -42,7 +42,7 @@ export function MediaFrame({
         }}
       />
       <div className="absolute top-4 left-4 flex items-center gap-2">
-        <span className="h-1.5 w-1.5 rounded-full bg-neutral-900" />
+        <span className="h-1.5 w-1.5 rounded-full bg-ink" />
         <span className="font-mono text-[9px] tracking-[0.3em] text-ink/50 uppercase">{label}</span>
       </div>
       {children}
