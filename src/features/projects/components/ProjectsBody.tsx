@@ -7,6 +7,7 @@ import { Figure, Kicker, Mono, Statement } from '@/components/typography';
 import { MediaFrame } from '@/components/shared/media/MediaFrame';
 import { Reveal, RevealItem } from '@/components/motion';
 import { PROJECTS } from '@/content/data/projects';
+import { FilterChip } from '@/components/shared/FilterChip';
 
 const INDUSTRIES = ['All', 'Residential', 'Commercial', 'Solar', 'Eco Resort'] as const;
 
@@ -19,7 +20,7 @@ export function ProjectsBody() {
   );
 
   return (
-    <div className="relative">
+    <div className="relative pt-nav">
       <Section id="explorer">
         <div className="mx-auto max-w-[1500px]">
           <Reveal>
@@ -39,17 +40,7 @@ export function ProjectsBody() {
           {/* filter rail */}
           <div className="mt-16 flex flex-wrap gap-3 border-t border-ink/12 pt-8">
             {INDUSTRIES.map((i) => (
-              <button
-                key={i}
-                onClick={() => setIndustry(i)}
-                className={`border px-5 py-2.5 font-mono text-[11px] tracking-[0.2em] uppercase transition-colors ${
-                  industry === i
-                    ? 'border-ink bg-ink text-paper'
-                    : 'border-ink/20 text-ink-soft hover:border-ink/50'
-                }`}
-              >
-                {i}
-              </button>
+              <FilterChip key={i} label={i} selected={industry === i} onSelect={() => setIndustry(i)} />
             ))}
           </div>
 

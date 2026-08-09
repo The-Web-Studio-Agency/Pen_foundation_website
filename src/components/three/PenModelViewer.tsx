@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment } from '@react-three/drei';
 import { PenSystem } from './PenSystem';
+import { EnvironmentBoundary } from './EnvironmentBoundary';
 import { store } from '@/lib/three/progressStore';
 
 /**
@@ -27,7 +28,12 @@ export function PenModelViewer() {
         <ambientLight intensity={0.5} color="#cfe3e6" />
         <directionalLight position={[5, 6, 3]} intensity={1.6} color="#fff1e2" castShadow />
         <directionalLight position={[-6, 3, -4]} intensity={1.1} color="#7ee7f0" />
-        <Environment preset="city" environmentIntensity={0.5} />
+        {/* Loads a ~1.5MB HDRI from drei's CDN. Boundaried because a failed
+            fetch used to throw the entire route into the error boundary — see
+            EnvironmentBoundary. */}
+        <EnvironmentBoundary>
+          <Environment preset="city" environmentIntensity={0.5} />
+        </EnvironmentBoundary>
         <PenSystem />
         <OrbitControls
           enablePan={false}

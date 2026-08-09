@@ -11,7 +11,7 @@ export function CaseStudy({ project }: { project: Project }) {
   const related = PROJECTS.filter((p) => p.slug !== project.slug).slice(0, 3);
 
   return (
-    <div className="relative">
+    <div className="relative pt-nav">
       {/* 00 — cold open */}
       <Section id="open" padded={false} className="flex min-h-[80vh] items-end">
         <MediaFrame

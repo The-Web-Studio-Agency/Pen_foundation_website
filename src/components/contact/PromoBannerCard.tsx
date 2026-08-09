@@ -64,7 +64,7 @@ export function PromoBannerCard() {
                     placeholder={promoBanner.emailPlaceholder}
                     className={cn(
                       'w-full appearance-none rounded-none border-0 border-b border-b-[var(--c-dark-green-20)]',
-                      'bg-transparent pb-2.5 text-[clamp(1rem,1.4vw,1.125rem)] leading-[1.35] tracking-[0.36px]',
+                      'min-h-11 bg-transparent pt-2.5 pb-2.5 text-[clamp(1rem,1.4vw,1.125rem)] leading-[1.35] tracking-[0.36px]',
                       'text-[var(--c-dark-green)] outline-none placeholder:text-[var(--c-light-gray)]',
                       'transition-colors duration-200 focus-visible:border-b-[var(--c-dark-green)]',
                     )}

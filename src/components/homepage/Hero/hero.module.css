@@ -1,0 +1,310 @@
+/*
+ * Hero styles.
+ *
+ * A CSS Module rather than utilities, kept as the clone shipped it: the scale
+ * is built from `min()` clamps measured off the reference and Tailwind has no
+ * equivalent on its scale, and scoping the whole hero to one file keeps it out
+ * of globals.css — which `arch:check` guards as an import orchestrator.
+ *
+ * Five custom properties theme it. Each has a fallback, so the module still
+ * stands on its own; the defaults below resolve to PEN's own tokens rather than
+ * the reference's:
+ *
+ *   --hero-accent         colour of a character mid-reveal   (PEN teal-bright)
+ *   --hero-heading-font   heading family                     (PEN sans)
+ *   --hero-mono-font      scroll-indicator family            (PEN mono)
+ *   --hero-page-bg        section background behind the stage (--c-white)
+ *   --hero-scrim          the legibility gradient over the video
+ *
+ * Every measurement is the reference's, taken with getComputedStyle or read out
+ * of its stylesheets. Only the colours and the two font families are PEN's.
+ */
+
+.section {
+  position: relative;
+  overflow: clip;
+  /* Shows only in the sliver between the stage releasing and the next section
+     arriving; matches the reference, which is a white page. */
+  background-color: var(--hero-page-bg, var(--c-white, #fff));
+  /* The reference tints the character under the reveal front with its own lime.
+     PEN's accent (--c-accent, #057c86) is tuned for white grounds and vanishes
+     against a darkened video, so the brighter teal carries it instead — the
+     same colour Capabilities and ProcessSteps use for text on ink. */
+  --hero-accent: var(--color-teal-bright, #2fb7c4);
+}
+
+/*
+ * Reduced motion collapses the scrub to a single static viewport rather than
+ * leaving three screens of scroll that no longer do anything. A modifier class
+ * rather than an inline style so the custom property needs no cast in TSX.
+ */
+.reduced {
+  --hero-sizer-height: 100svh;
+}
+
+/*
+ * The scroll sizer. Three viewport heights: the stage below spends two of them
+ * pinned, which is the whole scrub range.
+ */
+.sizer {
+  position: relative;
+  width: 100%;
+  height: var(--hero-sizer-height, 300svh);
+}
+
+/* ---------------------------------------------------------------- background */
+
+.background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/*
+ * `100vh`, not `100svh`, exactly as the reference has it. On mobile the large
+ * viewport height is the taller of the two, so the media keeps covering while
+ * the URL bar collapses instead of revealing a strip of page background. The
+ * overflow it causes is clipped by `.section`.
+ */
+.stage {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--hero-stage-height, 100vh);
+  background: #000;
+}
+
+.media {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+}
+
+.video {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/*
+ * Not in the reference — its frames are pre-darkened, PEN's site footage is
+ * not. Weighted to the bottom two thirds, which is the band the headings
+ * occupy: they sit on a fixed bottom edge and the tallest of them (four lines)
+ * reaches roughly 60% of the way up. The top stays clear so the video still
+ * reads as itself.
+ */
+.scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(
+    --hero-scrim,
+    linear-gradient(
+      to top,
+      rgb(0 0 0 / 62%) 0%,
+      rgb(0 0 0 / 50%) 25%,
+      rgb(0 0 0 / 34%) 48%,
+      rgb(0 0 0 / 14%) 70%,
+      rgb(0 0 0 / 0%) 90%
+    )
+  );
+}
+
+/* ------------------------------------------------------------------- content */
+
+.content {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  touch-action: none;
+  user-select: none;
+}
+
+/*
+ * `align-items: flex-end` plus `justify-content: center` is what bottom-aligns
+ * the headings: they are absolutely positioned with auto insets, so their
+ * static position resolves to the bottom-centre of this padding box. Headings
+ * of 2, 3 and 4 lines therefore all share one bottom edge and grow upward.
+ */
+.stageContent {
+  position: sticky;
+  top: 0;
+  height: var(--hero-content-height, 100svh);
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 3.75rem;
+}
+
+.headline {
+  position: absolute;
+  margin: 0;
+  width: 90%;
+  color: #fff;
+  text-align: center;
+  font-weight: 400;
+  /*
+   * The reference sets a flat 3.625rem (58px) below 1024px, sized for its own
+   * headings — roughly 17 characters a line against PEN's 27 at the longest.
+   * Two adjustments, both forced by that difference:
+   *
+   *   3.25rem cap (52px, 10% under the reference). At 58px the longest line
+   *   overruns the 90% measure on every tablet — 734px against 691px at 768 —
+   *   and drops `you?` onto a line of its own. 52px clears it from 731px up,
+   *   which covers every tablet portrait width down to the iPad mini's 744, so
+   *   tablets read as the hand-broken two- and four-line compositions they are
+   *   meant to be.
+   *
+   *   12vw below 433px. Phones cannot fit these lines at any type size worth
+   *   calling a hero, so they wrap — but at a flat 52px a 390px screen broke
+   *   `load-bearing.` across two lines and stretched the four-line heading over
+   *   nine. Scaling down holds the wrap to about two rendered lines per
+   *   hand-broken line, which is the density the reference's own copy produces
+   *   at that width, and keeps whole words intact.
+   */
+  font-size: min(3.25rem, 12vw);
+  line-height: 0.95;
+  /* Named explicitly rather than inherited: the opening heading is an `h1` and
+     the rest are `p`, and the site-wide Fraunces rule in globals.css would
+     otherwise apply to one and not the others. */
+  font-family: var(--hero-heading-font, var(--font-sans, system-ui, sans-serif));
+}
+
+.line {
+  display: block;
+}
+
+/*
+ * Reveal state is written straight onto these spans as inline `opacity` and
+ * `color`, one write per changed character per frame — the same thing the
+ * reference does, and the reason the scrub costs no React renders.
+ *
+ * The 0.1s opacity transition is load-bearing: the scrub front is only one
+ * character wide, and this transition is what smears it into the
+ * two-character trail you actually see.
+ */
+.char {
+  opacity: 0;
+  color: var(--hero-accent, #2fb7c4);
+  transition: opacity 0.1s;
+  will-change: opacity, transform;
+  transform: translateZ(0);
+}
+
+@media (min-width: 1024px) {
+  .stageContent {
+    padding-bottom: 8.4375rem;
+  }
+
+  /*
+   * Type scale and tracking are the reference's, measured at 1834px: 5.729vw
+   * clamped at 146.667px, tracking −0.057vw clamped at −1.46667px.
+   *
+   * The measure is not. The reference sets `width: min(62.5vw, 1600px)` and its
+   * own headings — three of them, at roughly 17 to 22 characters a line — fit
+   * inside it. PEN's copy runs to 27 ("a foundation surprised you?"), which
+   * overflows 62.5vw at this size and wraps, orphaning the last word on a line
+   * of its own. Every line in the sequence is broken by hand, so a wrap is
+   * always a defect rather than a fallback.
+   *
+   * `width: auto` on an absolutely positioned box is shrink-to-fit, so the
+   * heading is exactly as wide as its longest line and no wider — the block
+   * stays centred and the reveal cadence is unchanged. The max-width is the
+   * backstop: both it and the font size scale with the viewport, so a line that
+   * fits at one desktop width fits at all of them.
+   */
+  .headline {
+    width: auto;
+    max-width: min(92vw, 1600px);
+    font-size: min(5.729vw, 146.667px);
+    letter-spacing: min(-0.057vw, -1.46667px);
+  }
+}
+
+/* Local rather than borrowed from Tailwind, so the hero carries its own
+   accessibility affordances with it. */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ----------------------------------------------------------------- indicator */
+
+/*
+ * Desktop: follows the cursor. Fixed at the origin with a JS-written transform,
+ * `mix-blend-mode: difference` so it stays legible over any frame.
+ */
+.cursorIndicator {
+  display: none;
+}
+
+.touchIndicator {
+  position: absolute;
+  bottom: 2.25rem;
+  left: 50%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5625rem;
+  transform: translateX(-50%);
+  color: #fff;
+  pointer-events: none;
+  font-family: var(--hero-mono-font, var(--font-mono, ui-monospace, monospace));
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.103125rem;
+  line-height: 1;
+  text-transform: uppercase;
+  transition: opacity 0.3s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cursorIndicator {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 20;
+    color: #fff;
+    mix-blend-mode: difference;
+    pointer-events: none;
+    will-change: transform;
+    font-family: var(--hero-mono-font, var(--font-mono, ui-monospace, monospace));
+    font-size: max(11px, min(0.677vw, 17.3333px));
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    line-height: 0.85;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: opacity 0.25s ease;
+  }
+
+  .touchIndicator {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .char {
+    transition: none;
+  }
+}

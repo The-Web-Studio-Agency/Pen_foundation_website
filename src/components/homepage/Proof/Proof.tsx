@@ -8,6 +8,7 @@ import { ScrollRevealText } from '@/components/motion/ScrollRevealText';
 import { SECTION_RISE, SectionShell } from '@/components/homepage/shared/SectionHeader';
 import { SectionLink } from '@/components/homepage/shared/SectionLink';
 import { proof } from '@/content/data/homepage';
+import { cn } from '@/lib/utils';
 
 /**
  * Real deployments: the section that turns "this could work" into "this has
@@ -43,11 +44,11 @@ export function Proof() {
   return (
     <SectionShell id={proof.id} ariaLabel={proof.heading}>
       {/* The About page's chapter opening, reused here: an oversized centred
-          `display-title` heading. That band carried a two-column body under it
+          `title-si` heading. That band carried a two-column body under it
           — a labelled lead and a sourcing note — which was removed; the section
           now goes straight from the heading to the evidence. */}
       <header className="mx-auto mb-[54px] max-w-[1190px] text-center">
-        <ScrollRevealText as="h2" text={proof.heading} className="display-title" />
+        <ScrollRevealText as="h2" text={proof.heading} className="title-si" />
       </header>
 
       {/* One row per project: everything it says on the left, what it looks
@@ -107,6 +108,27 @@ export function Proof() {
               />
 
               <div className="notch-mask notch-mask-right absolute inset-px bg-[var(--c-dirty-white)]">
+                {/* The drawing sits behind EVERY card, not only the ones with no
+                    photograph. These are 2–4MB site photographs loading lazily
+                    on a phone, so between the card scrolling into view and the
+                    image arriving there was a large empty grey panel sitting
+                    directly above the NEXT project's heading — it read as a
+                    broken card belonging to the wrong project. The mark it
+                    falls back to is the one this section already uses, so the
+                    unloaded state is now the section's own language rather
+                    than a void. The photograph covers it on arrival. */}
+                <ProjectGlyph
+                  name={project.name}
+                  className={cn(
+                    'absolute inset-0 m-auto h-40 w-40',
+                    // Full strength where the drawing IS the picture — that is
+                    // the deliberate choice for a project with no photography.
+                    // Held back where it is only covering the gap before one
+                    // arrives, so it never competes with the photograph.
+                    project.image ? 'text-[var(--c-accent)]/40' : 'text-[var(--c-accent)]',
+                  )}
+                />
+
                 {project.image ? (
                   <Image
                     src={project.image.src}
@@ -115,12 +137,7 @@ export function Proof() {
                     sizes="(min-width: 1024px) 46vw, 90vw"
                     className="object-cover"
                   />
-                ) : (
-                  <ProjectGlyph
-                    name={project.name}
-                    className="absolute inset-0 m-auto h-40 w-40 text-[var(--c-accent)]"
-                  />
-                )}
+                ) : null}
               </div>
             </div>
           </motion.li>

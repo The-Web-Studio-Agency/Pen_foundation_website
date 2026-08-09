@@ -1,4 +1,6 @@
-import type { CSSProperties } from 'react';
+'use client';
+
+import { useId, type CSSProperties } from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -104,6 +106,14 @@ export function TechnicalGridBackground({
   hardEdges,
   className,
 }: TechnicalGridBackgroundProps) {
+  // Unique per instance. The homepage renders this background twice — WhyPen
+  // and the validation SectionIntro — and the id used to be a hardcoded
+  // string, so the document carried two patterns under the same name. That is
+  // invalid HTML, and the second <rect> silently filled from the FIRST
+  // pattern, leaving one background depending on the other still being there.
+  // `useId` is safe here: the only consumer is a client component.
+  const patternId = `pen-technical-grid-${useId().replace(/:/g, '')}`;
+
   return (
     <div
       aria-hidden
@@ -116,7 +126,7 @@ export function TechnicalGridBackground({
     >
       <svg width="100%" height="100%" className="block">
         <defs>
-          <pattern id="pen-technical-grid" width={CELL} height={CELL} patternUnits="userSpaceOnUse">
+          <pattern id={patternId} width={CELL} height={CELL} patternUnits="userSpaceOnUse">
             {/* Lines through the tile centre, so the crossing — and the "+"
                 drawn on it — lands inside the tile rather than being clipped
                 at its edge. */}
@@ -141,7 +151,7 @@ export function TechnicalGridBackground({
           </pattern>
         </defs>
 
-        <rect width="100%" height="100%" fill="url(#pen-technical-grid)" />
+        <rect width="100%" height="100%" fill={`url(#${patternId})`} />
 
         {/* Traces. `--color-teal` at low opacity and a round cap, so each reads
             as a lit stroke on the line rather than a bar drawn over it. */}

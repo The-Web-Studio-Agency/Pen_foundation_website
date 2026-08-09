@@ -33,19 +33,25 @@ export interface FooterLinkColumn {
  * was a property of which array an item sat in. An item is a dropdown when it
  * has `items`, and a plain link otherwise.
  *
- * Engineering, Applications, Projects and Research were dropped from the header
- * on request. Their routes still exist and stay reachable from the footer —
- * `footerColumns` below is the same single source, so nothing became orphaned.
+ * The header navigates to three destinations only: the homepage (and its
+ * sections), About, and Contact. Everything else — Engineering, Applications,
+ * Projects, Research, Gallery, Resources — was dropped from it on request, so
+ * the header sells the one page that carries the whole argument instead of
+ * scattering a visitor across half-finished routes.
+ *
+ * Those routes all still exist and stay reachable from `footerColumns` below,
+ * which is this same single source. `/resources` is the one exception: it is
+ * `noIndex`'d placeholder copy and is now linked from nowhere — restore its
+ * footer entry (see the TODO there) at the same time as its content.
  */
 export const primaryNav: NavItem[] = [
   {
     label: 'Home',
     href: '/',
-    // The homepage now carries the whole sales argument, and a visitor who
-    // lands mid-funnel should be able to jump to the part they came for. These
-    // are the section anchors on `/` — same `NavItem` shape and the same
-    // dropdown the Resources item already uses, so the header is unchanged
-    // visually and no new component was needed.
+    // The homepage carries the whole sales argument, and a visitor who lands
+    // mid-funnel should be able to jump to the part they came for. These are
+    // the section anchors on `/`, and since the header no longer navigates
+    // anywhere else, this dropdown is the only wayfinding it offers.
     items: [
       {
         label: 'Technology',
@@ -75,35 +81,6 @@ export const primaryNav: NavItem[] = [
       },
     ],
   },
-  { label: 'Works', href: '/projects' },
-  {
-    label: 'Resources',
-    href: '/resources',
-    items: [
-      {
-        label: 'Certificate',
-        href: '/resources#certificate',
-        description:
-          'GRIHA Council certification listing the pre-engineered nail foundation in the GRIHA Product Catalogue.',
-      },
-      {
-        label: 'FAQs',
-        href: '/resources#faqs',
-        description:
-          'Answers to the questions engineers ask most about specification, installation and soil conditions.',
-      },
-      {
-        label: 'Documents',
-        href: '/resources#documents',
-        description: 'Datasheets, certificates and technical documentation available to download.',
-      },
-      {
-        label: 'Blogs',
-        href: '/research',
-        description: 'Engineering articles and research notes on modern foundation systems.',
-      },
-    ],
-  },
   { label: 'About', href: '/about' },
 ];
 
@@ -122,7 +99,11 @@ export const footerColumns: FooterLinkColumn[] = [
       { label: 'Home', href: '/' },
       { label: 'About', href: '/about' },
       { label: 'Engineering', href: '/engineering' },
-      { label: 'Applications', href: '/applications' },
+      // Points at the homepage section, not `/applications`: that route renders
+      // an empty `<section aria-hidden />` placeholder, so the footer was
+      // sending visitors to a blank white page. The homepage section is the
+      // real content, and it is where the header's Applications item goes too.
+      { label: 'Applications', href: '/#applications' },
     ],
   },
   {
@@ -145,7 +126,7 @@ export const footerContact = {
   prompt: 'Ready to build? Let’s talk about your next project.',
   /** The prompt is a link in the footer — this is where it goes. */
   promptHref: '/contact',
-  phone: '+91 9847434848',
+  phone: '+91 7356177577',
   phoneNote: 'Give us a call today.',
 } as const;
 

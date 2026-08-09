@@ -1,269 +1,111 @@
 'use client';
 
-import {
-  motion,
-  useMotionValueEvent,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-  type MotionValue,
-} from 'framer-motion';
-import { useRef, useState } from 'react';
+import { useReducedMotion } from 'framer-motion';
+import { useRef } from 'react';
 
-import { RevealText } from '@/components/motion';
+import { HeroBackground } from './HeroBackground';
+import { HeroContent } from './HeroContent';
+import { HeroScrollIndicator } from './HeroScrollIndicator';
+import styles from './hero.module.css';
+import { useHeroProgress } from './useHeroProgress';
 import { hero } from '@/content/data/homepage';
 import { cn } from '@/lib/utils';
 
 /**
  * The scroll-scrubbed opening of the home page.
  *
- * The reference pins a stage (`position: sticky; top: 0; height: 100svh`)
- * inside a 300svh sizer and drives two things off the same scroll progress: a
- * frame sequence painted to a `<canvas>`, and four headings that hand over to
- * one another. The geometry and the timing are the original's; the canvas is
- * swapped for the 24 exported frames stacked on top of each other and
- * cross-faded by opacity, so scrubbing never waits on a network request.
+ * A stage pinned inside three viewport heights of scroll, over which each
+ * heading in `hero.sequence` types itself in one character at a time and is
+ * then wiped out again by a second wave running the same direction. The
+ * character under the reveal front is tinted `--hero-accent` until it lands,
+ * then turns white. Headings sit on a fixed bottom edge and grow upward, so the
+ * two-line and four-line ones share a baseline.
+ *
+ * It is a pure scrub, not an entrance: scrolling back up runs the waves
+ * backwards. Progress is damped (`useHeroProgress`), standing in for the
+ * smoothed scroll value the reference reads from, and is published through a
+ * subscription rather than React state — character opacity and colour are
+ * written straight to the DOM, so a full scrub costs zero renders.
+ *
+ * That one damped value is the hero's only clock. It drives the reveal, the
+ * erase, which heading is up — and the film's `currentTime`, which is why the
+ * footage cannot drift out of step with the words and why reversing the scroll
+ * reverses both. The video never plays; `useHeroVideo` seeks it.
+ *
+ * The geometry, timing and type scale are the reference's, measured off it. The
+ * copy, the film and the accent are PEN's; where the reference paints a
+ * scroll-scrubbed `<canvas>` frame sequence, `HeroBackground` scrubs the site's
+ * own film in the identical slot.
  *
  * The section deliberately runs underneath the fixed `SiteHeader` — the
- * original has no top padding here either.
- *
- * Frames are plain images rather than `next/image`: they are SVG, which the
- * image optimiser refuses without `dangerouslyAllowSVG`, and all 24 have to sit
- * in the DOM at once for the cross-fade regardless. `motion.img` is used so the
- * per-frame opacity can be a MotionValue and never triggers a React render.
+ * original has no top padding here either, and `src/app/page.tsx` omits the
+ * usual `pt-nav` for the same reason.
  */
 
-/** Background film behind the scrubbed headings. */
+/**
+ * PEN's own film. Not the reference's — that asset was never copied.
+ *
+ * This is a delivery encode, and the three settings that are not the usual
+ * web-video defaults are all here to make the film seekable rather than
+ * watchable — how a scrub feels is mostly a property of the file:
+ *
+ *   GOP 5      a seek decodes at most five frames. Sparse keyframes are what
+ *              make scrubbing lurch, and reversing worst of all, because the
+ *              decoder has to run forward from the previous one every time.
+ *   15fps      for a scrub, frame rate is scroll granularity, not motion
+ *              smoothness. 542 frames over the pinned range is already a new
+ *              frame every few pixels; 30 would double the weight to no effect.
+ *   faststart  `moov` ahead of `mdat`, so `duration` arrives early instead of
+ *              after the download and the scrub can start mapping immediately.
+ *
+ * Cut from the 180MB 36s master with ffmpeg (720p, crf25) at ~15MB. The master
+ * lives outside the repo, at TWS/media-masters/ — it is a mezzanine file and
+ * was never servable: at 40Mbps the browser cannot fetch and decode it fast
+ * enough to keep up with a scroll.
+ */
 const HERO_VIDEO = '/media/videos/hero.mp4';
 
-/** Distance, in pixels, an incoming heading travels up as it fades in. */
-const HEADING_RISE = 40;
-/** Share of a heading's window spent fading in, and again spent fading out. */
-const HEADING_FADE = 0.25;
-/** Measured ends of the per-character tint on the scroll indicator. */
-const INDICATOR_FROM = [222, 222, 222] as const;
-const INDICATOR_TO = [161, 161, 161] as const;
-/** Progress at which the indicator has finished getting out of the way. */
-const INDICATOR_HIDDEN_AT = 0.05;
-
 /**
- * The reference's `.title-sequence`. The class name is kept for traceability;
- * the declarations themselves live in the utilities beside it because the
- * min() clamps have no equivalent on Tailwind's scale.
+ * First frame of that film, held up while the video has no data and for the
+ * whole of the reduced-motion rendering. Extracted from hero.mp4 itself, so it
+ * is the same footage and never a mismatched still.
  */
-const HEADING_CLASS = cn(
-  'title-sequence w-[90%] text-center text-[3.625rem] leading-[0.95] font-normal',
-  'lg:w-auto lg:text-[min(5.729vw,146.6666666667px)]',
-  'lg:tracking-[min(-0.057vw,-1.4666666667px)]',
-);
-
-/**
- * Pairs each line with the number of characters that precede it, so a
- * multi-line heading keeps one continuous reveal wave. The +1 stands in for the
- * line break, matching how RevealText counts the space between words.
- */
-function withOffsets(lines: string[]) {
-  let cursor = 0;
-  return lines.map((line) => {
-    const offset = cursor;
-    cursor += line.length + 1;
-    return { line, offset };
-  });
-}
-
-function mixChannel(from: number, to: number, amount: number) {
-  return Math.round(from + (to - from) * amount);
-}
-
-/** Left-to-right interpolation of the indicator's grey ramp. */
-function indicatorTint(index: number, total: number) {
-  const amount = total > 1 ? index / (total - 1) : 0;
-  const r = mixChannel(INDICATOR_FROM[0], INDICATOR_TO[0], amount);
-  const g = mixChannel(INDICATOR_FROM[1], INDICATOR_TO[1], amount);
-  const b = mixChannel(INDICATOR_FROM[2], INDICATOR_TO[2], amount);
-  return `rgb(${r}, ${g}, ${b})`;
-}
-
-interface SequenceHeadingProps {
-  progress: MotionValue<number>;
-  lines: string[];
-  index: number;
-  count: number;
-  /**
-   * Mounting the lines is what starts RevealText's one-shot character wave, so
-   * a heading's text is withheld until its own window has been reached — every
-   * heading is otherwise permanently in view and would burn its reveal on load.
-   */
-  revealed: boolean;
-}
-
-function SequenceHeading({ progress, lines, index, count, revealed }: SequenceHeadingProps) {
-  const span = 1 / count;
-  const start = index * span;
-  const end = start + span;
-  const fade = span * HEADING_FADE;
-  const isFirst = index === 0;
-
-  // The first heading is legible at rest — the page lands on it and its own
-  // character reveal is the entrance. The rest fade and rise into their window.
-  //
-  // The trailing `1 -> 0` keyframe on the first heading is load-bearing: its
-  // ramp used to end at `end`, with nothing anchoring the value past that, so
-  // once scrolled beyond its window the opacity climbed back toward 1 and the
-  // opening question reappeared underneath every later heading. Holding it at
-  // 0 through the end of the range is what keeps the stack from colliding.
-  const opacity = useTransform(
-    progress,
-    isFirst ? [start, end - fade, end, 1] : [start, start + fade, end - fade, end],
-    isFirst ? [1, 1, 0, 0] : [0, 1, 1, 0],
-  );
-  const y = useTransform(progress, [start, start + fade], [isFirst ? 0 : HEADING_RISE, 0]);
-
-  const Heading = isFirst ? 'h1' : 'p';
-
-  return (
-    <motion.div
-      style={{ opacity, y }}
-      className="absolute inset-0 flex items-center justify-center"
-    >
-      {revealed ? (
-        <Heading className={HEADING_CLASS}>
-          {withOffsets(lines).map(({ line, offset }, lineIndex) => (
-            <RevealText
-              key={`${index}-${lineIndex}`}
-              text={line}
-              indexOffset={offset}
-              className="block"
-            />
-          ))}
-        </Heading>
-      ) : null}
-    </motion.div>
-  );
-}
-
-function ScrollIndicator({ progress, label }: { progress: MotionValue<number>; label: string }) {
-  const opacity = useTransform(progress, [INDICATOR_HIDDEN_AT / 2, INDICATOR_HIDDEN_AT], [1, 0]);
-  const characters = Array.from(label);
-
-  return (
-    <motion.div
-      style={{ opacity }}
-      className="label-4 pointer-events-none absolute bottom-10 left-1/2 -translate-x-1/2 select-none"
-    >
-      {/* Split per character for the gradient, so the label is announced once
-          from the copy that is not cut up. */}
-      <span className="sr-only">{label}</span>
-      <span aria-hidden className="uppercase">
-        {characters.map((character, index) => (
-          <span
-            key={`${character}-${index}`}
-            className="whitespace-pre"
-            style={{ color: indicatorTint(index, characters.length) }}
-          >
-            {character}
-          </span>
-        ))}
-      </span>
-    </motion.div>
-  );
-}
+const HERO_POSTER = '/media/images/homepage/hero-poster.webp';
 
 export function Hero() {
+  const sectionRef = useRef<HTMLElement>(null);
   const sizerRef = useRef<HTMLDivElement>(null);
-  const prefersReducedMotion = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: sizerRef,
-    offset: ['start start', 'end end'],
-  });
-  const [revealed, setRevealed] = useState(0);
+  // `useReducedMotion` reports null until the media query has been read on the
+  // client, which is the same "assume motion" default the rest of the site
+  // renders with.
+  const reducedMotion = useReducedMotion() === true;
 
-  // The only state driven by scroll, and it settles after three changes: React
-  // bails out when the index has not grown, so no render happens per frame.
-  useMotionValueEvent(scrollYProgress, 'change', (value) => {
-    const index = Math.min(hero.sequence.length - 1, Math.floor(value * hero.sequence.length));
-    setRevealed((current) => (index > current ? index : current));
-  });
-
-  if (prefersReducedMotion) {
-    // No scrubbing to do, so the sizer collapses to one viewport and the
-    // sequence resolves to its closing heading over a mid-sequence frame.
-    const closing = hero.sequence[hero.sequence.length - 1];
-
-    return (
-      <section className="relative overflow-clip bg-[var(--c-white)]">
-        <div className="relative h-[100svh] w-full">
-          {/* Background film. Replaces the 24-frame stack the reference
-              cross-faded on scroll; the headings above still scrub. Decorative,
-              so aria-hidden and untabbable. */}
-          <div aria-hidden className="absolute inset-0">
-            <video
-              muted
-              loop
-              playsInline
-              preload="auto"
-              tabIndex={-1}
-              className="pointer-events-none absolute inset-0 size-full object-cover"
-            >
-              <source src={HERO_VIDEO} type="video/mp4" />
-            </video>
-          </div>
-          <div className="pointer-events-none absolute inset-0 z-[1] flex touch-none items-center justify-center select-none">
-            <h1 className={HEADING_CLASS}>
-              {withOffsets(closing.lines).map(({ line, offset }, lineIndex) => (
-                <RevealText
-                  key={`closing-${lineIndex}`}
-                  text={line}
-                  indexOffset={offset}
-                  className="block"
-                />
-              ))}
-            </h1>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  const progress = useHeroProgress(sizerRef, !reducedMotion);
 
   return (
-    <section className="relative overflow-clip bg-[var(--c-white)]">
-      {/* `.content-sizer`: three viewport heights of scroll, two of which the
-          stage below spends pinned. */}
-      <div ref={sizerRef} className="h-[300svh] w-full">
-        <div className="sticky top-0 h-[100svh] w-full overflow-clip">
-          {/* Background film. Replaces the 24-frame stack the reference
-              cross-faded on scroll; the headings above still scrub. Decorative,
-              so aria-hidden and untabbable. */}
-          <div aria-hidden className="absolute inset-0">
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              tabIndex={-1}
-              className="pointer-events-none absolute inset-0 size-full object-cover"
-            >
-              <source src={HERO_VIDEO} type="video/mp4" />
-            </video>
-          </div>
+    <section
+      ref={sectionRef}
+      className={cn(styles.section, reducedMotion && styles.reduced)}
+      aria-label={hero.sequence[0]?.lines.join(' ')}
+    >
+      <div ref={sizerRef} className={styles.sizer}>
+        <HeroBackground
+          src={HERO_VIDEO}
+          poster={HERO_POSTER}
+          overlay
+          progress={progress}
+          frozen={reducedMotion}
+        />
 
-          {/* `.homepage-scroll-content`: sits over the frames and stays inert. */}
-          <div className="pointer-events-none absolute inset-0 z-[1] touch-none select-none">
-            {hero.sequence.map((item, index) => (
-              <SequenceHeading
-                key={index}
-                progress={scrollYProgress}
-                lines={item.lines}
-                index={index}
-                count={hero.sequence.length}
-                revealed={index <= revealed}
-              />
-            ))}
-          </div>
+        <HeroContent sequence={hero.sequence} progress={progress} frozen={reducedMotion} />
 
-          <ScrollIndicator progress={scrollYProgress} label={hero.scrollLabel} />
-        </div>
+        {reducedMotion ? null : (
+          <HeroScrollIndicator
+            label={hero.scrollLabel}
+            progress={progress}
+            sectionRef={sectionRef}
+          />
+        )}
       </div>
     </section>
   );

@@ -21,7 +21,7 @@ export const metadata = createMetadata({
 
 export default function AboutPage() {
   return (
-    <div className="about-clone">
+    <div className="about-clone pt-nav">
       <Hero />
       <NumberedFeatures />
       <StoryValues />

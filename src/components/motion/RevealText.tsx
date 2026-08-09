@@ -16,9 +16,23 @@ import { cn } from '@/lib/utils';
  */
 
 /** Milliseconds added per character index. */
-const STAGGER = 22;
+const STAGGER = 12;
 /** Length of one character's own transition. */
-const DURATION = 850;
+const DURATION = 500;
+/**
+ * Ceiling on the wave's start-to-start spread.
+ *
+ * At the old 22ms/char with no ceiling, the Statement's 128-character heading
+ * did not finish for 3.67s (2.816s delay + 850ms) — longer than anyone spends
+ * on a section while scrolling, so a heading read as two-thirds missing the
+ * whole time it was on screen. Measured in the browser, not guessed.
+ *
+ * 12ms/char keeps the wave linear for every real heading up to ~58 characters,
+ * which is all but the longest; past that the tail compresses and lands
+ * together rather than trailing off the end of the reader's patience. Worst
+ * case is now 700ms + 500ms.
+ */
+const MAX_DELAY = 700;
 
 export interface RevealTextProps {
   text: string;
@@ -67,7 +81,7 @@ export function RevealText({
                 className="reveal-char"
                 data-on-dark={onDark || undefined}
                 style={{
-                  animationDelay: `${(start + i) * STAGGER}ms`,
+                  animationDelay: `${Math.min((start + i) * STAGGER, MAX_DELAY)}ms`,
                   animationDuration: `${DURATION}ms`,
                 }}
               >

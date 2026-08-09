@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { RevealText } from '@/components/motion';
 import { cn } from '@/lib/utils';
@@ -35,8 +35,8 @@ export interface LogoWallProps {
    * One supporting line under the heading. Twenty unfamiliar marks do not say
    * what kind of backing they represent, and the heading alone cannot carry it.
    *
-   * Sits inside the measured intro block, so the grid's top padding — built
-   * from `--lw-intro-h` — absorbs the extra height on its own.
+   * Sits in the intro block directly above the grid, so however many lines it
+   * wraps to, the marks below simply start lower.
    */
   note?: string;
   cells: { reel: { src: string; alt: string }[] }[];
@@ -67,8 +67,6 @@ function swapOrder(count: number): number[] {
 }
 
 export function LogoWall({ heading, note, cells, className, perRow: perRowProp }: LogoWallProps) {
-  const introRef = useRef<HTMLDivElement>(null);
-  const windowRef = useRef<HTMLDivElement>(null);
   const [indexes, setIndexes] = useState<readonly number[]>(() => cells.map(() => 0));
 
   /** Cells with a single mark have nothing to swap, so they never take a turn. */
@@ -100,23 +98,6 @@ export function LogoWall({ heading, note, cells, className, perRow: perRowProp }
     return () => window.clearInterval(id);
   }, [order]);
 
-  /**
-   * The reference measures its own intro and publishes the height as
-   * `--lw-intro-h`, which the grid's top padding is built from. The `calc()`
-   * fallbacks (7rem / 10rem) cover the first paint before this lands.
-   */
-  useEffect(() => {
-    const intro = introRef.current;
-    const target = windowRef.current;
-    if (!intro || !target) return;
-
-    const sync = () => target.style.setProperty('--lw-intro-h', `${intro.offsetHeight}px`);
-    sync();
-    const observer = new ResizeObserver(sync);
-    observer.observe(intro);
-    return () => observer.disconnect();
-  }, [heading, note]);
-
   const perRow = perRowProp ?? Math.min(DESKTOP_MAX_PER_ROW, Math.max(cells.length, 1));
   // Every mark carries the same placeholder alt, so one group label stands in
   // for what would otherwise be forty identical announcements.
@@ -134,20 +115,25 @@ export function LogoWall({ heading, note, cells, className, perRow: perRowProp }
         className,
       )}
     >
-      <div
-        ref={windowRef}
-        className={cn(
-          'relative [grid-column:1/span_2] lg:[grid-column:2/span_10]',
-          heading &&
-            'pt-[calc(var(--lw-intro-h,7rem)+3.25rem)] lg:pt-[calc(var(--lw-intro-h,10rem)+min(3.854vw,98.6666666667px))]',
-        )}
-      >
+      {/* The intro is in normal flow above the grid.
+
+          It used to be absolutely positioned, with the grid reserving room for
+          it via a JS-measured `--lw-intro-h` custom property. That property was
+          never actually applied — measured in the browser, the element carried
+          no inline style — so the grid fell back to the 7rem guess while the
+          intro really stood 319px tall on a phone, and 142px of the supporting
+          paragraph rendered directly on top of the first row of logos.
+
+          Flow layout cannot desynchronise: however tall the intro gets, the
+          marks start below it. The composition on screen is unchanged, one
+          effect and one ResizeObserver are gone, and the bug cannot come back
+          the next time this copy is edited. */}
+      <div className={cn('relative [grid-column:1/span_2] lg:[grid-column:2/span_10]')}>
         {heading ? (
           <div
-            ref={introRef}
             className={cn(
-              'absolute inset-x-0 top-10 z-[2] px-5 text-center text-balance',
-              'lg:top-[min(3.125vw,80px)] lg:px-[4.375rem]',
+              'z-[2] px-5 pt-10 text-center text-balance',
+              'lg:px-[4.375rem] lg:pt-[min(3.125vw,80px)]',
             )}
           >
             <RevealText as="h2" text={heading} className="title-si" />
@@ -161,8 +147,8 @@ export function LogoWall({ heading, note, cells, className, perRow: perRowProp }
           role="img"
           aria-label={wallLabel}
           className={cn(
-            'flex flex-wrap items-start pt-[3.125rem] pb-14',
-            'lg:justify-center lg:py-[4.5rem]',
+            'flex flex-wrap items-start pt-[3.25rem] pb-14',
+            'lg:justify-center lg:pt-[min(3.854vw,98.6666666667px)] lg:pb-[4.5rem]',
           )}
           style={{ '--lw-basis': `${100 / perRow}%` } as React.CSSProperties}
         >
@@ -172,7 +158,19 @@ export function LogoWall({ heading, note, cells, className, perRow: perRowProp }
             return (
               <div
                 key={cellIndex}
-                className="relative aspect-square shrink-0 grow-0 basis-1/2 lg:basis-[var(--lw-basis)]"
+                /* Three short cells per row on a phone, not two square ones.
+                   A square cell at `basis-1/2` is ~175px tall on a 390px
+                   screen while the mark inside it is capped at 72px, so twelve
+                   supporters occupied about 1050px of mostly empty page — the
+                   single largest stretch of dead space on mobile. Same marks,
+                   same order, a third of the height. Square returns at `lg`,
+                   where a 12-column row makes the cell small enough for it to
+                   be the right shape. */
+                className={cn(
+                  'relative shrink-0 grow-0',
+                  'aspect-[3/2] basis-1/3',
+                  'lg:aspect-square lg:basis-[var(--lw-basis)]',
+                )}
               >
                 <div className="relative size-full overflow-clip">
                   <div
@@ -191,7 +189,7 @@ export function LogoWall({ heading, note, cells, className, perRow: perRowProp }
                     {cell.reel.map((mark, markIndex) => (
                       <div
                         key={`${mark.src}-${markIndex}`}
-                        className="flex aspect-square w-full shrink-0 grow-0 items-center justify-center"
+                        className="flex aspect-[3/2] w-full shrink-0 grow-0 items-center justify-center lg:aspect-square"
                       >
                         {/* 85% is the reference's `min(95%, 85% * clamp(.5, var(--logo-scale), 2))`
                             resolved at the default scale of 1. */}
@@ -202,8 +200,11 @@ export function LogoWall({ heading, note, cells, className, perRow: perRowProp }
                             width={160}
                             height={40}
                             // The optimizer refuses SVG unless dangerouslyAllowSVG
-                            // is set, and these placeholders are all SVG.
-                            unoptimized
+                            // is set. It was skipped for every mark, though,
+                            // so the .webp logos were being sent at 600px to
+                            // fill a 94px box. Only SVG opts out now.
+                            unoptimized={mark.src.endsWith('.svg')}
+                            sizes="(min-width: 1024px) 120px, 30vw"
                             className={cn(
                               'h-full w-full object-contain object-center',
                               // The reference supplies pre-greyed marks; these

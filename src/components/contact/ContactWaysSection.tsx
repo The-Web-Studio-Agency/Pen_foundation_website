@@ -132,7 +132,7 @@ function SubscribeCard({ way }: { way: ContactWay }) {
                 placeholder={way.subscribe?.placeholder}
                 className={cn(
                   'w-auto min-w-40 flex-auto rounded-none border-0 border-b border-b-[var(--c-dark-green-20)]',
-                  'bg-transparent pb-2 text-base leading-[1.35] tracking-[0.3px] text-inherit outline-none',
+                  'min-h-11 bg-transparent pt-2.5 pb-2 text-base leading-[1.35] tracking-[0.3px] text-inherit outline-none',
                   'placeholder:text-current placeholder:opacity-50',
                   'focus-visible:border-b-[var(--c-dark-green)]',
                 )}

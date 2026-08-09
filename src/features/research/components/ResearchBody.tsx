@@ -7,6 +7,7 @@ import { Kicker, Mono, Statement } from '@/components/typography';
 import { MediaFrame } from '@/components/shared/media/MediaFrame';
 import { Reveal, RevealItem } from '@/components/motion';
 import { ARTICLES, type Category } from '@/content/data/research';
+import { FilterChip } from '@/components/shared/FilterChip';
 
 const CATEGORIES: (Category | 'All')[] = [
   'All',
@@ -28,7 +29,7 @@ export function ResearchBody() {
   );
 
   return (
-    <div className="relative">
+    <div className="relative pt-nav">
       {/* masthead */}
       <Section id="masthead">
         <div className="mx-auto max-w-[1500px]">
@@ -64,17 +65,7 @@ export function ResearchBody() {
         <div className="mx-auto max-w-[1500px]">
           <div className="flex flex-wrap gap-3 border-b border-ink/12 pb-8">
             {CATEGORIES.map((c) => (
-              <button
-                key={c}
-                onClick={() => setCategory(c)}
-                className={`border px-5 py-2.5 font-mono text-[11px] tracking-[0.2em] uppercase transition-colors ${
-                  category === c
-                    ? 'border-ink bg-ink text-paper'
-                    : 'border-ink/20 text-ink-soft hover:border-ink/50'
-                }`}
-              >
-                {c}
-              </button>
+              <FilterChip key={c} label={c} selected={category === c} onSelect={() => setCategory(c)} />
             ))}
           </div>
 

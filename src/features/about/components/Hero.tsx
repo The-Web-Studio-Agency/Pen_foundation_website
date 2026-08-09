@@ -23,10 +23,11 @@ const HEADING_LINE = cn(
 );
 
 export function Hero() {
-  // Top padding clears the fixed header (--spacing-nav) plus the same small
-  // breathing room the contact hero uses, so the two stay visually matched.
+  // The header clearance itself lives on the page wrapper as `pt-nav`, which
+  // is how every non-home route now does it — this only adds the small extra
+  // breathing room the contact hero has, so the two stay visually matched.
   return (
-    <section className="relative w-full overflow-hidden pt-[calc(var(--spacing-nav)+0.5rem)] pb-20 lg:pt-[calc(var(--spacing-nav)+1rem)]">
+    <section className="relative w-full overflow-hidden pt-2 pb-20 lg:pt-4">
       <div aria-hidden className="pointer-events-none absolute inset-0 z-0 opacity-20">
         <div className="bg-grid-canvas size-full text-[var(--c-dark-green)]/25" />
       </div>

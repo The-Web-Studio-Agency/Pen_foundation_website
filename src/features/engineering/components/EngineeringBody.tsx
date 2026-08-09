@@ -17,7 +17,7 @@ const VS: { label: string; conventional: string; pen: string }[] = [
 
 export function EngineeringBody() {
   return (
-    <div className="relative">
+    <div className="relative pt-nav">
       {/* 01 — exploded / anatomy */}
       <Section id="anatomy">
         <div className="mx-auto max-w-[1500px]">

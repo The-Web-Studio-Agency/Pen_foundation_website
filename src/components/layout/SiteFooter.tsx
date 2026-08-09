@@ -37,8 +37,12 @@ const SOCIAL_ICONS = {
  */
 export function SiteFooter() {
   const decorativeLine = 'pointer-events-none absolute rounded-[50%] border border-white/[0.06]';
+  /* `py-1.5` with no gap on the list rather than `gap-3` with none: identical
+     spacing on screen, but each link is a ~41px touch target instead of the
+     29px text box it was. Footer links were the smallest tap targets on the
+     site. */
   const linkClass =
-    'body-3 text-[var(--c-white)] no-underline transition-colors duration-200 fine:hover:text-[var(--c-accent)]';
+    'body-3 inline-block py-1.5 text-[var(--c-white)] no-underline transition-colors duration-200 fine:hover:text-[var(--c-accent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--c-accent)]';
 
   return (
     <NotchedBand
@@ -102,7 +106,7 @@ export function SiteFooter() {
           {footerColumns.map((column) => (
             <div key={column.heading} className="flex flex-col gap-6">
               <p className="label-4 m-0 text-white/70 uppercase">{column.heading}</p>
-              <ul className="flex flex-col gap-3">
+              <ul className="flex flex-col">
                 {column.links.map((link) => (
                   <li key={link.label}>
                     <Link href={link.href} className={linkClass}>
@@ -127,16 +131,23 @@ export function SiteFooter() {
             <p className="body-3 m-0 text-white/50">{footerContact.phoneNote}</p>
           </div>
 
+          {/* Only the accounts that actually have a URL. Every entry in
+              `siteConfig.social` still ships `href: '#'`, so all three icons
+              were live links that went nowhere — three dead controls in the
+              footer of every page. Filling in a real URL brings the icon back
+              with no change here. */}
           <ul className="flex items-center gap-5">
             {siteConfig.social.map((social) => {
               const Icon = SOCIAL_ICONS[social.label as keyof typeof SOCIAL_ICONS];
-              if (!Icon) return null;
+              if (!Icon || !social.href || social.href === '#') return null;
               return (
                 <li key={social.label}>
                   <a
                     href={social.href}
                     aria-label={social.label}
-                    className="inline-flex text-[var(--c-white)] transition-colors duration-200 fine:hover:text-[var(--c-accent)]"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex size-11 items-center justify-center -m-3 text-[var(--c-white)] transition-colors duration-200 fine:hover:text-[var(--c-accent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--c-accent)]"
                   >
                     <Icon className="size-5" />
                   </a>
@@ -152,7 +163,7 @@ export function SiteFooter() {
           </p>
           <Link
             href={footerSecondaryLink.href}
-            className="w-fit text-sm text-white/45 no-underline transition-colors duration-200 fine:hover:text-[var(--c-accent)]"
+            className="w-fit py-1.5 text-sm text-white/45 no-underline transition-colors duration-200 fine:hover:text-[var(--c-accent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--c-accent)]"
           >
             {footerSecondaryLink.label}
           </Link>

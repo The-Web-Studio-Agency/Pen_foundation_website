@@ -1,0 +1,13 @@
+# Build output — Vercel builds fresh in the cloud.
+.next
+out
+
+# Local-only working material, never part of the site.
+.archive/
+docs/
+fetch_data_from_docs/
+
+# Cruft
+*.tsbuildinfo
+*.log
+.DS_Store

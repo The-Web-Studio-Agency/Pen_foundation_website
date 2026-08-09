@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { Kicker, Mono } from '@/components/typography';
 import { MediaFrame } from '@/components/shared/media/MediaFrame';
 import { CATEGORIES, GALLERY_ITEMS, type GalleryCategory } from '@/content/data/gallery';
+import { FilterChip } from '@/components/shared/FilterChip';
 
 export function GalleryBody() {
   const [category, setCategory] = useState<GalleryCategory | 'All'>('All');
@@ -23,22 +24,12 @@ export function GalleryBody() {
   };
 
   return (
-    <div className="relative min-h-screen bg-ink">
-      <div className="mx-auto max-w-[1500px] px-6 pt-[calc(var(--spacing-nav)+2.5rem)] md:px-16">
+    <div className="relative min-h-screen bg-ink pt-nav">
+      <div className="mx-auto max-w-[1500px] px-6 pt-10 md:px-16">
         <Kicker n="—" label="The archive" className="text-ink-soft" />
         <div className="mt-6 flex flex-wrap gap-2">
           {(['All', ...CATEGORIES] as const).map((c) => (
-            <button
-              key={c}
-              onClick={() => setCategory(c)}
-              className={`border px-4 py-2 font-mono text-[10px] tracking-[0.2em] uppercase transition-colors ${
-                category === c
-                  ? 'border-ink bg-ink text-paper'
-                  : 'border-ink/20 text-ink-soft hover:border-ink/50'
-              }`}
-            >
-              {c}
-            </button>
+            <FilterChip key={c} label={c} selected={category === c} onSelect={() => setCategory(c)} />
           ))}
         </div>
       </div>

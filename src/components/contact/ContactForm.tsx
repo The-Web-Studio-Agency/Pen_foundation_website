@@ -1,10 +1,11 @@
 'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { useState, type FormEvent } from 'react';
+import { useState, type SubmitEvent } from 'react';
 
 import { PhoneIcon } from '@/components/shared/icons';
 import { formFields, hero } from '@/content/data/contact';
+import { buildWhatsAppUrl, type EnquiryValues } from '@/lib/contact/whatsapp';
 import { fadeUp, staggerContainer } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 
@@ -12,17 +13,40 @@ import { cn } from '@/lib/utils';
  * Dark form panel on the right of the hero. Fields are underline-only inputs on
  * a two-column grid that collapses to one below 768px.
  *
- * There is no backend here — submitting swaps the panel for a success message,
- * which is enough to exercise the states the original shows.
+ * Submitting hands the enquiry to WhatsApp on the number in `siteConfig`, with
+ * the message pre-written — see `@/lib/contact/whatsapp`. There is no server
+ * here, so the visitor's own send is what delivers it; the panel then swaps for
+ * an acknowledgement that says exactly that, and repeats the link in case the
+ * new tab was blocked.
  */
 
+/**
+ * `min-h-11` + top padding, not just the bottom padding the design came with:
+ * an underline field is only as tall as its text, which measured 33px on a
+ * tablet — under the 44px a finger needs. The extra height goes ABOVE the
+ * text, so the baseline still sits on the rule and nothing moves visually.
+ */
 const fieldClass = cn(
-  'w-full appearance-none rounded-none border-0 border-b bg-transparent pb-2 outline-none',
+  'w-full appearance-none rounded-none border-0 border-b bg-transparent outline-none',
+  'min-h-11 pt-2.5 pb-2',
   'text-base leading-[1.35] tracking-[0.0225rem] transition-colors duration-200',
   'md:pb-[0.5625rem] md:text-[1.0625rem] lg:pb-[0.6rem] lg:text-lg',
   'border-b-white/30 text-[var(--c-white)] placeholder:text-[var(--c-light-gray)]',
   'focus:border-b-[var(--c-white)] fine:hover:not-focus:border-b-white/70',
 );
+
+/**
+ * Keyed by the field `name` in the content module. Browser autofill is most of
+ * what makes a form on a phone bearable, and it only works if the fields say
+ * what they hold.
+ */
+const autoComplete: Record<string, string> = {
+  name: 'name',
+  phone: 'tel',
+  email: 'email',
+  company: 'organization',
+  role: 'organization-title',
+};
 
 const labelClass = cn(
   'mb-2 text-lg leading-[1.35] tracking-[0.0225rem] text-[var(--c-white)]',
@@ -50,11 +74,30 @@ export interface ContactFormProps {
 
 export function ContactForm({ className, submitLabel = 'Submit' }: ContactFormProps) {
   const prefersReducedMotion = useReducedMotion();
-  const [submitted, setSubmitted] = useState(false);
+  /**
+   * The composed WhatsApp link, held from submit so the acknowledgement can
+   * offer it again — `window.open` is the happy path, but a blocked popup
+   * returns null and the visitor still needs a way through.
+   */
+  const [enquiryUrl, setEnquiryUrl] = useState<string | null>(null);
+  const [openedInNewTab, setOpenedInNewTab] = useState(false);
 
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const onSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSubmitted(true);
+
+    const entries = new FormData(event.currentTarget);
+    const values: EnquiryValues = {};
+    for (const [key, value] of entries.entries()) {
+      if (typeof value === 'string') values[key] = value;
+    }
+
+    const url = buildWhatsAppUrl(values);
+    // Opened straight from the submit gesture, which is what keeps popup
+    // blockers out of the way on the common path.
+    const opened = window.open(url, '_blank', 'noopener,noreferrer');
+
+    setEnquiryUrl(url);
+    setOpenedInNewTab(opened !== null);
   };
 
   return (
@@ -66,12 +109,12 @@ export function ContactForm({ className, submitLabel = 'Submit' }: ContactFormPr
         className,
       )}
     >
-      {submitted ? (
+      {enquiryUrl ? (
         /* Left-aligned on the same axis as the fields it replaces, so the card
-           does not reflow its optical centre on submit. No tick in a circle:
-           it would claim a delivery that did not happen. The state opens on the
-           acknowledgement itself, and the closing line below is what says the
-           submission stopped at the browser. */
+           does not reflow its optical centre on submit. No tick in a circle: the
+           message is written but not yet sent, and the copy says so — the one
+           remaining action is the visitor's, so it leads as the primary button
+           rather than sitting in a line of body text. */
         <motion.div
           variants={staggerContainer()}
           initial={prefersReducedMotion ? 'show' : 'hidden'}
@@ -79,18 +122,40 @@ export function ContactForm({ className, submitLabel = 'Submit' }: ContactFormPr
           className="flex min-h-[22rem] flex-col justify-center"
         >
           <motion.p variants={fadeUp} className="title-h3 text-[var(--c-white)]">
-            Thanks — that&rsquo;s everything an engineer needs.
+            {openedInNewTab
+              ? 'Thanks — WhatsApp is open with your details.'
+              : 'Thanks — one tap left to send it.'}
           </motion.p>
 
           <motion.p variants={fadeUp} className="mt-4 max-w-[42ch] text-lg text-white/60">
-            On the live site this reaches the engineering team and you get a call back the same day.
-            Here it stops at the browser.
+            {openedInNewTab
+              ? 'Press send there and it reaches the engineering team, who will call you back the same day. Nothing leaves this page until you do.'
+              : 'Your browser blocked the new tab. Open the chat below and press send — your answers are already written into the message.'}
           </motion.p>
 
-          <motion.div variants={fadeUp} className="mt-10">
+          <motion.div variants={fadeUp} className="mt-10 flex flex-wrap items-center gap-4">
+            <a
+              href={enquiryUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                'inline-flex h-13 items-center justify-center rounded-lg border-0 px-8',
+                'font-mono text-[0.8125rem] leading-[0.81] font-semibold tracking-[0.14625rem] uppercase',
+                'bg-[var(--c-accent)] text-[var(--c-dark-green)] no-underline',
+                'transition-opacity duration-[250ms] ease-linear fine:hover:opacity-85',
+                'active:scale-[0.98] motion-reduce:active:scale-100',
+                'focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-[var(--c-accent)]',
+              )}
+            >
+              {openedInNewTab ? 'Reopen WhatsApp' : 'Open WhatsApp'}
+            </a>
+
             <button
               type="button"
-              onClick={() => setSubmitted(false)}
+              onClick={() => {
+                setEnquiryUrl(null);
+                setOpenedInNewTab(false);
+              }}
               className={cn(
                 'inline-flex h-13 items-center justify-center rounded-lg border border-white/25 px-8',
                 'font-mono text-[0.8125rem] leading-[0.81] font-semibold tracking-[0.14625rem] uppercase',
@@ -151,6 +216,17 @@ export function ContactForm({ className, submitLabel = 'Submit' }: ContactFormPr
                     type={field.type}
                     required={field.required}
                     placeholder={field.placeholder}
+                    autoComplete={autoComplete[field.name]}
+                    {...(field.type === 'tel'
+                      ? {
+                          inputMode: 'tel' as const,
+                          // Digits, spaces and the punctuation a written number
+                          // carries. Loose on shape, strict on there being
+                          // enough of a number to call back.
+                          pattern: '[+()\\-.\\s0-9]{7,}',
+                          title: 'Enter a phone number we can call back on, with country code.',
+                        }
+                      : null)}
                     className={fieldClass}
                   />
                 )}

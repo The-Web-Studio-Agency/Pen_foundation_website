@@ -62,7 +62,8 @@ export default function HomePage() {
     <div className="home-clone flex min-h-screen flex-col bg-[var(--c-white)] text-[var(--c-dark-green)]">
       {/* ================================================== UNDERSTAND ==== */}
 
-      {/* LOCKED — approved as-is. Do not edit Hero or its content. */}
+      {/* The scrubbed opening. Three viewport heights of scroll, two of them
+          pinned, over PEN's own hero.mp4 — see components/homepage/Hero. */}
       <Hero />
 
       {/* Supporters sit straight under the hero so the claim is vouched for

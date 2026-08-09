@@ -45,6 +45,40 @@ export function ChevronDownIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+/** Hamburger. Paired with `CloseIcon` on the header's mobile toggle. */
+export function MenuIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path d="M4 7h16M4 12h16M4 17h16" />
+    </svg>
+  );
+}
+
+/** The hamburger's open state. */
+export function CloseIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path d="M6 6l12 12M18 6L6 18" />
+    </svg>
+  );
+}
+
 // Stands in for lucide-react's <Phone />, which this project doesn't depend on.
 export function PhoneIcon(props: SVGProps<SVGSVGElement>) {
   return (

@@ -16,7 +16,7 @@ export const siteConfig = {
     'PEN Foundation is a patented pre-engineered foundation system inspired by nature and developed through engineering research to help redefine modern foundation construction.',
 
   /** Direct contact. Mirrored in the footer via config/navigation.ts. */
-  phone: '+91 9847434848',
+  phone: '+91 7356177577',
 
   /**
    * Canonical origin, no trailing slash. Absolute URLs in metadata are built

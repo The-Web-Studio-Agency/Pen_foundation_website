@@ -136,8 +136,14 @@ export function WhatIsPen() {
           section closes on one column rather than drifting back to the left
           margin. `max-w-3xl` is what keeps that safe: centred text needs a
           short measure to stay readable, and both ragged edges of a full-width
-          paragraph are a genuinely hard thing to read. */}
-      <div className="mx-auto mt-20 flex max-w-3xl flex-col gap-6 text-center">
+          paragraph are a genuinely hard thing to read.
+
+          Left-aligned below `lg`, though — that is the same rule, not an
+          exception to it. Under 1024px the cap is wider than the viewport, so
+          the measure it was protecting does not exist and four paragraphs end
+          up centred at full width with both edges ragged. Exactly the failure
+          the comment above describes. */}
+      <div className="mx-auto mt-20 flex max-w-3xl flex-col gap-6 text-left lg:text-center">
         {product.body.map((paragraph) => (
           <motion.p
             key={paragraph.text.slice(0, 40)}

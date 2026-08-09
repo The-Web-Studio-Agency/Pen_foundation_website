@@ -13,7 +13,7 @@ export function StoryValues() {
     <section className="flex min-h-screen flex-col items-center justify-center py-24 lg:py-32">
       <div className="mx-auto w-full max-w-[1700px] px-6 lg:px-[70px]">
         <header className="mx-auto mb-[54px] max-w-[1190px] text-center">
-          <ScrollRevealText as="h2" text={storyValues.heading} className="display-title" />
+          <ScrollRevealText as="h2" text={storyValues.heading} className="title-si" />
         </header>
 
         <div className="mx-auto grid max-w-[1096px] gap-x-14 gap-y-12 text-left md:grid-cols-2">
