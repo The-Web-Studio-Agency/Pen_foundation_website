@@ -60,7 +60,9 @@ export function Proof() {
           ground-condition drawing at size instead. That is deliberate: a stock
           photograph or a render standing in for a named deployment would read
           as documentary evidence of it. */}
-      <ul className="mt-4 flex list-none flex-col gap-20 p-0 lg:gap-28">
+      {/* `gap-12` on a phone, where the cards stack and 80px between them is a
+          desktop interval reading as a break in the list rather than a rhythm. */}
+      <ul className="mt-4 flex list-none flex-col gap-12 p-0 md:gap-20 lg:gap-28">
         {proof.projects.map((project) => (
           <motion.li
             key={project.name}

@@ -57,7 +57,7 @@ export function SiteFooter() {
       <footer
         className={cn(
           'relative w-full overflow-hidden bg-ink text-[var(--c-white)]',
-          'pt-[7.8125rem] pb-[2.09375rem]',
+          'pt-20 pb-[2.09375rem] md:pt-[7.8125rem]',
           'lg:pt-[14.375rem] lg:pb-5',
         )}
       >

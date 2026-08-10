@@ -44,7 +44,9 @@ export function SectionIntro({ id, heading, linkLabel, linkHref, className }: Se
       id={id}
       className={cn(
         'relative flex w-full scroll-mt-nav flex-col items-center justify-center overflow-hidden',
-        'bg-[var(--c-white)] py-[7.5rem] lg:py-[10rem]',
+        // 80px on a phone against the designed 120/160. A chapter opening
+        // needs air around it, but not a desktop's worth on a 390px screen.
+        'bg-[var(--c-white)] py-20 md:py-[7.5rem] lg:py-[10rem]',
         className,
       )}
     >

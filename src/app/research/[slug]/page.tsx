@@ -17,6 +17,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: article.title,
     description: article.dek,
     path: `/research/${article.slug}`,
+    // Follows `/research` out of the index: the section that lists these is
+    // unlinked from the site's own navigation, so indexing the articles under
+    // it would leave a crawler with pages no visitor can navigate to.
+    noIndex: true,
     type: 'article',
   });
 }

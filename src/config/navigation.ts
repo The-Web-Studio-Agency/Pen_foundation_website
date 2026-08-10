@@ -55,7 +55,13 @@ export interface FooterLinkColumn {
  */
 export const primaryNav: NavItem[] = [
   { label: 'Home', href: '/' },
-  { label: 'Engineering', href: '/engineering' },
+  // Points at the homepage's system block, not `/engineering`. That route is
+  // not ready for visitors yet, so nothing in the chrome sends anyone to it —
+  // the same arrangement Applications has had. `WhatIsPen` renders with
+  // `id="technology"`: the mechanism, the parts with their specifications and
+  // the comparison against a conventional footing, which is the engineering
+  // story a visitor clicking this expects.
+  { label: 'Engineering', href: '/#technology' },
   { label: 'Applications', href: '/#applications' },
   // The homepage `Proof` section, not the `/projects` route — asked for: the
   // header should move you down the page rather than navigate away from it.
@@ -66,7 +72,10 @@ export const primaryNav: NavItem[] = [
   // linked from the footer and from this section's own "See all projects" CTA.
   // Only the header stopped pointing at it.
   { label: 'Projects', href: '/#projects' },
-  { label: 'Research', href: '/research' },
+  // Points at the homepage's validation block for the same reason. That is the
+  // NIT Calicut testing chapter — the evidence a visitor clicking "Research"
+  // is after — while `/research` and its articles stay unlinked.
+  { label: 'Research', href: '/#validation' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ];
@@ -101,7 +110,13 @@ export const footerColumns: FooterLinkColumn[] = [
     links: [
       { label: 'Home', href: '/' },
       { label: 'About', href: '/about' },
-      { label: 'Engineering', href: '/engineering' },
+      // Points at the homepage's system block, not `/engineering`. That route is
+  // not ready for visitors yet, so nothing in the chrome sends anyone to it —
+  // the same arrangement Applications has had. `WhatIsPen` renders with
+  // `id="technology"`: the mechanism, the parts with their specifications and
+  // the comparison against a conventional footing, which is the engineering
+  // story a visitor clicking this expects.
+  { label: 'Engineering', href: '/#technology' },
       // Points at the homepage section, not `/applications`: that route renders
       // an empty `<section aria-hidden />` placeholder, so the footer was
       // sending visitors to a blank white page. The homepage section is the
@@ -116,7 +131,10 @@ export const footerColumns: FooterLinkColumn[] = [
     heading: 'Evidence',
     links: [
       { label: 'Projects', href: '/projects' },
-      { label: 'Research', href: '/research' },
+      // Points at the homepage's validation block for the same reason. That is the
+  // NIT Calicut testing chapter — the evidence a visitor clicking "Research"
+  // is after — while `/research` and its articles stay unlinked.
+  { label: 'Research', href: '/#validation' },
       { label: 'Gallery', href: '/gallery' },
       // TODO(content): /resources stays out of the header AND the footer while
       // it still carries clone copy and is noIndex'd. HANDOFF suggests hanging

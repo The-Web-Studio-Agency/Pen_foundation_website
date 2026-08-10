@@ -93,7 +93,7 @@ export function CalculatorSection() {
        closing form already carries. */
     <section
       id="calculator"
-      className="flex section-screen w-full scroll-mt-nav flex-col justify-center bg-[var(--c-white)] py-28"
+      className="flex section-screen w-full scroll-mt-nav flex-col justify-center bg-[var(--c-white)] py-16 md:py-28"
     >
       <motion.div
         variants={STAGGER}

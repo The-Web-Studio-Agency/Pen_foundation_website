@@ -40,7 +40,7 @@ export function Statement() {
        the middle of it, but on a portrait one the floor lifts and, with no
        padding, the dark band would have shrink-wrapped the text. The held beat
        is the point of this section, so it now carries its own height. */
-    <section className="section-mask relative flex section-screen w-full items-center justify-center overflow-hidden bg-ink py-32 text-[var(--c-white)] md:py-40">
+    <section className="section-mask relative flex section-screen w-full items-center justify-center overflow-hidden bg-ink py-24 text-[var(--c-white)] md:py-40">
       <h2 className="site-gutter title-si relative z-[1] max-w-[min(80rem,90vw)] text-center text-balance">
         <RevealText text={statement.before} onDark />
         <strong className="font-[inherit]">

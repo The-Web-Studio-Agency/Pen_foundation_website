@@ -33,7 +33,7 @@ export function WhyPen() {
        has somewhere to land. Non-visual — the section is otherwise unchanged. */
     <section
       id="why"
-      className="flex section-screen w-full scroll-mt-nav flex-col justify-center bg-[var(--c-white)] py-24 lg:py-28"
+      className="flex section-screen w-full scroll-mt-nav flex-col justify-center bg-[var(--c-white)] py-16 md:py-24 lg:py-28"
     >
       <SectionIntro heading={whyPen.heading} />
 

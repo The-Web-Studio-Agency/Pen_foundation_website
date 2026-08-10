@@ -95,7 +95,7 @@ export function Faq() {
        clearance that keeps content off the footer's notched lip. */
     <section
       id={faq.id}
-      className="flex section-screen scroll-mt-nav flex-col justify-center overflow-x-hidden pt-[5.625rem] pb-28"
+      className="flex section-screen scroll-mt-nav flex-col justify-center overflow-x-hidden pt-16 pb-20 md:pt-[5.625rem] md:pb-28"
     >
       {/*
        * On the page's content column, not a gutter of its own.

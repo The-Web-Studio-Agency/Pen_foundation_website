@@ -92,7 +92,10 @@ export function SectionShell({ id, ariaLabel, className, children }: SectionShel
         // grid, the FAQ) grows rather than clips, and `svh` so mobile browser
         // chrome cannot make a "full screen" section overflow the visible area.
         'flex section-screen w-full scroll-mt-nav flex-col justify-center',
-        'bg-[var(--c-white)] py-28',
+        // `py-16` until `md`, then the designed `py-28`. 112px above AND
+        // below every section is a desktop rhythm; on a 390px phone it read
+        // as the page having been left at its desktop spacing.
+        'bg-[var(--c-white)] py-16 md:py-28',
         className,
       )}
     >
