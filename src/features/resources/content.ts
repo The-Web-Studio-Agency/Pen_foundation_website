@@ -16,6 +16,37 @@ import type { CarouselSection, FaqTab, FeaturedGrid, Testimonial } from '@/types
  * Moved out of content/data/contact.ts when these sections left /contact.
  */
 
+/**
+ * TODO(content): stand-in cover art for every card on this route.
+ *
+ * These are real photographs and renders already in /public/media — the site's
+ * own construction imagery — standing in until this route has its own assets.
+ * They replaced the flat geometric SVGs at /media/images/contact/*.svg, which
+ * read as unrendered wireframes rather than as pictures.
+ *
+ * They are stand-ins, NOT documentation: none of them depicts the resource on
+ * the card it sits behind, and the copy above them is still clone copy. That is
+ * survivable only while the route is `noIndex`'d. Swap in real covers with the
+ * copy rewrite, and delete this array.
+ *
+ * Ordered so that neighbours in a row do not look alike — product render, then
+ * aerial, then close-up, and so on. `MediaCard` draws every one into a square
+ * `object-cover` slot, so portrait and landscape sources both centre-crop
+ * cleanly and the mixed aspect ratios here do not matter.
+ */
+const DUMMY_COVERS = [
+  '/media/images/pen.png',
+  '/media/images/storysection2.png',
+  '/media/images/storysection3.png',
+  '/media/images/brick-house.png',
+  '/media/images/homepage/pen-installed_image.png',
+  '/media/images/storysection1.png',
+  '/media/images/homepage/excavation-image.png',
+  '/media/images/homepage/startup-ecoashram.png',
+  '/media/images/homepage/black_langur-waayanad.png',
+  '/media/images/homepage/devagiri-library.png',
+];
+
 export const videoGrid: FeaturedGrid = {
   eyebrow: 'Videos',
   title: 'See the platform in action',
@@ -25,8 +56,8 @@ export const videoGrid: FeaturedGrid = {
       title: 'Introducing computer vision for the yard',
       href: '#',
       image: {
-        src: '/media/images/contact/resource-01.svg',
-        alt: 'Placeholder video thumbnail',
+        src: DUMMY_COVERS[0],
+        alt: 'A PEN foundation unit — cast head, four splayed legs — on a white ground',
       },
       actionLabel: 'Watch now',
     },
@@ -36,8 +67,8 @@ export const videoGrid: FeaturedGrid = {
       excerpt: 'How one camera reads several lanes of traffic at once.',
       href: '#',
       image: {
-        src: '/media/images/contact/resource-02.svg',
-        alt: 'Placeholder video thumbnail',
+        src: DUMMY_COVERS[1],
+        alt: 'Aerial view of a cleared plot set out with string lines, paddy fields either side',
       },
       actionLabel: 'Watch now',
     },
@@ -47,8 +78,8 @@ export const videoGrid: FeaturedGrid = {
       excerpt: 'A full check-in captured end to end without a clipboard.',
       href: '#',
       image: {
-        src: '/media/images/contact/resource-03.svg',
-        alt: 'Placeholder video thumbnail',
+        src: DUMMY_COVERS[2],
+        alt: 'A timber-framed house carried on a row of PEN units, seen from ground level',
       },
       actionLabel: 'Watch now',
     },
@@ -66,8 +97,8 @@ export const exploreGrid: FeaturedGrid = {
         "Explore insights from 2000+ operations leaders on what's working and where teams are investing",
       href: '#',
       image: {
-        src: '/media/images/contact/resource-04.svg',
-        alt: 'Placeholder report cover',
+        src: DUMMY_COVERS[3],
+        alt: 'Brick infill walls rising inside a steel frame on a concrete plinth',
       },
       actionLabel: 'Read more',
     },
@@ -77,8 +108,8 @@ export const exploreGrid: FeaturedGrid = {
       excerpt: 'What changed operationally, and which numbers moved first.',
       href: '#',
       image: {
-        src: '/media/images/contact/resource-05.svg',
-        alt: 'Placeholder case study cover',
+        src: DUMMY_COVERS[4],
+        alt: 'A PEN foundation installed in the ground on site',
       },
       actionLabel: 'Read more',
     },
@@ -88,8 +119,8 @@ export const exploreGrid: FeaturedGrid = {
       excerpt: 'A live walkthrough of an unattended gate, recorded on site.',
       href: '#',
       image: {
-        src: '/media/images/contact/resource-06.svg',
-        alt: 'Placeholder webinar cover',
+        src: DUMMY_COVERS[5],
+        alt: 'A steel frame standing on concrete columns at sunrise, paddy fields behind',
       },
       actionLabel: 'Watch now',
     },
@@ -107,8 +138,8 @@ export const comparisonCarousel: CarouselSection = {
         'PEN FOUNDATION is a purpose-built, AI-native operating layer that provides end-to-end…',
       href: '#',
       image: {
-        src: '/media/images/contact/carousel-01.svg',
-        alt: 'Placeholder aerial photograph of a road',
+        src: DUMMY_COVERS[6],
+        alt: 'An excavator cutting a foundation trench in laterite',
       },
       actionLabel: 'Read more',
     },
@@ -118,8 +149,8 @@ export const comparisonCarousel: CarouselSection = {
       excerpt: 'PEN FOUNDATION is a purpose-built, AI-native operating layer that provides…',
       href: '#',
       image: {
-        src: '/media/images/contact/carousel-02.svg',
-        alt: 'Placeholder aerial photograph of a road',
+        src: DUMMY_COVERS[7],
+        alt: 'A pavilion with a curved shingled roof raised above a wooded slope',
       },
       actionLabel: 'Read more',
     },
@@ -129,8 +160,8 @@ export const comparisonCarousel: CarouselSection = {
       excerpt: 'PEN FOUNDATION is a purpose-built, AI-native operating layer that provides…',
       href: '#',
       image: {
-        src: '/media/images/contact/carousel-03.svg',
-        alt: 'Placeholder aerial photograph of a road',
+        src: DUMMY_COVERS[8],
+        alt: 'A two-storey block with a tiled roof and pool, built among standing trees',
       },
       actionLabel: 'Read more',
     },
@@ -140,8 +171,8 @@ export const comparisonCarousel: CarouselSection = {
       excerpt: 'PEN FOUNDATION is a purpose-built, AI-native operating layer that provides…',
       href: '#',
       image: {
-        src: '/media/images/contact/carousel-04.svg',
-        alt: 'Placeholder aerial photograph of a road',
+        src: DUMMY_COVERS[9],
+        alt: 'A cylindrical reading tower in a black steel grid, lit from within at night',
       },
       actionLabel: 'Read more',
     },
@@ -151,8 +182,8 @@ export const comparisonCarousel: CarouselSection = {
       excerpt: 'PEN FOUNDATION is a purpose-built, AI-native operating layer that provides…',
       href: '#',
       image: {
-        src: '/media/images/contact/carousel-05.svg',
-        alt: 'Placeholder aerial photograph of a road',
+        src: DUMMY_COVERS[0],
+        alt: 'A PEN foundation unit — cast head, four splayed legs — on a white ground',
       },
       actionLabel: 'Read more',
     },
@@ -368,24 +399,18 @@ export const documents = {
  * second edit — and unlike the clone copy above, every string below is PEN's.
  *
  * Neither record type carries imagery yet (both routes draw placeholder
- * `MediaFrame`s), so the cards cycle the placeholder art already on this page.
- * The alt text is empty because that art depicts nothing: the card's own title
- * is the accessible name, and describing a placeholder would only add noise.
- * Swap in real covers here when the assets land.
+ * `MediaFrame`s), so the cards cycle the same stand-in art as the rest of the
+ * page. The alt text stays empty: these covers illustrate nothing about the
+ * article or archive entry they sit on, so the card's own title is the
+ * accessible name and describing the picture would only add noise. Swap in real
+ * covers here when the assets land.
+ *
+ * Gallery starts halfway down the pool so the two sections do not open on the
+ * same picture — they sit only one block apart on the page.
  */
-const BLOG_COVERS = [
-  '/media/images/contact/resource-01.svg',
-  '/media/images/contact/resource-02.svg',
-  '/media/images/contact/resource-03.svg',
-];
+const BLOG_COVERS = DUMMY_COVERS;
 
-const GALLERY_COVERS = [
-  '/media/images/contact/carousel-01.svg',
-  '/media/images/contact/carousel-02.svg',
-  '/media/images/contact/carousel-03.svg',
-  '/media/images/contact/carousel-04.svg',
-  '/media/images/contact/carousel-05.svg',
-];
+const GALLERY_COVERS = [...DUMMY_COVERS.slice(5), ...DUMMY_COVERS.slice(0, 5)];
 
 export const blogGrid: FeaturedGrid = {
   eyebrow: 'Blogs',

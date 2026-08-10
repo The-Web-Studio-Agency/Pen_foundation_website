@@ -183,9 +183,13 @@ export function SiteHeader() {
                   onMouseEnter={() => setOpenMenu(null)}
                   className={cn(
                     'rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                    // `isCurrent` as well as an exact match, so Projects stays
-                    // lit on `/projects/[slug]` rather than only on the index.
-                    // It returns false for `/`, which keeps Home exact-match.
+                    // `isCurrent` as well as an exact match, so a page item stays
+                    // lit on routes nested under it rather than only on the
+                    // index. It returns false for `/`, which keeps Home
+                    // exact-match — and, since it compares the part before the
+                    // `#`, it is false for Projects too now that Projects is the
+                    // homepage anchor `/#projects`. Home is the lit item there,
+                    // which is correct: the section IS the homepage.
                     pathname === item.href || isCurrent(item.href)
                       ? 'text-teal-bright'
                       : 'text-white/90 hover:text-white',

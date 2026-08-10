@@ -523,15 +523,6 @@ export const proof: ProofContent = {
       result:
         'Delivered as a single commercial-scale installation, taking PEN from pilot projects to repeatable volume.',
     },
-    {
-      name: 'Rehabilitation Housing',
-      location: 'Wayanad, Kerala',
-      application: 'Post-landslide housing',
-      challenge:
-        'A post-landslide slope in unstable laterite. Conventional foundations were not an option — the ground was too disturbed to excavate.',
-      result:
-        'PEN foundations installed on the active slope within 72 hours of site clearance, load-bearing immediately with no curing wait on unstable terrain.',
-    },
   ],
   cta: { label: 'See all projects', href: '/projects' },
 };

@@ -6,7 +6,7 @@ import { rootMetadata } from '@/config/seo';
 import { AppProviders } from '@/providers/AppProviders';
 import { SiteHeader } from '@/components/layout/SiteHeader';
 import { SiteFooter } from '@/components/layout/SiteFooter';
-import { Preloader } from '@/components/layout/Preloader';
+import { PENPreloader } from '@/components/preloader/PENPreloader';
 import './globals.css';
 
 export const metadata: Metadata = rootMetadata;
@@ -15,10 +15,12 @@ export const metadata: Metadata = rootMetadata;
  * Runs before the first paint, ahead of hydration.
  *
  * The entry overlay is in the server HTML so that a first-time visitor never
- * sees the page before the curtain. That would mean a returning visitor sees a
- * frame of black before React could remove it — the flash the overlay exists
- * to avoid, just moved. This sets an attribute the overlay's stylesheet keys
- * off, so on a second entry it is display:none before anything is painted.
+ * sees the page before the curtain — and so its CSS entrance can start on the
+ * first paint rather than waiting for hydration. That would mean a returning
+ * visitor sees a frame of the panel before React could remove it — the flash
+ * the overlay exists to avoid, just moved. This sets an attribute the overlay's
+ * stylesheet keys off, so on a second entry it is display:none before anything
+ * is painted.
  */
 const ENTRY_FLAG_SCRIPT = `try{if(sessionStorage.getItem('pen-entered')==='1'){document.documentElement.setAttribute('data-pen-entered','')}}catch(e){}`;
 
@@ -26,7 +28,7 @@ const ENTRY_FLAG_SCRIPT = `try{if(sessionStorage.getItem('pen-entered')==='1'){d
  * The curtain is raised by React, so without React it never goes up.
  *
  * The overlay is deliberately part of the server HTML, which means a visitor
- * with scripting disabled gets a fixed, full-screen black panel over a page
+ * with scripting disabled gets a fixed, full-screen cream panel over a page
  * that is otherwise complete and readable — and because it is `position:
  * fixed`, scrolling does not get out from under it. The whole site reads as a
  * blank screen. Hiding it here costs those visitors the entry animation, which
@@ -59,7 +61,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       </head>
       <body>
         <AppProviders>
-          <Preloader />
+          <PENPreloader />
           <SiteHeader />
           <main>{children}</main>
           <SiteFooter />

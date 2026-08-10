@@ -91,22 +91,6 @@ function ArrayGlyph(props: GlyphProps) {
   );
 }
 
-/** Slope: disturbed ground on a grade, with the unit battered square into it. */
-function SlopeGlyph(props: GlyphProps) {
-  return (
-    <GlyphFrame {...props}>
-      {/* The slope, hatched on the downhill side. */}
-      <path d="M4 50 60 16" />
-      <g opacity="0.5">
-        <path d="M11 46v7M21 40v7M31 34v7M41 28v7M51 22v7" />
-      </g>
-      {/* Cap plate laid level on the grade, legs splayed below it. */}
-      <path d="m22 27 15-9" />
-      <path d="M25.5 25 22 50M30 22.5 30 50M33 20.5l6 28M36.5 18.5l11 25" />
-    </GlyphFrame>
-  );
-}
-
 /**
  * Marks keyed by project name rather than by grid position, so reordering the
  * projects cannot hand a project the wrong drawing. A project with no entry
@@ -117,7 +101,6 @@ const GLYPHS: Record<string, (props: GlyphProps) => React.ReactElement> = {
   'Devagiri Library': RetrofitGlyph,
   'Black Langur Resort': RootsGlyph,
   'Startup EcoAshram': ArrayGlyph,
-  'Rehabilitation Housing': SlopeGlyph,
 };
 
 export function ProjectGlyph({ name, className }: { name: string; className?: string }) {

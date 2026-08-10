@@ -1,0 +1,632 @@
+/*
+ * The entry panel: a cream ground, a technical line field drawn onto it, and
+ * the mark cleared out of a mask at its centre.
+ *
+ * Every entrance animation in here is CSS, deliberately — the panel ships in
+ * the server HTML and is painted long before the bundle arrives, so the drawing
+ * has to be able to start without JavaScript. Timings come in as custom
+ * properties from timeline.ts; nothing here invents a duration of its own.
+ * Framer owns the exit only, because only React knows when the page is ready.
+ */
+
+/* --------------------------------------------------------------- structure */
+
+/*
+ * The fixed layer. Holds no ground of its own: the panel underneath paints the
+ * cream and is what retracts, and the seam has to survive that retraction, so
+ * the two are siblings inside a container that is only ever a coordinate space.
+ */
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  /* Decoration over a page that is already mounted and reachable. Nothing in
+     here is interactive and a keyboard user must never be held behind it. */
+  pointer-events: none;
+  /*
+   * Failsafe, and only that.
+   *
+   * `<noscript>` in the root layout covers scripting being switched off. It
+   * cannot cover the commoner case — scripting on, but the bundle never
+   * arrives — where React never mounts to take the curtain away and the site
+   * is a cream screen indefinitely.
+   *
+   * IT IS DISARMED THE MOMENT REACT IS ALIVE, and that is not a refinement: the
+   * entry runs for about eleven and a half seconds, so a switch that fires on a
+   * fixed eight would blank the panel in the middle of the third beat and take
+   * the retraction with it. Measured, before `data-live` existed: the panel
+   * went to `visibility: hidden` at 8.4s with two seconds of copy still to run.
+   *
+   * Making the delay longer than the whole sequence is the wrong fix — the
+   * worst case is act one's own 6s ceiling plus nine seconds of copy, so it
+   * would have to sit near eighteen, which is how long a visitor whose bundle
+   * never arrives would then be staring at a blank screen. Eight seconds is the
+   * right number for the case this exists for; it just has to stop being armed
+   * once the case cannot happen. React writes the attribute on mount, and from
+   * then on the 6s `MAX_WAIT_MS` ceiling in the scheduler is what guarantees an
+   * exit.
+   */
+  animation: pen-entry-failsafe 400ms linear 8s forwards;
+}
+
+.root[data-live='true'] {
+  animation: none;
+}
+
+/* Returning within the session: hidden before the first paint by the attribute
+   the inline script in the root layout sets, so a repeat visitor never sees a
+   frame of it. The component then drops it from the DOM on mount. */
+:global(html[data-pen-entered]) .root {
+  display: none;
+}
+
+@keyframes pen-entry-failsafe {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/*
+ * The panel is the thing that is actually painted, and the thing that retracts.
+ *
+ * `--color-cream` rather than the white the previous overlay used: a warm
+ * off-white reads as paper under a drawing, which is what the line field is,
+ * and it separates the entry from the plain white sections it hands over to.
+ */
+.panel {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background-color: var(--color-cream, #eeede9);
+}
+
+/* Only while retracting. A permanent `will-change` on a full-viewport element
+   keeps a layer alive for the whole session to no purpose. */
+.panel[data-exiting='true'] {
+  will-change: clip-path;
+}
+
+/*
+ * A whisper of tooth on the cream, so it reads as stock rather than as a fill.
+ * `.noise` is the site-wide grain; this only sets how much of it comes through.
+ */
+.grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.45;
+}
+
+/* ------------------------------------------------------------- line system */
+
+.field {
+  position: absolute;
+  inset: 0;
+  transition: opacity 900ms var(--ease-expo);
+}
+
+/*
+ * Held back while the statement is being written.
+ *
+ * The field is the subject for the first two seconds and the ground for the
+ * nine after it — at full strength behind 80px type it is two things competing
+ * for the same centre. Opacity only, and slowly, so it reads as the drawing
+ * receding rather than as a light going out. The corner brackets are outside
+ * this: they are the frame, and a frame does not recede.
+ */
+.field[data-recede='true'] {
+  opacity: 0.42;
+}
+
+/*
+ * `slice` so the geometry is cropped by the viewport rather than squashed into
+ * it — an engineering drawing whose circles turn into ellipses on a phone has
+ * stopped being one. The square viewBox keeps the mark's own centre at the
+ * centre of the crop on every aspect ratio, and means the field loses its top
+ * and bottom on a desktop and its left and right on a phone: only ever parts of
+ * the large paths are on screen, which is the point of drawing them that large.
+ */
+.fieldSvg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/*
+ * The draw itself.
+ *
+ * Every path carries `pathLength="1"`, so its length is normalised and one
+ * declaration draws all of them regardless of how long they actually are — no
+ * measuring pass, no per-path constants, and circles behave like paths.
+ *
+ * `vector-effect: non-scaling-stroke` is deliberately NOT used, even though the
+ * stroke width scales with the crop: under it the dash pattern is resolved in
+ * screen units too, which would make `stroke-dashoffset: 1` mean one pixel
+ * instead of one path length and break the reveal outright. The viewBox is
+ * 1440 wide so that the scale sits at 1 on a 1440 desktop and stays inside
+ * roughly 0.6–1.35 everywhere else; a hairline anywhere in that range still
+ * reads as a hairline.
+ */
+.draw {
+  fill: none;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: pen-draw var(--pre-draw) var(--ease-expo) calc(var(--pre-stagger) * var(--i)) both;
+}
+
+@keyframes pen-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/*
+ * The two slow movements, and there are only two.
+ *
+ * Both are transforms, so they composite and never lay out; both are far longer
+ * than anyone looks at the entry, so what is visible is drift rather than
+ * animation. `transform-box: view-box` puts the origin in viewBox units, which
+ * is the only way to pivot on the drawing's own centre.
+ */
+.drift {
+  transform-box: view-box;
+  transform-origin: 720px 720px;
+  animation: pen-drift 52s ease-in-out infinite alternate;
+}
+
+.breathe {
+  transform-box: view-box;
+  transform-origin: 720px 720px;
+  animation: pen-breathe 26s ease-in-out infinite alternate;
+}
+
+@keyframes pen-drift {
+  from {
+    transform: rotate(-1.6deg);
+  }
+  to {
+    transform: rotate(1.6deg);
+  }
+}
+
+@keyframes pen-breathe {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.014);
+  }
+}
+
+/*
+ * One lit stroke travelling the setting-out circle — the site's own trace
+ * language, borrowed from TechnicalGridBackground, at a single instance rather
+ * than six. It is the only thing on the panel that says the system is running
+ * rather than drawn. The dash period is in normalised path units because of
+ * `pathLength="1"`, so the offset travels exactly one circumference and the
+ * loop cannot seam.
+ */
+.trace {
+  fill: none;
+  stroke-dasharray: 0.07 0.93;
+  stroke-linecap: round;
+  animation: pen-trace 16s linear 1.2s infinite;
+}
+
+@keyframes pen-trace {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -1;
+  }
+}
+
+/* ---------------------------------------------------------- corner marks */
+
+/*
+ * Registration brackets, one per viewport corner.
+ *
+ * They are positioned in CSS rather than placed in the field's viewBox because
+ * a cropped square viewBox has no corners in common with the viewport — the
+ * coordinates that sit in the corner of a desktop are off-screen on a phone.
+ * These are the only geometry that must land exactly where the viewport ends,
+ * so they are the only geometry that is measured in viewport units.
+ *
+ * Brackets rather than long runs inward: a line that stops in open space reads
+ * as a rendering failure, and a bracket is a mark that is supposed to end.
+ */
+.corner {
+  position: absolute;
+  width: clamp(56px, 6.5vw, 84px);
+  height: clamp(56px, 6.5vw, 84px);
+  inset: auto;
+}
+
+.cornerTl {
+  top: clamp(16px, 3vw, 40px);
+  left: clamp(16px, 3vw, 40px);
+}
+
+.cornerTr {
+  top: clamp(16px, 3vw, 40px);
+  right: clamp(16px, 3vw, 40px);
+  transform: rotate(90deg);
+}
+
+.cornerBr {
+  right: clamp(16px, 3vw, 40px);
+  bottom: clamp(16px, 3vw, 40px);
+  transform: rotate(180deg);
+}
+
+.cornerBl {
+  bottom: clamp(16px, 3vw, 40px);
+  left: clamp(16px, 3vw, 40px);
+  transform: rotate(270deg);
+}
+
+.cornerSvg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* ---------------------------------------------------------------- the mark */
+
+.markWrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The clipping window and the scan line share this box, so both are measured
+   against the same height and cannot drift apart. */
+.markStage {
+  position: relative;
+  /* Small, per the brief: a mark at the centre of a large field, not a splash
+     screen. Roughly 96px on a laptop, 76px on a phone. */
+  width: clamp(76px, 8.2vw, 116px);
+}
+
+/*
+ * The reveal.
+ *
+ * Bottom to top, not a left-to-right wipe: the mark is a structure standing on
+ * piles, and clearing the mask upward reads as it being set on its foundation.
+ * It is also the same axis the panel later retracts along, so the entry opens
+ * and closes on one line of movement instead of two.
+ */
+.markClip {
+  display: block;
+  clip-path: inset(100% 0% 0% 0%);
+  animation: pen-mark-reveal var(--pre-mark-reveal) var(--ease-expo) var(--pre-mark-delay) forwards;
+}
+
+@keyframes pen-mark-reveal {
+  to {
+    clip-path: inset(0% 0% 0% 0%);
+  }
+}
+
+/*
+ * The mark clearing again, to hand the centre to the statement.
+ *
+ * The wipe carries on in the direction it was already going: the reveal's front
+ * edge travelled up the mark, and this one does too, eating it from the bottom
+ * until there is nothing left at the top. Retracting it back down instead would
+ * undo the reveal, and the two together would read as a mistake being corrected.
+ *
+ * It has to be a second CSS animation rather than a Framer value, because a
+ * running `animation` with `fill: forwards` outranks any inline style Framer
+ * could write for `clip-path`. Swapping the animation is the only way to move a
+ * property the stylesheet already owns.
+ */
+.markClip[data-clearing='true'] {
+  animation: pen-mark-clear var(--pre-mark-clear) var(--ease-expo) forwards;
+}
+
+@keyframes pen-mark-clear {
+  from {
+    clip-path: inset(0% 0% 0% 0%);
+  }
+  to {
+    clip-path: inset(0% 0% 100% 0%);
+  }
+}
+
+.markImage {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/*
+ * The line the mask is cut with.
+ *
+ * A full-height box whose top border is the visible hairline, translated by a
+ * percentage of its own height — which is the mark's height. That is what keeps
+ * it welded to the mask edge: the clip's top inset and this translation are the
+ * same fraction of the same box, driven by the same duration, delay and easing,
+ * so they cannot separate however the curve is retuned. It runs slightly wider
+ * than the mark, the way a measuring line overruns the thing it measures.
+ */
+.scan {
+  position: absolute;
+  top: 0;
+  right: -9%;
+  left: -9%;
+  height: 100%;
+  border-top: 1px solid var(--c-accent, #057c86);
+  opacity: 0;
+  transform: translateY(100%);
+  animation: pen-mark-scan var(--pre-mark-reveal) var(--ease-expo) var(--pre-mark-delay) forwards;
+}
+
+@keyframes pen-mark-scan {
+  0% {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  14% {
+    opacity: 0.85;
+  }
+  82% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(0%);
+  }
+}
+
+/* ----------------------------------------------------------- the statement */
+
+/*
+ * Lifts the type above the field, which is `absolute inset-0` and would
+ * otherwise paint over it. Same `relative z-[1]` SectionIntro gives its own
+ * heading block for the same reason.
+ */
+.content {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* The measure's gutter lives here, on the one box that is definitely the
+     width of the viewport. See `.beat`. */
+  padding: 0 4vw;
+}
+
+/*
+ * The beat wrapper, and it exists for one reason: to be a definite width.
+ *
+ * It is a flex item, so left alone it shrink-wraps its content — and a
+ * percentage width on the heading inside then resolves against an indefinite
+ * box and is quietly dropped. That is not theoretical: measured across ten
+ * viewports, the heading was laying out at its own content width and wrapping
+ * against the viewport edge instead of the measure, so "about foundations...
+ * was wrong?" broke in two on every screen under 1024px however the type was
+ * sized. Stretching this to the container makes every percentage below mean
+ * what it says.
+ */
+.beat {
+  width: 100%;
+}
+
+/*
+ * THE SIZE IS SET BY THE LONGEST AUTHORED LINE, NOT BY TASTE.
+ *
+ * `preloaderSequence` breaks every beat by hand, which is only worth doing if
+ * each of those lines actually fits on one — the moment a line rewraps, the
+ * composition is gone and the ellipsis lands in the middle of a row. The
+ * governing line is "about foundations... was wrong?" at 31 characters, so
+ * every step below is the largest size at which 31 characters of this sans
+ * still fit the measure with headroom.
+ *
+ * The previous overlay ran `min(3.25rem, 12vw)` here, transcribed from the
+ * hero's display scale. On a 390px phone that is 47px, the two authored lines
+ * became six, and the beat filled the screen edge to edge.
+ */
+.statement {
+  margin: 0 auto;
+  width: 100%;
+  /* The one site dark, on the entry's cream — the same pairing the editorial
+     sections use for a heading on paper. */
+  color: var(--c-dark-green);
+  text-align: center;
+  font-weight: 400;
+  font-size: min(1.5rem, 5.5vw);
+  line-height: 1.04;
+  /* Stated, not inherited: the site-wide Fraunces rule in globals.css targets
+     every h1, and this one is sans. */
+  font-family: var(--font-sans, system-ui, sans-serif);
+}
+
+/* Large phones and tablets, where the measure is wide enough to grow into but
+   the desktop step would still overflow it. */
+@media (min-width: 640px) {
+  .statement {
+    font-size: min(2.75rem, 5.5vw);
+    line-height: 1;
+  }
+}
+
+/* One hand-broken line of the statement. `block` so the lines break where
+   `preloaderSequence` breaks them rather than wherever the measure runs out. */
+.line {
+  display: block;
+}
+
+/*
+ * A word group and its mask. The group is the clipping window; the span inside
+ * is what rises into it. Two effects only — a mask and a translate — because
+ * the reveal is meant to read as type being set, not as an effects reel. It is
+ * the same instrument as the mark's own mask, at the scale of a word.
+ */
+.group {
+  display: inline-block;
+  overflow: hidden;
+  /* Ascenders and descenders are clipped by `overflow` at exactly the line box,
+     so the window is opened slightly and pulled back in. Without this, "y" and
+     "?" lose their tails at rest. */
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+  vertical-align: bottom;
+}
+
+.groupInner {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* The technical caption under the statement — the mono/hairline pairing the
+   validation block uses, at the smallest weight it comes in. It arrives last
+   and says who is speaking, which is the one thing the sentence itself does
+   not. */
+.caption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2.5rem;
+}
+
+.rule {
+  display: block;
+  height: 1px;
+  width: clamp(1.5rem, 6vw, 4rem);
+  /* The identity teal the field's own live trace is drawn in, so the rule and
+     the drawing agree. */
+  background-color: var(--c-accent, #057c86);
+  transform-origin: left center;
+}
+
+.captionText {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  line-height: 1;
+  text-transform: uppercase;
+  /* `--c-dark-green` held back, the way the sections set supporting copy;
+     stated as a literal because the palette has no 62% step of it. */
+  color: rgb(1 44 50 / 62%);
+  white-space: nowrap;
+}
+
+/* The sentence is real text for a screen reader; the animated groups are not. */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (min-width: 1024px) {
+  .statement {
+    width: auto;
+    /*
+     * Capped at 86px rather than the hero's 146.667px, which this was once
+     * transcribed from. That scale existed so the overlay's sentence and the
+     * hero's first line could sit on top of each other without moving, and
+     * nothing about the entry works that way any more — it hands over with a
+     * retraction, not a dissolve, and the two carry different copy.
+     *
+     * 96 is where the 31-character line stops fitting the measure on a wide
+     * monitor, and it is also about where the sentence stops running past the
+     * outer setting-out circle. Those two limits landing together is luck, but
+     * the first is the one that must hold.
+     */
+    max-width: min(90vw, 1500px);
+    font-size: min(5.5vw, 96px);
+    line-height: 0.98;
+    letter-spacing: min(-0.054vw, -0.94px);
+  }
+
+  .caption {
+    margin-top: 3.5rem;
+  }
+}
+
+/* ---------------------------------------------------------------- the exit */
+
+/*
+ * What is left when the panel has closed.
+ *
+ * The retraction collapses the panel onto its horizontal centre line, so the
+ * last state before nothing is a single hairline across the viewport — the line
+ * system reduced to one line. This is that line, and it is a sibling of the
+ * panel rather than a child so the clip cannot take it with it. Framer fades it
+ * in as the panel closes and out a beat later; at rest it is invisible.
+ */
+.seam {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--c-dark-green-20) 22%,
+    var(--c-accent, #057c86) 50%,
+    var(--c-dark-green-20) 78%,
+    transparent
+  );
+  opacity: 0;
+}
+
+/* ------------------------------------------------------------ reduced motion */
+
+/*
+ * Nothing is drawn, cleared or retracted.
+ *
+ * Every entrance here is a CSS animation, so switching them off means switching
+ * off the reveal as well as the movement — hence the explicit resting states:
+ * paths fully drawn, mask fully open, scan line gone. The exit is handled on
+ * the React side, which drops the retraction for a short fade.
+ *
+ * The stylesheet has to carry this itself. `MotionConfig reducedMotion="user"`
+ * governs Framer only, and the whole entrance is deliberately outside Framer.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .draw {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+
+  .trace,
+  .drift,
+  .breathe {
+    animation: none;
+  }
+
+  .trace {
+    display: none;
+  }
+
+  .markClip {
+    clip-path: none;
+    animation: none;
+  }
+
+  /* Stated separately because the attribute selector outranks the rule above,
+     and a `display: none` is the honest reduced-motion form of a wipe. */
+  .markClip[data-clearing='true'] {
+    animation: none;
+    display: none;
+  }
+
+  .scan {
+    display: none;
+  }
+}

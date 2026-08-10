@@ -51,7 +51,15 @@ export interface FooterLinkColumn {
  */
 export const primaryNav: NavItem[] = [
   { label: 'Home', href: '/' },
-  { label: 'Projects', href: '/projects' },
+  // The homepage `Proof` section, not the `/projects` route — asked for: the
+  // header should move you down the page rather than navigate away from it.
+  // `SectionShell` renders that section with `id="projects"` and
+  // `scroll-mt-nav`, so the anchor lands it below the fixed pill.
+  //
+  // `/projects` is NOT dead: it is still routed, still in the sitemap, still
+  // linked from the footer and from this section's own "See all projects" CTA.
+  // Only the header stopped pointing at it.
+  { label: 'Projects', href: '/#projects' },
   { label: 'Resources', href: '/resources' },
   { label: 'About', href: '/about' },
 ];
