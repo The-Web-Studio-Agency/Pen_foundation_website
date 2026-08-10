@@ -33,54 +33,26 @@ export interface FooterLinkColumn {
  * was a property of which array an item sat in. An item is a dropdown when it
  * has `items`, and a plain link otherwise.
  *
- * The header navigates to three destinations only: the homepage (and its
- * sections), About, and Contact. Everything else — Engineering, Applications,
- * Projects, Research, Gallery, Resources — was dropped from it on request, so
- * the header sells the one page that carries the whole argument instead of
- * scattering a visitor across half-finished routes.
+ * Every item is currently a plain link. Home used to open a mega menu of `/#`
+ * section anchors; it was removed on request, so the header now goes to four
+ * whole pages and nothing expands. The dropdown branch is deliberately kept in
+ * `NavItem`, `SiteHeader` and `MobileNavPanel` — it is data-driven, so adding
+ * `items` back to any entry restores it with no component change.
  *
- * Those routes all still exist and stay reachable from `footerColumns` below,
- * which is this same single source. `/resources` is the one exception: it is
- * `noIndex`'d placeholder copy and is now linked from nowhere — restore its
- * footer entry (see the TODO there) at the same time as its content.
+ * The routes not listed here — Engineering, Research, Gallery, Contact —
+ * stay reachable from `footerColumns` below, which is this same single source.
+ *
+ * NOTE(content): `/resources` is linked from the header on request, but it is
+ * still `noIndex`'d and its sections still carry the Terminal Industries clone
+ * copy they were ported with (computer vision, gate lanes — see
+ * `features/resources/content.ts`). It is the one header destination that is
+ * not yet about PEN. Give it PEN's own words, then drop the `noIndex` in
+ * `app/resources/page.tsx` and the `Disallow` in `app/robots.ts`.
  */
 export const primaryNav: NavItem[] = [
-  {
-    label: 'Home',
-    href: '/',
-    // The homepage carries the whole sales argument, and a visitor who lands
-    // mid-funnel should be able to jump to the part they came for. These are
-    // the section anchors on `/`, and since the header no longer navigates
-    // anywhere else, this dropdown is the only wayfinding it offers.
-    items: [
-      {
-        label: 'Technology',
-        href: '/#technology',
-        description:
-          'What the system is: one precast node, four driven nails, and the specification behind them.',
-      },
-      {
-        label: 'Applications',
-        href: '/#applications',
-        description: 'The project types PEN is engineered and sold for today.',
-      },
-      {
-        label: 'Projects',
-        href: '/#projects',
-        description: 'Deployments already in the ground, with the challenge and the outcome.',
-      },
-      {
-        label: 'Validation',
-        href: '/#validation',
-        description: 'The institutes and bodies that tested, mentored and listed the system.',
-      },
-      {
-        label: 'Calculator',
-        href: '/#calculator',
-        description: 'Estimate the programme time and site cost PEN removes from your project.',
-      },
-    ],
-  },
+  { label: 'Home', href: '/' },
+  { label: 'Projects', href: '/projects' },
+  { label: 'Resources', href: '/resources' },
   { label: 'About', href: '/about' },
 ];
 
@@ -113,8 +85,9 @@ export const footerColumns: FooterLinkColumn[] = [
       { label: 'Research', href: '/research' },
       { label: 'Gallery', href: '/gallery' },
       { label: 'Contact', href: '/contact' },
-      // TODO(content): /resources still carries clone copy and is noIndex'd.
-      // Uncomment once it has PEN's own words.
+      // TODO(content): /resources is reachable from the header (see primaryNav)
+      // but stays out of the footer while it still carries clone copy and is
+      // noIndex'd. Uncomment once it has PEN's own words.
       // { label: 'Resources', href: '/resources' },
     ],
   },

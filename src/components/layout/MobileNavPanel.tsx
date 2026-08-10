@@ -116,7 +116,11 @@ export function MobileNavPanel({
               aria-current={pathname === item.href ? 'page' : undefined}
               className={cn(
                 'rounded-md border-b border-white/10 px-4 py-3.5 text-base transition-colors last:border-b-0',
-                pathname === item.href ? 'text-teal-bright' : 'text-white hover:text-white',
+                // Matches the desktop row: a section stays lit on its detail
+                // routes, and `isCurrent` returns false for `/` so Home does not.
+                pathname === item.href || isCurrent(item.href)
+                  ? 'text-teal-bright'
+                  : 'text-white hover:text-white',
               )}
             >
               {item.label}

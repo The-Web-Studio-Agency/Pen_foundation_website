@@ -183,7 +183,12 @@ export function SiteHeader() {
                   onMouseEnter={() => setOpenMenu(null)}
                   className={cn(
                     'rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                    pathname === item.href ? 'text-teal-bright' : 'text-white/90 hover:text-white',
+                    // `isCurrent` as well as an exact match, so Projects stays
+                    // lit on `/projects/[slug]` rather than only on the index.
+                    // It returns false for `/`, which keeps Home exact-match.
+                    pathname === item.href || isCurrent(item.href)
+                      ? 'text-teal-bright'
+                      : 'text-white/90 hover:text-white',
                   )}
                 >
                   {item.label}
