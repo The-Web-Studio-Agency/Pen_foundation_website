@@ -19,25 +19,24 @@ import type { CSSProperties } from 'react';
  * panel is painted, whatever the bundle is doing. React is only needed for the
  * one thing CSS cannot decide: when the page underneath is ready to be shown.
  *
- * TWO ACTS. The drawing assembles around the mark, and then the mark hands the
- * centre over to the statement — three beats of copy written a word at a time,
- * which is the entry this site already had and the part of it that says
- * something. They are sequential rather than stacked because they want the same
- * middle of the same screen: the geometry is set out about a single point, and
- * putting a mark and an 80px sentence on that point at once makes two
- * compositions fighting over one centre. So the mark holds it, then clears.
+ * TWO ACTS. The drawing sets itself out, and then the statement is written into
+ * the centre it left empty — three beats of copy, a word at a time, which is
+ * the entry this site already had and the part of it that says something.
+ *
+ * The centre is deliberately unoccupied through act one. The axes break at the
+ * inner circle rather than crossing, so the drawing is built around a void, and
+ * the sentence is what the void turns out to have been for.
  *
  * The published shape, measured from first paint:
  *
  *   0.00s  panel covers the viewport (it is in the server HTML)
  *   0.00s  the technical line system starts drawing itself, staggered
- *   0.40s  the mark starts to clear its mask
- *   1.22s  the mark is fully revealed; lines keep drifting
- *   1.72s  the last line lands
- *   1.90s  the mark wipes away, the field recedes, beat one starts writing
- *   ~11.1s three beats and their holds — see the beat constants below
- *   ~11.1s the panel retracts to its centre line
- *   ~11.7s the hero is clear
+ *   1.14s  the axes and the two inner circles have landed
+ *   1.30s  beat one starts writing, over a drawing still finishing itself
+ *   1.76s  the last of the outer geometry lands; the field begins to recede
+ *   ~10.2s three beats and their holds — see the beat constants below
+ *   ~10.2s the panel retracts to its centre line
+ *   ~10.9s the hero is clear
  *
  * Act one is fixed; act two is as long as the copy is. The beat lengths are
  * derived from `statementRevealMs`, never written down twice — the previous
@@ -49,16 +48,10 @@ import type { CSSProperties } from 'react';
 export const FIELD_STAGGER_MS = 48;
 /** How long a single path takes to draw itself in. */
 export const FIELD_DRAW_MS = 900;
-/**
- * Highest stagger index used by the line system, so the schedule can be checked
- * against it rather than against a number somebody remembered.
- * `18 * 48 + 900 = 1764ms` — the field lands inside the hold, never after it.
- */
+/** Highest stagger index used by the line system. */
 export const FIELD_LAST_INDEX = 17;
-
-/** The mark waits for the field to establish itself before it clears. */
-export const MARK_DELAY_MS = 400;
-export const MARK_REVEAL_MS = 820;
+/** When the last path finishes drawing, from first paint. Derived, never typed. */
+export const FIELD_SETTLED_MS = FIELD_LAST_INDEX * FIELD_STAGGER_MS + FIELD_DRAW_MS;
 
 /**
  * When act one ends and the statement takes the centre, from first paint.
@@ -67,14 +60,28 @@ export const MARK_REVEAL_MS = 820;
  * from, and it is a floor rather than a fixed point — see `PENPreloader`, which
  * holds past it if the document is not ready and cuts to it if it already was.
  *
- * The mark is fully revealed at 1.22s, so this is a hold of a little under
- * three-quarters of a second: long enough to be a beat, short enough that the
- * entry is not standing still while the copy waits its turn.
+ * It lands just after the axes and the two inner circles have drawn (1.14s) and
+ * well before the outer geometry has (1.76s), on purpose: the frame around the
+ * centre is complete when the first word arrives, and the rest of the drawing
+ * finishes underneath the sentence. Waiting for the whole field would add half
+ * a second in which nothing at all is happening in the middle of the screen.
  */
-export const MARK_HOLD_END_MS = 1900;
+export const STATEMENT_START_MS = 1300;
 
-/** The mark wiping away. Overlaps the first beat writing itself in. */
-export const MARK_CLEAR_MS = 420;
+/**
+ * How long the field waits, after the copy starts, before it recedes.
+ *
+ * The statement deliberately begins before the drawing has finished, so the
+ * two overlap — but the fade must not. The outer geometry is drawn at stroke
+ * opacities of 0.07–0.09; fading the layer to 0.42 while those paths are still
+ * arriving would land them at about 0.03, which is nothing, and the drawing
+ * would lose everything except the inner circles for the rest of the entry.
+ *
+ * So the recede is held off until the last path is down, and derived rather
+ * than typed: it is exactly the overlap between the two acts, and it stays
+ * correct if the stagger, the draw length or the start ever move.
+ */
+export const RECEDE_DELAY_MS = Math.max(FIELD_SETTLED_MS - STATEMENT_START_MS, 0);
 
 /**
  * The stillness after a sentence has finished writing itself.
@@ -96,15 +103,16 @@ export const SEAM_TAIL_MS = 140;
 export const EXIT_TOTAL_MS = EXIT_MS + SEAM_TAIL_MS;
 
 /**
- * Reduced motion: nothing is drawn, wiped or retracted, so act one has nothing
- * to watch and no reason to hold. The mark is simply present, briefly.
+ * Reduced motion: nothing is drawn or retracted, so act one has nothing to
+ * watch and no reason to hold. The field is simply there, briefly, and then the
+ * copy starts.
  *
  * The beat holds are deliberately NOT shortened. That setting asks for less
  * movement, not less reading time — and since each beat is painted at once
  * rather than written, cutting the holds would leave no time to read them at
  * all. Only the reveal and the exit go.
  */
-export const REDUCED_MARK_HOLD_END_MS = 900;
+export const REDUCED_STATEMENT_START_MS = 500;
 export const REDUCED_EXIT_MS = 220;
 
 /**
@@ -137,9 +145,7 @@ export const MOUNT_GRACE_MS = 220;
 export const entryVariables = Object.freeze({
   '--pre-draw': `${FIELD_DRAW_MS}ms`,
   '--pre-stagger': `${FIELD_STAGGER_MS}ms`,
-  '--pre-mark-delay': `${MARK_DELAY_MS}ms`,
-  '--pre-mark-reveal': `${MARK_REVEAL_MS}ms`,
-  '--pre-mark-clear': `${MARK_CLEAR_MS}ms`,
+  '--pre-recede-delay': `${RECEDE_DELAY_MS}ms`,
 }) as CSSProperties;
 
 /** Per-path draw index, as the stylesheet's `--i` multiplier. */

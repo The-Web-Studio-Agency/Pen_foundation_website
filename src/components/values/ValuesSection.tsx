@@ -49,7 +49,11 @@ export function ValuesSection({ content = defaultValues, id, className }: Values
       aria-label={content.eyebrow}
       className={cn(
         'relative w-full bg-white py-[3.75rem] text-[var(--c-dark-green)]',
-        'px-5 lg:px-[min(3.646vw,93.3333px)] lg:py-[8.75rem]',
+        // `px-6`, not the `px-5` this was ported with: on /about the block
+        // above it is padded 24px and this one was 20px, so the two sections'
+        // left edges sat four pixels apart on every phone. The `lg` value is
+        // untouched — above that breakpoint both resolve to the same gutter.
+        'px-6 lg:px-[min(3.646vw,93.3333px)] lg:py-[8.75rem]',
         className,
       )}
     >

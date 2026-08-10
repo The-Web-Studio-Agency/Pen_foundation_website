@@ -34,15 +34,6 @@
 }
 
 /*
- * Reduced motion collapses the scrub to a single static viewport rather than
- * leaving three screens of scroll that no longer do anything. A modifier class
- * rather than an inline style so the custom property needs no cast in TSX.
- */
-.reduced {
-  --hero-sizer-height: 100svh;
-}
-
-/*
  * The scroll sizer. Three viewport heights: the stage below spends two of them
  * pinned, which is the whole scrub range.
  */
@@ -174,9 +165,11 @@
    */
   font-size: min(3.25rem, 12vw);
   line-height: 0.95;
-  /* Named explicitly rather than inherited: the opening heading is an `h1` and
-     the rest are `p`, and the site-wide Fraunces rule in globals.css would
-     otherwise apply to one and not the others. */
+  /* Named explicitly rather than inherited. The opening heading is an `h1` and
+     the rest are `p`; a heading rule that applied to one and not the others
+     would split the sequence in two, which is exactly what the old site-wide
+     serif rule did before it was removed. Stating it here keeps all six beats
+     on one typeface whatever the cascade does later. */
   font-family: var(--hero-heading-font, var(--font-sans, system-ui, sans-serif));
 }
 
@@ -303,8 +296,40 @@
   }
 }
 
+/*
+ * Reduced motion, expressed HERE rather than as a class React adds.
+ *
+ * All of this used to be driven from JS: `Hero` added a `.reduced` modifier and
+ * skipped rendering the indicator, and `HeroContent` rendered one heading
+ * instead of six. But `useReducedMotion()` returns `false` during SSR and
+ * `true` on the very first client render, so each of those produced markup the
+ * server never sent — React reported a hydration failure (#418) on every load
+ * with the setting on, and recovered by throwing the server tree away.
+ *
+ * Worse, the class did not even work. `.reduced` set `--hero-sizer-height` on
+ * the section, while `Hero` writes that same custom property inline on the
+ * sizer itself, and an inline value wins — so the runway stayed at its full
+ * ~400svh and a reader who had asked for less motion still got three empty
+ * screens of scroll under one frozen heading.
+ *
+ * Setting `height` directly here fixes both: it is a later rule of equal
+ * specificity, so it beats the `height: var(--hero-sizer-height)` above no
+ * matter what the inline variable says, and CSS cannot disagree with the
+ * server about what the HTML was.
+ */
 @media (prefers-reduced-motion: reduce) {
   .char {
     transition: none;
+  }
+
+  /* No scrub, so no runway: the stage is all there is. */
+  .sizer {
+    height: 100svh;
+  }
+
+  /* Nothing to scroll through, so nothing to point at. */
+  .cursorIndicator,
+  .touchIndicator {
+    display: none;
   }
 }

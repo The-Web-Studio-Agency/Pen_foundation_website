@@ -35,7 +35,8 @@ export function ResearchBody() {
         <div className="mx-auto max-w-[1500px]">
           <Reveal>
             <Mono className="text-ink-soft">Issue №07 · [Date] · Ground, reconsidered</Mono>
-            <Statement size="lg" className="mt-6 max-w-[18ch] text-ink">
+            {/* The route's `h1` — see the note in EngineeringBody. */}
+            <Statement as="h1" size="lg" className="mt-6 max-w-[18ch] text-ink">
               The Research Journal
             </Statement>
           </Reveal>
@@ -69,7 +70,7 @@ export function ResearchBody() {
             ))}
           </div>
 
-          <Reveal key={category} stagger={0.08} className="mt-12 grid grid-cols-12 gap-8">
+          <Reveal key={category} stagger={0.08} className="mt-12 grid grid-cols-12 gap-y-8 md:gap-x-8">
             {filtered.map((a, i) => (
               <RevealItem
                 key={a.slug}

@@ -4,7 +4,6 @@
 @theme inline {
   --font-sans: var(--font-suisse), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
-  --font-serif: var(--font-fraunces), Georgia, serif;
 }
 
 @theme {
@@ -19,6 +18,21 @@
    * breakpoint puts it in the sorted scale, after `xl`, where it belongs.
    */
   --breakpoint-3xl: 105rem;
+
+  /*
+   * 1440px, registered for exactly the reason `3xl` above is.
+   *
+   * `PromoBannerCard` carried `xl:p-[…]` and `min-[1440px]:p-[…]` together, and
+   * the arbitrary variant was emitted ahead of the named one — so from 1440px
+   * up `xl` won and the wider padding never applied at any width. Measured in
+   * the browser at 1300, 1440 and 1500, the computed padding was the `xl` value
+   * at all three. Naming it sorts it after `xl`, where it belongs, and the rule
+   * starts working.
+   *
+   * `wide` rather than overriding `2xl`: that is a real Tailwind step at 96rem
+   * and NumberedFeatures uses it for the media column's height.
+   */
+  --breakpoint-wide: 90rem;
 
   /* dark tokens — used by the WebGL film (overlay layer) */
   --color-pen-deep: #060f11; /* film base, near-black */
@@ -79,17 +93,22 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Editorial serif for every heading, site-wide (overridable via font-sans/font-mono utilities) */
-@layer base {
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: var(--font-serif);
-  }
-}
+/*
+ * Headings are Suisse Intl, like everything else. There is no serif rule.
+ *
+ * There used to be one — `h1..h6 { font-family: var(--font-serif) }` — with an
+ * opt-out for `.home-clone`, `.about-clone` and `.contact-clone` below it. The
+ * result was that the site had two heading typefaces depending on which route
+ * you were on: Suisse on /, /about, /contact and in the footer; Fraunces on
+ * /engineering, /projects, /research and /gallery. Those are not two tiers of a
+ * system, they are two identities, and the split fell along the accident of
+ * which pages happened to be ported from a sans-serif reference rather than
+ * along anything a reader could perceive as intentional.
+ *
+ * Suisse is the side that won because it is the brand: the logo, the hero
+ * scrub, the footer slogan and the two highest-traffic routes were all already
+ * set in it. Dropping Fraunces also drops the site's only remote font request.
+ */
 
 ::selection {
   background-color: #057c86;
@@ -136,7 +155,7 @@ body {
 
 /* ---------------------------------------------------------------------------
    About page (/about) — background + shape motifs.
-   Scoped to .about-clone or to the classes only that route's components use.
+   Scoped to the classes only that route's components use.
    --------------------------------------------------------------------------- */
 
 /* Dotted grid with crosshair intersections — the section backdrop motif. */
@@ -278,19 +297,11 @@ body {
   filter: blur(6px);
 }
 
-/* The ported routes are sans-serif designs — opt them out of the site-wide
-   serif heading rule in @layer base above (unlayered rules beat layered ones).
-   One selector list rather than a rule per route: they were diverging copies,
-   and a route added without its own rule silently rendered in Fraunces. */
-:is(.about-clone, .contact-clone, .home-clone) :is(h1, h2, h3, h4, h5, h6) {
-  font-family: var(--font-sans);
-}
-
 /* ---------------------------------------------------------------------------
    Contact page (/contact) — clone tokens, typography scale and motifs.
-   Scoped the same way /about is: to .contact-clone, or to the classes only
-   that route's components use. Only what /contact actually references was
-   ported; the clone's nav, footer and shadcn token blocks were not.
+   Scoped the same way /about is: to the classes only that route's components
+   use. Only what /contact actually references was ported; the clone's nav,
+   footer and shadcn token blocks were not.
    --------------------------------------------------------------------------- */
 
 :root {
@@ -339,18 +350,33 @@ body {
     letter-spacing: min(-0.0225rem, -0.092vw);
     line-height: 146%;
   }
+  /*
+   * BODY TIERS ARE FLUID BELOW 1024px.
+   *
+   * They used to be flat: `body-3` was `1.25rem` at every width, so a phone got
+   * the desktop's 20px. Measured on the homepage, that produced 65-83
+   * characters per line on a 1440 desktop — a correct measure — and 29-35 on a
+   * 390px phone, roughly half of what body copy wants. Paragraphs turned into
+   * tall narrow ribbons (16 lines where the desktop takes 8), which is most of
+   * why the phone view ran to 32 screens and read as an unadapted desktop.
+   *
+   * Each clamp ramps from a phone size at 390px to today's value at 1024px and
+   * stops there, so EVERY viewport at or above 1024 is pixel-identical to
+   * before and only the small end moves. At 390px this lands body copy at 16px
+   * and about 43 characters per line.
+   */
   .body-1 {
-    font-size: min(1.4375rem, 5.897vw);
+    font-size: clamp(1.1250rem, 0.9328rem + 0.7886vw, 1.4375rem);
     letter-spacing: min(-0.014375rem, -0.059vw);
     line-height: 1.26;
   }
   .body-3 {
-    font-size: 1.25rem;
+    font-size: clamp(1.0000rem, 0.8462rem + 0.6309vw, 1.2500rem);
     letter-spacing: -0.0125rem;
     line-height: 1.46;
   }
   .body-4 {
-    font-size: 1.125rem;
+    font-size: clamp(0.9375rem, 0.8222rem + 0.4732vw, 1.1250rem);
     letter-spacing: 0.0225rem;
     line-height: 1.4;
   }
@@ -631,22 +657,22 @@ html.lenis body {
     line-height: 1.46;
   }
   .body-1 {
-    font-size: min(1.4375rem, 5.897vw);
+    font-size: clamp(1.1250rem, 0.9328rem + 0.7886vw, 1.4375rem);
     letter-spacing: min(-0.014375rem, -0.059vw);
     line-height: 1.26;
   }
   .body-2 {
-    font-size: 1.25rem;
+    font-size: clamp(1.0000rem, 0.8462rem + 0.6309vw, 1.2500rem);
     letter-spacing: -0.01em;
     line-height: 1.26;
   }
   .body-3 {
-    font-size: 1.25rem;
+    font-size: clamp(1.0000rem, 0.8462rem + 0.6309vw, 1.2500rem);
     letter-spacing: -0.0125rem;
     line-height: 1.46;
   }
   .body-4 {
-    font-size: 1.125rem;
+    font-size: clamp(0.9375rem, 0.8222rem + 0.4732vw, 1.1250rem);
     letter-spacing: 0.0225rem;
     line-height: 1.4;
   }
@@ -668,6 +694,18 @@ html.lenis body {
     letter-spacing: 0.18em;
     line-height: 0.81;
   }
+  /*
+   * The four `label-*` tiers carry a sub-1 line-height on purpose: they are
+   * display leadings, measured off the reference, and they are what makes a
+   * mono chip or eyebrow sit tight against its own box.
+   *
+   * They are only correct on ONE LINE. At `label-4`'s 11px, 0.81 computes to
+   * 8.91px — shorter than the type — so a label that wraps overlaps its own
+   * previous line by about 5px and the glyphs collide. Two instances were
+   * doing exactly that (the contact form's "Prefer speaking with an engineer?"
+   * at 390px, the footer CTA at 360px) and both now set `leading-normal`.
+   * Anything using these classes for a phrase rather than a label should too.
+   */
   .label-4 {
     font-family: var(--font-mono-stack);
     font-size: 0.6875rem;
@@ -719,6 +757,69 @@ html.lenis body {
   /* Horizontal page gutter shared by every section */
   .site-gutter {
     padding-inline: var(--spacing-gutter);
+  }
+
+  /*
+   * THE page content column. One measure, one place.
+   *
+   * `max-w-7xl px-6 md:px-10` had been written out by hand in five components,
+   * and three more sections used a different pair (`px-5 lg:px-[4.375rem]`,
+   * full-bleed). Measured on the homepage at 1440, that put the process cards
+   * and the media cards at x=70 while the applications cards and the estimator
+   * next to them started at x=120 — adjacent card grids stepping 50px apart,
+   * and the footer stepping out again below them.
+   *
+   * Naming it is what stops that recurring: a section opts into the page's
+   * column by saying so, rather than by copying two numbers correctly.
+   *
+   * Sections that are deliberately full-bleed — the hero, the dark statement
+   * band, the logo walls — do NOT use this, and still should not: their
+   * backgrounds run edge to edge and only their inner type is inset.
+   */
+  .site-column {
+    margin-inline: auto;
+    width: 100%;
+    max-width: 80rem;
+    padding-inline: 1.5rem;
+  }
+
+  @media (min-width: 48rem) {
+    .site-column {
+      padding-inline: 2.5rem;
+    }
+  }
+
+  /*
+   * The one-section-per-screen rhythm — applied only where it is a composition
+   * rather than a hole.
+   *
+   * Every marketing section used a flat `min-h-svh`, which reads as intended on
+   * a landscape desktop: the content centres in a screen-sized field and the
+   * page advances a beat at a time. On a PORTRAIT viewport the same rule stops
+   * describing a composition and starts describing dead space. Measured on the
+   * homepage at 1024×1366, nine sections sat at exactly 1366px — `why`,
+   * `applications`, `calculator` and `contact` were each being padded out by
+   * 150–350px of nothing, because their content is only ~1000px tall and the
+   * floor is a third taller than that.
+   *
+   * So the floor is gated on the viewport being at least as wide as it is tall,
+   * which is exactly the line between the two cases and needs no breakpoint
+   * list to maintain: 1440×900, 1280×800 and 1024×768 keep it and are pixel-
+   * identical to before; 1024×1366, 834×1194, 768×1024 and every phone drop it
+   * and let the content set the height. A phone in landscape gets it back,
+   * which is right — there the screen IS the composition again.
+   *
+   * `min-height`, never `height`: a section with more content than a screen has
+   * always had to grow rather than clip, and that is unchanged.
+   */
+  .section-screen {
+    min-height: auto;
+  }
+
+  @media (min-aspect-ratio: 1 / 1) {
+    .section-screen {
+      min-height: 100svh;
+    }
   }
 }
 

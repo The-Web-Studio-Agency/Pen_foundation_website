@@ -27,7 +27,19 @@ export interface MediaCardData {
   actionLabel: string;
 }
 
-export function MediaCard({ card }: { card: MediaCardData }) {
+export function MediaCard({
+  card,
+  as: Heading = 'h3',
+}: {
+  card: MediaCardData;
+  /**
+   * Heading level for the card's title. `h3` suits the usual arrangement — a
+   * grid under a section `h2` — but /resources opens on a grid whose own title
+   * is the page `h1`, and its cards have to be `h2` there or the outline jumps
+   * a level. Purely structural: the styling is on the class either way.
+   */
+  as?: 'h2' | 'h3';
+}) {
   return (
     <article className="group overflow-clip">
       <div className="flex flex-1 flex-col items-center justify-center gap-6 overflow-hidden rounded-lg">
@@ -63,7 +75,7 @@ export function MediaCard({ card }: { card: MediaCardData }) {
             {card.category}
           </p>
           <Link href={card.href} className="no-underline">
-            <h3 className="relative inline text-xl leading-normal font-medium text-[#012c32]">
+            <Heading className="relative inline text-xl leading-normal font-medium text-[#012c32]">
               {card.title}
               <span
                 aria-hidden
@@ -72,7 +84,7 @@ export function MediaCard({ card }: { card: MediaCardData }) {
                   'transition-transform duration-600 ease-in-out group-hover:scale-x-100',
                 )}
               />
-            </h3>
+            </Heading>
           </Link>
           {card.excerpt ? (
             <p className="line-clamp-2 text-lg leading-[146%] tracking-[-0.18px] text-[#6b7280]">

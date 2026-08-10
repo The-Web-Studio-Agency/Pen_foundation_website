@@ -1,8 +1,7 @@
 'use client';
 
-import Link from 'next/link';
-
 import { RevealText } from '@/components/motion';
+import { SectionLink } from '@/components/homepage/shared/SectionLink';
 import { TechnicalGridBackground } from '@/components/shared/backgrounds/TechnicalGridBackground';
 import { cn } from '@/lib/utils';
 
@@ -55,26 +54,10 @@ export function SectionIntro({ id, heading, linkLabel, linkHref, className }: Se
         <h2 className="title-si max-w-[min(70rem,90vw)] text-center text-balance">
           <RevealText text={heading} />
         </h2>
-        {linkLabel ? (
-          <Link
-            href={linkHref ?? '#'}
-            className={cn(
-              'label-4 group relative inline-block overflow-hidden uppercase no-underline',
-              'text-[var(--c-dark-green)]',
-            )}
-          >
-            {linkLabel}
-            <span
-              aria-hidden
-              className={cn(
-                'absolute bottom-0 left-0 h-px w-full origin-right scale-x-0 bg-current',
-                'transition-transform duration-[600ms] ease-wipe',
-                'fine:group-hover:origin-left fine:group-hover:scale-x-100',
-                'group-focus-visible:origin-left group-focus-visible:scale-x-100',
-              )}
-            />
-          </Link>
-        ) : null}
+        {/* `SectionLink` rather than the copy of it that used to live here.
+            The two were the same markup, so the copy also carried the same
+            9px-tall tap target — see that component for the fix. */}
+        {linkLabel ? <SectionLink label={linkLabel} href={linkHref ?? '#'} /> : null}
       </div>
     </section>
   );

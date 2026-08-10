@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import { Section } from '@/components/layout';
 import { Body, Figure, Kicker, Mono, Statement } from '@/components/typography';
 import { MediaFrame } from '@/components/shared/media/MediaFrame';
@@ -23,7 +25,10 @@ export function EngineeringBody() {
         <div className="mx-auto max-w-[1500px]">
           <Reveal>
             <Kicker n="01" label="Anatomy of PEN" />
-            <Statement size="lg" className="mt-6 max-w-[16ch] text-ink">
+            {/* The route's `h1`. It renders identically to the `h2` it was —
+                `Statement` only swaps the tag — but /engineering previously had
+                no first-level heading at all, so its outline began at 2. */}
+            <Statement as="h1" size="lg" className="mt-6 max-w-[16ch] text-ink">
               Every part, in place.
             </Statement>
             <Body className="mt-6 max-w-[54ch] text-ink-soft">
@@ -46,7 +51,10 @@ export function EngineeringBody() {
       <Section id="assembly">
         <div className="mx-auto max-w-[1500px]">
           <Reveal>
-            <Kicker n="02" label="Assembly" />
+            {/* `as="h2"`: this section's only naming copy is its kicker, so
+                without a level here the part terms below (`h3`) hung directly
+                off the page's `h1` and the outline jumped 1 → 3. */}
+            <Kicker as="h2" n="02" label="Assembly" />
           </Reveal>
           <Reveal stagger={0.08} className="mt-12 border-t border-ink/12">
             {specification.parts.map((part, index) => (
@@ -76,7 +84,7 @@ export function EngineeringBody() {
 
       {/* 03 — material science */}
       <Section id="material">
-        <div className="mx-auto grid max-w-[1500px] grid-cols-12 items-center gap-10">
+        <div className="mx-auto grid max-w-[1500px] grid-cols-12 items-center gap-y-10 md:gap-x-10">
           <Reveal className="col-span-12 md:col-span-5">
             <Kicker n="03" label="Material science" />
             <Statement size="md" className="mt-6 text-ink">
@@ -98,7 +106,7 @@ export function EngineeringBody() {
 
       {/* 04 — load transfer */}
       <Section id="load-transfer">
-        <div className="mx-auto grid max-w-[1500px] grid-cols-12 items-center gap-10">
+        <div className="mx-auto grid max-w-[1500px] grid-cols-12 items-center gap-y-10 md:gap-x-10">
           <MediaFrame
             label="LOAD PATH · DIAGRAM"
 
@@ -136,7 +144,7 @@ export function EngineeringBody() {
 
       {/* 06 — soil interaction */}
       <Section id="soil">
-        <div className="mx-auto grid max-w-[1500px] grid-cols-12 items-center gap-10">
+        <div className="mx-auto grid max-w-[1500px] grid-cols-12 items-center gap-y-10 md:gap-x-10">
           <Reveal className="col-span-12 md:col-span-5">
             <Kicker n="06" label="Soil interaction" />
             <Statement size="md" className="mt-6 text-ink">
@@ -211,15 +219,18 @@ export function EngineeringBody() {
             <Kicker n="09" label="Downloads" />
           </Reveal>
           <Reveal stagger={0.06} className="mt-12 border-t border-ink/12">
+            {/* Requests, not downloads — see the same note in CaseStudy. None
+                of these three files exists yet; all three rows were `href="#"`. */}
             {['Spec sheet (PDF)', 'CAD block (DWG)', 'Test report (PDF)'].map((d) => (
               <RevealItem key={d}>
-                <a
-                  href="#"
+                <Link
+                  href="/contact#contact-form"
+                  aria-label={`Request ${d}`}
                   className="flex items-center justify-between border-b border-ink/12 py-6 font-mono text-sm tracking-[0.05em] text-ink transition-colors hover:text-teal"
                 >
                   {d}
-                  <span className="text-ink-soft">↓</span>
-                </a>
+                  <span className="text-ink-soft">Request →</span>
+                </Link>
               </RevealItem>
             ))}
           </Reveal>

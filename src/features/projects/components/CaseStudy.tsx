@@ -24,7 +24,9 @@ export function CaseStudy({ project }: { project: Project }) {
           <Mono className="text-ink-soft">
             {project.location} · {project.year}
           </Mono>
-          <Statement size="xl" className="mt-4 max-w-[16ch] text-ink">
+          {/* The case study's `h1`: the project name is what this page is
+              about, and it was rendering as an `h2` under no `h1` at all. */}
+          <Statement as="h1" size="xl" className="mt-4 max-w-[16ch] text-ink">
             {project.name}
           </Statement>
         </div>
@@ -44,7 +46,7 @@ export function CaseStudy({ project }: { project: Project }) {
 
       {/* 02 — site conditions */}
       <Section id="site">
-        <div className="mx-auto grid max-w-[1500px] grid-cols-12 items-center gap-10">
+        <div className="mx-auto grid max-w-[1500px] grid-cols-12 items-center gap-y-10 md:gap-x-10">
           <Reveal className="col-span-12 md:col-span-5">
             <Kicker n="02" label="Site conditions" />
             <Body className="mt-6 text-ink-soft">{project.siteConditions}</Body>
@@ -61,7 +63,7 @@ export function CaseStudy({ project }: { project: Project }) {
 
       {/* 03 — engineering approach */}
       <Section id="approach">
-        <div className="mx-auto grid max-w-[1500px] grid-cols-12 items-center gap-10">
+        <div className="mx-auto grid max-w-[1500px] grid-cols-12 items-center gap-y-10 md:gap-x-10">
           <MediaFrame
             label="PLAN DRAWING · SLEEVE LAYOUT"
 
@@ -145,15 +147,20 @@ export function CaseStudy({ project }: { project: Project }) {
             <Kicker n="08" label="Downloads" />
           </Reveal>
           <Reveal stagger={0.06} className="mt-10 border-t border-ink/12">
+            {/* These documents are not in the repo, so the rows request them
+                instead of linking to files that do not exist. Every one was
+                `href="#"`, i.e. a download list where nothing downloaded. The
+                arrow changed with the behaviour: "↓" promised a file. */}
             {['Site drawings (PDF)', 'Load report (PDF)'].map((d) => (
               <RevealItem key={d}>
-                <a
-                  href="#"
+                <Link
+                  href="/contact#contact-form"
+                  aria-label={`Request ${d}`}
                   className="flex items-center justify-between border-b border-ink/12 py-6 font-mono text-sm text-ink transition-colors hover:text-teal"
                 >
                   {d}
-                  <span className="text-ink-soft">↓</span>
-                </a>
+                  <span className="text-ink-soft">Request →</span>
+                </Link>
               </RevealItem>
             ))}
           </Reveal>

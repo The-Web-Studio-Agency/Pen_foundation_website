@@ -9,8 +9,11 @@ import { ScrollRevealText } from '@/components/motion/ScrollRevealText';
 // without multicol's balancing splitting a block across both.
 
 export function StoryValues() {
+  // `section-screen` rather than `min-h-screen`: the full-screen floor now
+  // applies only on landscape viewports, where it composes, instead of padding
+  // this block out to 1366px on a portrait tablet.
   return (
-    <section className="flex min-h-screen flex-col items-center justify-center py-24 lg:py-32">
+    <section className="flex section-screen flex-col items-center justify-center py-24 lg:py-32">
       <div className="mx-auto w-full max-w-[1700px] px-6 lg:px-[70px]">
         <header className="mx-auto mb-[54px] max-w-[1190px] text-center">
           <ScrollRevealText as="h2" text={storyValues.heading} className="title-si" />

@@ -66,7 +66,7 @@ export function SectionHeader({ heading, lead, leadClassName, className }: Secti
 
 /**
  * Section shell used by every block added below the fold: white ground, the
- * page's `py-28` rhythm, the `max-w-7xl` content column the calculator set, and
+ * page's `py-28` rhythm, the shared `.site-column` measure, and
  * one in-view stagger driving the children.
  */
 export interface SectionShellProps {
@@ -85,12 +85,13 @@ export function SectionShell({ id, ariaLabel, className, children }: SectionShel
       id={id}
       aria-label={ariaLabel}
       className={cn(
-        // Every section holds at least one screen, with its content centred in
-        // it. `min-h-svh`, never `h-`: a section taller than the viewport —
-        // the applications grid, the FAQ — has to grow rather than clip, and
-        // `svh` rather than `screen` so mobile browser chrome cannot make a
-        // "full screen" section overflow the visible area.
-        'flex min-h-svh w-full scroll-mt-nav flex-col justify-center',
+        // On a landscape viewport every section holds at least one screen, with
+        // its content centred in it; on a portrait one the content sets the
+        // height instead. That is `section-screen` in globals.css — a floor,
+        // never `h-`, so a section taller than the viewport (the applications
+        // grid, the FAQ) grows rather than clips, and `svh` so mobile browser
+        // chrome cannot make a "full screen" section overflow the visible area.
+        'flex section-screen w-full scroll-mt-nav flex-col justify-center',
         'bg-[var(--c-white)] py-28',
         className,
       )}
@@ -100,7 +101,7 @@ export function SectionShell({ id, ariaLabel, className, children }: SectionShel
         initial={prefersReducedMotion ? 'show' : 'hidden'}
         whileInView="show"
         viewport={{ once: true, amount: 0.15 }}
-        className="mx-auto max-w-7xl px-6 md:px-10"
+        className="site-column"
       >
         {children}
       </motion.div>

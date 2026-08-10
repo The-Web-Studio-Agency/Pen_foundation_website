@@ -84,7 +84,7 @@ export function TabbedAccordion() {
         className={cn(
           'grid grid-cols-1 gap-16 px-5',
           'lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] lg:items-start lg:px-[4.375rem]',
-          'min-[1440px]:gap-31',
+          'wide:gap-31',
         )}
       >
         <div className="flex flex-col gap-6 lg:gap-12">

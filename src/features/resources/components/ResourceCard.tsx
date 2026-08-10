@@ -10,6 +10,12 @@ import type { ResourceCard as ResourceCardData } from '@/types/contact';
  * (`FeaturedResourceGrid`, `ResourcesCarousel`) keep their local import and
  * their `ResourceCard` type. Rendering is identical.
  */
-export function ResourceCard({ card }: { card: ResourceCardData }) {
-  return <MediaCard card={card} />;
+export function ResourceCard({
+  card,
+  as,
+}: {
+  card: ResourceCardData;
+  as?: 'h2' | 'h3';
+}) {
+  return <MediaCard card={card} as={as} />;
 }

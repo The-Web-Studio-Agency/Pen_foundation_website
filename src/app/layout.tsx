@@ -62,8 +62,30 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       <body>
         <AppProviders>
           <PENPreloader />
+          {/*
+           * Skip link. The header carries seven navigation items, a call
+           * control and a CTA, so reaching the page content by keyboard meant
+           * nine tab stops on every route — and the same nine again on the next
+           * one. It is the first thing in the tab order and invisible until it
+           * takes focus, which is the whole convention: `sr-only` until
+           * `focus-visible`, then a real button over the header.
+           *
+           * `z-[60]` clears the header's `z-50`, or it would land underneath the
+           * pill it is trying to skip.
+           */}
+          <a
+            href="#main"
+            className="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:top-4 focus-visible:left-4 focus-visible:z-[60] focus-visible:rounded-lg focus-visible:bg-ink focus-visible:px-5 focus-visible:py-3 focus-visible:text-sm focus-visible:font-medium focus-visible:text-white focus-visible:ring-2 focus-visible:ring-[var(--c-accent)]"
+          >
+            Skip to content
+          </a>
           <SiteHeader />
-          <main>{children}</main>
+          {/* `tabIndex={-1}`: the skip link moves focus here, and without it the
+              jump would move the viewport but leave focus in the header, so the
+              next Tab would go straight back into the nav that was skipped. */}
+          <main id="main" tabIndex={-1}>
+            {children}
+          </main>
           <SiteFooter />
         </AppProviders>
       </body>

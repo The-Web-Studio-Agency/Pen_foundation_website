@@ -91,16 +91,58 @@ function ArrayGlyph(props: GlyphProps) {
   );
 }
 
+/** Dwelling: the house the foundation carries, on units set into the grade. */
+function DwellingGlyph(props: GlyphProps) {
+  return (
+    <GlyphFrame {...props}>
+      {/* Grade, with the gable standing on it. */}
+      <path d="M4 30h56" />
+      <path d="M16 30V15l16-9 16 9v15" />
+      {/* Two units below it, each a cap plate on four battered legs. */}
+      <path d="M9 36h14" />
+      <path d="M12 36 8 57M15 36l-1 21M17 36l1 21M20 36l4 21" />
+      <path d="M41 36h14" />
+      <path d="M44 36l-4 21M47 36l-1 21M49 36l1 21M52 36l4 21" />
+    </GlyphFrame>
+  );
+}
+
+/** Remote: a long approach across empty ground to a single unit at the end. */
+function RemoteGlyph(props: GlyphProps) {
+  return (
+    <GlyphFrame {...props}>
+      {/* The track in, drawn as a broken run so the distance reads as distance
+          rather than as a second grade line. */}
+      <g opacity="0.45">
+        <path d="M4 20h9M17 20h9M30 20h9" />
+      </g>
+      <path d="M4 26h56" />
+      {/* The one unit at the end of the run, set toward the frame edge so the
+          emptiness to its left is the subject. */}
+      <path d="M43 32h16" />
+      <path d="M46.5 32 43 57M51 32l-1 25M53 32l1 25M56.5 32 60 57" />
+    </GlyphFrame>
+  );
+}
+
 /**
  * Marks keyed by project name rather than by grid position, so reordering the
  * projects cannot hand a project the wrong drawing. A project with no entry
  * renders nothing at all — better a card without a mark than a card wearing
  * another site's section.
+ *
+ * Two keys were renamed with the projects themselves when the C-DISC content
+ * handoff settled their public names — Devagiri Library → Devagiri College
+ * Library, Startup EcoAshram → Startup Eco-Ashram. Because the lookup is by
+ * name, a rename in the content module silently drops the drawing unless the
+ * key moves with it; that is the failure this comment exists to prevent.
  */
 const GLYPHS: Record<string, (props: GlyphProps) => React.ReactElement> = {
-  'Devagiri Library': RetrofitGlyph,
   'Black Langur Resort': RootsGlyph,
-  'Startup EcoAshram': ArrayGlyph,
+  'Startup Eco-Ashram': ArrayGlyph,
+  'Devagiri College Library': RetrofitGlyph,
+  'Bethel Residency': DwellingGlyph,
+  'Bengaluru Farmhouse': RemoteGlyph,
 };
 
 export function ProjectGlyph({ name, className }: { name: string; className?: string }) {

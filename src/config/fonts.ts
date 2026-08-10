@@ -1,5 +1,4 @@
 import localFont from 'next/font/local';
-import { Fraunces } from 'next/font/google';
 
 /**
  * Typeface declarations.
@@ -29,11 +28,14 @@ export const fontMono = localFont({
   display: 'swap',
 });
 
-export const fontSerif = Fraunces({
-  subsets: ['latin'],
-  variable: '--font-fraunces',
-  display: 'swap',
-});
+/*
+ * There is no serif. Fraunces was loaded from Google Fonts to serve a site-wide
+ * `h1..h6 { font-family: serif }` rule that three of the busiest routes then
+ * opted out of, so the site rendered headings in two different typefaces
+ * depending on which page you were on. Headings are Suisse now — see the note
+ * where that rule used to be, in globals.css — which leaves this file with two
+ * local families and no remote font request at all.
+ */
 
 /** Every font variable, ready to drop on <html>. */
-export const fontVariables = [fontSans.variable, fontMono.variable, fontSerif.variable].join(' ');
+export const fontVariables = [fontSans.variable, fontMono.variable].join(' ');

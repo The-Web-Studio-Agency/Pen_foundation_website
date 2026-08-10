@@ -31,14 +31,14 @@ export const metadata = createMetadata({
  * Resource library, split out of /contact so that page ends at "Other ways to
  * connect" and stays a single-purpose contact flow.
  *
- * `contact-clone` is retained deliberately: these sections were built against
- * that scope, which opts the route out of the site-wide Fraunces heading rule
- * and supplies the sans-serif treatment they were designed with.
+ * The `contact-clone` class this shared with /contact is gone: its only rule
+ * was an opt-out from a site-wide serif heading rule that no longer exists.
+ * These sections were designed sans-serif and now simply inherit it.
  */
 export default function ResourcesPage() {
   return (
-    <div className="contact-clone pt-nav">
-      <FeaturedResourceGrid grid={videoGrid} />
+    <div className="pt-nav">
+      <FeaturedResourceGrid grid={videoGrid} lead />
       <FeaturedResourceGrid grid={exploreGrid} />
 
       {/* Decorative dark band, notched on both edges — the same divider that

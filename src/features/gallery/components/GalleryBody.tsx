@@ -26,7 +26,9 @@ export function GalleryBody() {
   return (
     <div className="relative min-h-screen bg-ink pt-nav">
       <div className="mx-auto max-w-[1500px] px-6 pt-10 md:px-16">
-        <Kicker n="—" label="The archive" className="text-ink-soft" />
+        {/* The route's `h1`. /gallery had no heading of any level, so its
+            outline consisted of the footer's. */}
+        <Kicker as="h1" n="—" label="The archive" className="text-ink-soft" />
         <div className="mt-6 flex flex-wrap gap-2">
           {(['All', ...CATEGORIES] as const).map((c) => (
             <FilterChip key={c} label={c} selected={category === c} onSelect={() => setCategory(c)} />

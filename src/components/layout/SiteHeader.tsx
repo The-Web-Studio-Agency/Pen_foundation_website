@@ -104,6 +104,41 @@ export function SiteHeader() {
     return () => document.removeEventListener('pointerdown', onPointerDown);
   }, [mobileOpen, openMenu]);
 
+  /*
+   * Scroll lock while the mobile panel is open.
+   *
+   * The panel is a menu, but the page behind it still scrolled: a swipe
+   * anywhere outside it ran the document underneath — on the homepage that
+   * meant scrubbing the hero film behind an open menu. The panel does its own
+   * internal scrolling (`overflow-y-auto overscroll-contain`), which is
+   * unaffected by this.
+   *
+   * Locked on `documentElement`, not `body`: `html` is the scrolling element
+   * here, and `body`'s own `overflow` is already spoken for by the
+   * `overflow-x: clip` rule in globals.css. The previous inline value is
+   * restored rather than cleared, so the lock composes with anything else that
+   * might set it and the stylesheet's rule comes back on release.
+   *
+   * The compensating padding keeps the fixed header from jumping sideways by
+   * the scrollbar's width on desktop — where the panel never opens, so it is
+   * really only for a narrow desktop window that is emulating a tablet.
+   */
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const root = document.documentElement;
+    const previousOverflow = root.style.overflow;
+    const previousPadding = root.style.paddingRight;
+    const scrollbar = window.innerWidth - root.clientWidth;
+
+    root.style.overflow = 'hidden';
+    if (scrollbar > 0) root.style.paddingRight = `${scrollbar}px`;
+
+    return () => {
+      root.style.overflow = previousOverflow;
+      root.style.paddingRight = previousPadding;
+    };
+  }, [mobileOpen]);
+
   // Crossing up into the desktop row while the panel is open would otherwise
   // leave it mounted but hidden, ready to reappear on the way back down.
   useEffect(() => {
@@ -125,7 +160,12 @@ export function SiteHeader() {
         // Reference source says max-w-[820px], but this project's Suisse Intl
         // is wider than the Geist it was written against, which pushed the
         // action buttons outside the pill. Widened so the row fits.
-        className="w-full max-w-[960px]"
+        //
+        // Widened again from 960px when the primary nav went from four items to
+        // the handoff's seven. Logo + seven links + the phone button + a
+        // "Request Assessment" pill measures past 960 on its own, so the row
+        // was overflowing its own container rather than wrapping.
+        className="w-full max-w-[1160px]"
         onMouseLeave={() => setOpenMenu(null)}
       >
         <div className="inner flex h-16 items-center justify-between gap-3 rounded-lg bg-ink/30 px-4 backdrop-blur-[30px] lg:h-[78px] lg:gap-6 lg:px-6">
@@ -135,7 +175,11 @@ export function SiteHeader() {
             // `shrink-0`: the logo has no intrinsic minimum in a flex row, so
             // before this it was the first thing the overflow ate — the mobile
             // header rendered with no logo at all.
-            className="flex shrink-0 items-center gap-2 text-white"
+            //
+            // `py-1` takes the home link from a 36px-tall target to 44px. The
+            // mark itself does not move: the pill centres its row, so the extra
+            // four pixels above and below are hit area only.
+            className="flex shrink-0 items-center gap-2 py-1 text-white"
           >
             <Logo className="h-8 lg:h-9" priority />
           </Link>
@@ -202,13 +246,25 @@ export function SiteHeader() {
           </nav>
 
           <div className="hidden items-center gap-3 lg:flex">
-            <button
-              type="button"
-              aria-label="Show phone number"
-              className="flex size-9 items-center justify-center rounded-lg border border-white/20 text-white/80 transition-colors hover:text-white"
+            {/*
+             * The handoff's "clear Call button". It was a `<button>` with no
+             * handler — an enabled control, on every route, that did nothing
+             * when clicked. It is the same `tel:` link the mobile panel already
+             * carries, so the two now behave identically.
+             *
+             * The number is in the label rather than only in the icon: "Show
+             * phone number" described a reveal that never happened, and a
+             * screen reader announcing "Call +91 7356177577" is the actual
+             * destination. `size-11` matches the mobile toggle beside it.
+             */}
+            <a
+              href={`tel:${footerContact.phone.replace(/\s+/g, '')}`}
+              aria-label={`Call ${footerContact.phone}`}
+              title={footerContact.phone}
+              className="flex size-11 items-center justify-center rounded-lg border border-white/20 text-white/80 transition-colors hover:border-white/40 hover:text-white"
             >
               <PhoneIcon className="size-4" />
-            </button>
+            </a>
             {navActions.map((action) => (
               <Link
                 key={action.label}

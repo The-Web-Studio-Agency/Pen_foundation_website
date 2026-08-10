@@ -1,12 +1,11 @@
 'use client';
 
-import Link from 'next/link';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
 
 import { SectionIntro } from '@/components/homepage/SectionIntro/SectionIntro';
+import { SectionLink } from '@/components/homepage/shared/SectionLink';
 import { whyPen } from '@/content/data/homepage';
 import { duration, easing } from '@/lib/motion';
-import { cn } from '@/lib/utils';
 
 /**
  * Opens the "why" chapter: the claim that a conventional footing's constraints
@@ -34,7 +33,7 @@ export function WhyPen() {
        has somewhere to land. Non-visual — the section is otherwise unchanged. */
     <section
       id="why"
-      className="flex min-h-svh w-full scroll-mt-nav flex-col justify-center bg-[var(--c-white)] py-24 lg:py-28"
+      className="flex section-screen w-full scroll-mt-nav flex-col justify-center bg-[var(--c-white)] py-24 lg:py-28"
     >
       <SectionIntro heading={whyPen.heading} />
 
@@ -55,26 +54,10 @@ export function WhyPen() {
         {/* Rendered here rather than through SectionIntro, which places its link
             directly under the heading — the lead-in sentence has to come first
             for the capability cards below to read as the list it promises. The
-            underline treatment is SectionIntro's own, reproduced. */}
+            link itself is the shared `SectionLink`, not the third hand-written
+            copy of it that used to sit here. */}
         <motion.div variants={RISE} className="mt-10 flex justify-center">
-          <Link
-            href={whyPen.link.href}
-            className={cn(
-              'label-4 group relative inline-block overflow-hidden uppercase no-underline',
-              'text-[var(--c-dark-green)]',
-            )}
-          >
-            {whyPen.link.label}
-            <span
-              aria-hidden
-              className={cn(
-                'absolute bottom-0 left-0 h-px w-full origin-right scale-x-0 bg-current',
-                'transition-transform duration-[600ms] ease-wipe',
-                'fine:group-hover:origin-left fine:group-hover:scale-x-100',
-                'group-focus-visible:origin-left group-focus-visible:scale-x-100',
-              )}
-            />
-          </Link>
+          <SectionLink label={whyPen.link.label} href={whyPen.link.href} />
         </motion.div>
       </motion.div>
     </section>

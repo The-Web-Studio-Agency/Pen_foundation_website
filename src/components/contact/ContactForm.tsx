@@ -265,7 +265,13 @@ export function ContactForm({ className, submitLabel = 'Submit' }: ContactFormPr
           'sm:flex-row sm:items-center sm:justify-between sm:gap-8',
         )}
       >
-        <p className="label-4 text-[var(--c-light-gray)] uppercase">{hero.phoneLabel}</p>
+        {/* `leading-normal` overrides `label-4`'s 0.81. That value is a
+            single-line display leading: at 11px it computes to 8.91px, so the
+            moment this sentence-length label wraps — it does at 390px — the two
+            line boxes overlap by 5px and the glyphs collide. */}
+        <p className="label-4 leading-normal text-[var(--c-light-gray)] uppercase">
+          {hero.phoneLabel}
+        </p>
         <a
           href={`tel:${hero.phoneNumber.replace(/[^\d+]/g, '')}`}
           className={cn(

@@ -16,7 +16,7 @@ import type { ProcessContent } from '@/types/homepage';
  * `SectionShell`. Two adjacent card grids reading as two different systems —
  * one dark and left-aligned, one light and centred — made the page change its
  * mind halfway down. The process is now the third panel of the same idea, so
- * it is built from `InAction`'s shell: `min-h-svh` with the centred header
+ * it is built from `InAction`'s shell: `section-screen` with the centred header
  * block, `px-5 py-15 lg:px-[4.375rem] lg:py-[5.625rem]`, `rounded-2xl` cards
  * on the off-white ground at `gap-6 lg:gap-[1.875rem]`.
  *
@@ -50,8 +50,8 @@ export function ProcessSteps({ content }: ProcessStepsProps) {
       id={content.id}
       aria-label={content.heading}
       className={cn(
-        'flex min-h-svh scroll-mt-nav flex-col justify-center',
-        'px-5 py-15 lg:px-[4.375rem] lg:py-[5.625rem]',
+        'flex section-screen scroll-mt-nav flex-col justify-center',
+        'site-column py-15 lg:py-[5.625rem]',
       )}
     >
       <motion.div

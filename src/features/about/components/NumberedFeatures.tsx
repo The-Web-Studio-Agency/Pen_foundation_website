@@ -33,8 +33,13 @@ export function NumberedFeatures() {
             >
               <div className={cn(imageLeft && 'lg:order-2')}>
                 <p className="mb-6 font-mono text-sm text-[#8a8a8a]">{feature.number}</p>
+                {/* `h2`, not `h3`. These three features are top-level blocks of
+                    /about, sitting directly under the hero's `h1` and before the
+                    page's other `h2`s — as `h3`s they made the outline jump
+                    1 → 3 and then back to 2. Styling is on the class, so this
+                    changes the document structure and nothing on screen. */}
                 <ScrollRevealText
-                  as="h3"
+                  as="h2"
                   text={feature.title}
                   className="max-w-[520px] text-3xl leading-tight font-semibold md:text-4xl"
                 />

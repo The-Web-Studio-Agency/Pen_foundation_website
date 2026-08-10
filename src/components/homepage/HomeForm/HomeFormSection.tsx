@@ -33,9 +33,15 @@ export function HomeFormSection() {
   return (
     <section
       id="contact"
-      className="site-gutter flex min-h-svh w-full scroll-mt-nav flex-col justify-center bg-[var(--c-white)] pt-0 pb-8"
+      className="flex section-screen w-full scroll-mt-nav flex-col justify-center bg-[var(--c-white)] pt-0 pb-8"
     >
-      <div className="mx-auto flex w-full max-w-[64rem] flex-col items-center">
+      {/* `site-column` for the gutter, `max-w-[64rem]` for the measure. The
+          section used `site-gutter`, whose 5.128vw base is 20px on a 390px
+          phone against the page column's 24px — so the form card sat 8px wider
+          than every card above it. The utility layer's max-width wins over the
+          column's own 80rem, which is what keeps this block narrower than the
+          full page measure on a desktop, as designed. */}
+      <div className="site-column flex max-w-[64rem] flex-col items-center">
         <h2 className="title-si pt-24 text-center text-balance">
           <RevealText text={firstLine} className="block" />
           {/* +1 for the break, so the wave carries on into the second line. */}

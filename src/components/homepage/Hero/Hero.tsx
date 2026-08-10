@@ -9,7 +9,6 @@ import { HeroScrollIndicator } from './HeroScrollIndicator';
 import styles from './hero.module.css';
 import { useHeroProgress } from './useHeroProgress';
 import { hero } from '@/content/data/homepage';
-import { cn } from '@/lib/utils';
 
 /**
  * The scroll-scrubbed opening of the home page.
@@ -99,7 +98,7 @@ export function Hero() {
   return (
     <section
       ref={sectionRef}
-      className={cn(styles.section, reducedMotion && styles.reduced)}
+      className={styles.section}
       aria-label={hero.sequence[0]?.lines.join(' ')}
     >
       <div
@@ -121,13 +120,15 @@ export function Hero() {
 
         <HeroContent sequence={hero.sequence} progress={progress} frozen={reducedMotion} />
 
-        {reducedMotion ? null : (
-          <HeroScrollIndicator
-            label={hero.scrollLabel}
-            progress={progress}
-            sectionRef={sectionRef}
-          />
-        )}
+        {/* Always rendered. It used to be omitted under reduced motion, which
+            meant the client's first tree differed from the server's and React
+            failed hydration; `hero.module.css` hides it in a media query
+            instead, where the decision costs no markup. */}
+        <HeroScrollIndicator
+          label={hero.scrollLabel}
+          progress={progress}
+          sectionRef={sectionRef}
+        />
       </div>
     </section>
   );

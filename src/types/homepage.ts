@@ -237,32 +237,59 @@ export interface InActionContent {
   }[];
 }
 
-/** A selectable project type; each scales the per-point rates. */
+/**
+ * A selectable project type.
+ *
+ * No `factor`. These used to carry a multiplier that scaled the time and cost
+ * saved per point; the C-DISC handoff demotes project type to "a supporting
+ * selector" and supplies one unit-per-area band for all suitable low-rise
+ * structures, so there is nothing left for a per-type multiplier to be sourced
+ * from. The selection is context for the assessment request, not an input to
+ * the arithmetic — see the note in `lib/calculator/savings`.
+ */
 export interface CalculatorProjectType {
   id: string;
   label: string;
-  /** Multiplier applied to the baseline time and cost saved per point. */
-  factor: number;
 }
 
-/** The homepage time & cost estimator. */
+/**
+ * The homepage project estimator.
+ *
+ * Was a time & cost estimator keyed on a foundation-point count. The handoff
+ * changed the input to built-up area and removed the cost output entirely, so
+ * `pointsLabel`, `points`, `costLabel` and `costNote` are gone, and the time
+ * card no longer carries a computed figure — `programme*` states the approved
+ * wording instead, because the final installation-time statement is on the
+ * handoff's list of figures to reconcile before publishing.
+ */
 export interface CalculatorContent {
   heading: string;
   body: { lead: string; linkLabel: string; linkHref: string; trail: string };
   parametersTitle: string;
-  pointsLabel: string;
-  points: { min: number; max: number; step: number; initial: number };
+  /** Slider label, e.g. "Built-up area". */
+  areaLabel: string;
+  /** Unit suffix printed after the slider's value, e.g. "sq ft". */
+  areaUnit: string;
+  area: { min: number; max: number; step: number; initial: number };
   projectTypes: CalculatorProjectType[];
   /** Small print under the parameters, stating what the model is based on. */
   basis: string[];
-  timeLabel: string;
-  timeNote: string;
-  costLabel: string;
-  costNote: string;
+  /** The derived foundation-point band. */
+  unitsLabel: string;
+  unitsNote: string;
   /**
-   * The computed carbon card. `title` is gone — the figure is calculated from
-   * the slider now, not written down. The trees line is assembled around the
-   * computed count so the copy still lives here rather than in the component.
+   * The programme card. Its value is WRITTEN, not computed: the handoff's
+   * claims-control table approves "installs within hours, with no on-site
+   * foundation curing cycle" and directs that it be used until one exact
+   * duration is signed off, so this card must not derive a day count.
+   */
+  programmeValue: string;
+  programmeLabel: string;
+  programmeNote: string;
+  /**
+   * The computed carbon card. The figure is calculated from the slider, so only
+   * the copy around it lives here — the trees line is assembled around the
+   * computed band rather than written out.
    */
   carbon: {
     label: string;

@@ -66,23 +66,36 @@ import type {
  * Adding or removing a beat re-times all of them. The runway in `Hero.tsx`
  * scales off `sequence.length` so each keeps the same amount of scroll.
  *
- * NO FACTUAL CLAIMS HERE, deliberately — this is the argument, not the
- * evidence. Every number it implies (no curing, no excavation, ~2 hours) is
- * stated with its source further down the page, in `whyPen` and
- * `capabilitySteps`. Beat 3 says "No waiting weeks" rather than naming the
- * 21 days for that reason: the figure belongs where it can be cited.
+ * Rewritten again on 2026-08-10 against HANDOFF's PAGE 1 hero spec. That
+ * document specifies a static hero — a headline, three supporting lines and two
+ * CTAs — but it also states it is "a content handoff, not a website redesign".
+ * The six-beat scrub is the site's existing structure and it is synced to the
+ * film, so the WORDS were replaced and the structure kept: HANDOFF's headline
+ * opens on beat 1, its "30 days of construction" line lands on the pull-back
+ * shot, and beat 6 closes on the footer headline the same document prescribes.
+ *
+ * NOT YET CARRIED: HANDOFF's two hero CTAs, "Request a Project Assessment" and
+ * "Watch the Installation". `HeroContent` has no CTA slot and this hero is a
+ * full-viewport scrub with nowhere to pin one — placing them is a design
+ * decision, not a copy change. The primary CTA is live in the header instead.
+ *
+ * Beat 4 carries a figure, which this block used to forbid. HANDOFF approves
+ * "30 days of construction. Less than one day for the foundation." as hero
+ * wording, and its claims-control table clears "installs within hours, with no
+ * on-site foundation curing cycle" for broad use. Every other beat is still
+ * argument rather than evidence.
  *
  * Lines are hand-broken. The reveal runs one continuous wave across the breaks,
  * so a break is a compositional choice, not a wrap.
  */
 export const hero: HeroContent = {
   sequence: [
-    { lines: ['Meet the future', 'of foundations.'] },
-    { lines: ['Every component has one purpose.', 'Maximum strength.', 'Minimum complexity.'] },
-    { lines: ['No excavation.', 'No concrete curing.', 'No waiting weeks.'] },
-    { lines: ['Designed to scale.', 'From one home', 'to entire communities.'] },
-    { lines: ["Because projects shouldn't", 'wait for foundations.'] },
-    { lines: ["The future isn't built", 'from the top down.', 'It begins underground.'] },
+    { lines: ['Instant foundation', 'for modern buildings.'] },
+    { lines: ['One precast node.', 'Four engineered nails.', 'Ready to build.'] },
+    { lines: ['Zero excavation.', 'No curing cycle.', 'Immediate load-bearing.'] },
+    { lines: ['30 days of construction.', 'Less than one day', 'for the foundation.'] },
+    { lines: ['Hours, not weeks.', "Because programmes shouldn't", 'wait for concrete.'] },
+    { lines: ['From soil we rise.', 'Faster. Stronger. Greener.'] },
   ],
   scrollLabel: 'Scroll to find out',
 };
@@ -111,11 +124,22 @@ const supporterLogos = partners.flatMap((partner) =>
  * the wall reads as evidence rather than decoration.
  */
 export const logoWall: LogoWallContent = {
+  // HANDOFF, credibility strip headline — already the wording this section
+  // carried, so it stands unchanged.
   heading: 'Engineered. Tested. Supported.',
-  // BROCH: "incubated at IIT Kanpur and NIT Calicut, and recognized by the
-  // Kerala Startup Mission"; the brochure's own logo strip separates mentoring,
-  // funding and partnerships, which is the distinction drawn here.
-  note: 'Incubation, grant funding and research partnerships behind the pre-engineered nail foundation — from national institutes, government innovation programmes and climate funds.',
+  // HANDOFF, credibility strip supporting line, verbatim. It replaces a line
+  // built from BROCH that said much the same thing in different words; the
+  // handoff's version adds "certification" as a fourth role and names the
+  // system in full, which is the first-reference rule that document sets.
+  //
+  // HANDOFF's developer note on this strip: group the marks by role — Research
+  // / Incubation / Support / Certification — and do not imply every logo is a
+  // technical validator. The wall currently cycles all twenty marks in one
+  // undifferentiated grid, so that grouping is NOT yet implemented; it needs a
+  // `LogoCell` role field and a change to `LogoWall`, which is structure rather
+  // than copy. The note below is the interim guard: it tells the reader the
+  // marks represent four different kinds of backing.
+  note: 'Research, incubation, grant support and industry collaboration behind the Pre-Engineered Nail Foundation, spanning national institutes, government innovation programmes and climate-focused ecosystems.',
   // 20 cells over a shorter list, so each cell's two reel entries are always a
   // different mark — the offset is coprime with the list length.
   cells: Array.from({ length: 20 }, (_, index) => ({
@@ -142,9 +166,13 @@ export const logoWall: LogoWallContent = {
  * four battered galvanized steel nails driven into the surrounding soil".
  */
 export const statement: StatementContent = {
-  before: 'For a century a foundation meant digging, pouring and waiting. PEN ',
-  emphasis: 'drives four nails',
-  after: ' instead — and carries the load the same day.',
+  // HANDOFF, PROBLEM SECTION: "For a century, a foundation meant digging,
+  // pouring and waiting. / PEN drives four engineered nails instead, and
+  // carries the load the same day." Split around the emphasis span this
+  // component sets in a <strong>.
+  before: 'For a century, a foundation meant digging, pouring and waiting. PEN ',
+  emphasis: 'drives four engineered nails',
+  after: ' instead, and carries the load the same day.',
 };
 
 /* -------------------------------------------------------------------------- */
@@ -159,12 +187,21 @@ export const statement: StatementContent = {
  * the list this sentence promises, so the two read as one block.
  */
 export const whyPen: WhyPenContent = {
+  // HANDOFF section headline, verbatim — and already the heading here.
   heading: 'Three weeks of your programme are spent waiting for concrete to cure',
-  // BRIEF core-claims table: 21+ days including curing vs ~2 hours, no curing;
-  // zero excavation; Enhancement Factor 2.0–2.6× SBC field-validated at NIT
-  // Calicut. BRIEF: "eliminating 2–3 m³ of spoil disposal per foundation point".
+  // HANDOFF body copy for the problem section, verbatim, with the colon and
+  // trailing clause kept: the capability list immediately below is the list
+  // this sentence promises, so the two read as one block.
+  //
+  // This REPLACES a version carrying two hard figures — "21 days" and "2–3 m³
+  // of spoil per point" — sourced from BRIEF. HANDOFF's verification box puts
+  // the final installation-time statement on the list of figures to reconcile
+  // before publishing, and its claims-control table approves the softer
+  // "installs within hours, with no on-site foundation curing cycle" until one
+  // exact duration is signed off. The numbers are not lost: they are still
+  // stated, with their sources, in `capabilitySteps` and `product` below.
   intro:
-    'A cast-in-situ footing has to be dug, formed, poured and then left alone for 21 days before anything can be built on it — and each point displaces 2–3 m³ of spoil on the way. PEN Foundation is a patented alternative that is driven in about two hours, carries structural load immediately, and moves no soil at all. What that changes on a real project:',
+    'A conventional cast-in-situ footing has to be excavated, formed, reinforced, poured and then left to cure before the structure can move forward. PEN Foundation changes that sequence. A factory-made node is positioned at ground level, engineered nails are driven into qualified soil, and the completed point is ready to receive the structure without an on-site curing cycle. The result is a faster programme, less wet work, less site disruption and a foundation process that works with the land rather than removing it. What that changes on a real project:',
   link: { label: 'Understand the engineering', href: '/engineering' },
 };
 
@@ -244,8 +281,12 @@ export const capabilitySteps: CapabilityStep[] = [
  */
 export const product: ProductContent = {
   id: 'technology',
-  heading: 'One precast node. Four driven nails.',
-  lead: 'PEN Foundation is a pre-engineered replacement for a cast-in-situ footing: a factory-made concrete node that sits on the ground, anchored by four galvanised steel nails driven into the soil around it at an angle.',
+  // HANDOFF, PRODUCT DEFINITION headline, verbatim.
+  heading: 'One precast node. Four engineered nails. Ready to build.',
+  // HANDOFF product-definition body, verbatim. It names the system in full on
+  // first reference and states the patent and the biomimetic origin, which the
+  // previous lead did not.
+  lead: 'PEN Foundation, the Pre-Engineered Nail Foundation System, is a patented, biomimetic foundation inspired by the way tree roots distribute load through soil. A high-strength precast node sits at ground level and transfers structural loads through four inclined steel nails driven into the surrounding soil. The system is designed for the project’s soil, structural loads and layout, then installed without excavation, formwork or on-site foundation curing.',
   /**
    * Each paragraph carries the one term it exists to land, and `WhatIsPen`
    * sets that term in a `<strong>`. Skim the three bold spans on their own and
@@ -257,10 +298,14 @@ export const product: ProductContent = {
     // transfers structural load through four battered galvanized steel nails …
     // creates a three-dimensional soil-structure interaction zone that engages
     // a significantly larger soil volume than a conventional pad footing".
+    // HANDOFF, "Supporting explanation" under the product definition, verbatim.
+    // It makes the same bearing-versus-distribution contrast the previous
+    // paragraph made, in the words the handoff approves, and it names the
+    // mechanism the rest of the section depends on.
     {
-      text: 'A conventional footing works by bearing: its weight presses down on the soil directly beneath it, and its capacity is limited by what that patch of ground can carry. PEN works by friction. Load entering the node splits into four paths and travels down the nails, shedding into the soil along their whole embedded length — the same way a tree resists wind through its roots rather than by sitting heavily on the ground.',
-      // The mechanism the whole paragraph is built to contrast with bearing.
-      emphasis: 'friction',
+      text: 'A conventional footing concentrates load beneath a concrete mass. PEN distributes load through four inclined paths that engage a three-dimensional volume of soil. The design is compact at the surface but active below it, using soil-structure interaction rather than relying only on the footprint of the node.',
+      // The mechanism the whole paragraph is built to name.
+      emphasis: 'soil-structure interaction',
     },
     // BRIEF: three-dimensional soil-structure interaction zone; Enhancement
     // Factor field-validated at NIT Calicut; grout fills the annular space.
@@ -278,26 +323,47 @@ export const product: ProductContent = {
       emphasis: '“Pre-engineered”',
     },
   ],
+  /**
+   * HANDOFF's five CORE PROOF POINTS, each given the short label this component
+   * needs above it. The sentences are the handoff's.
+   *
+   * These replace four highlights that led on grades and angles — M50, 40–51°,
+   * the Enhancement Factor range. HANDOFF's developer note for the engineering
+   * page is explicit that exact dimensions, grades, standards and model codes
+   * belong in an expandable specification panel or datasheet, and that public
+   * page copy should explain the mechanics first. The figures still exist on
+   * /engineering and in `capabilitySteps`; they are simply no longer the first
+   * thing a reader who has not yet decided PEN is relevant to them meets.
+   *
+   * `highlights` renders as a flex column beside the render, not a fixed 2×2,
+   * so a fifth entry lengthens the column rather than breaking the grid.
+   */
   highlights: [
     {
-      title: 'One precast node',
-      // BRIEF: M50 node, factory-cured before dispatch.
-      body: 'M50 concrete, cast and cured in the factory — nothing is mixed or formed on your site.',
+      title: 'Zero excavation',
+      body: 'Soil layers, drainage paths and terrain are preserved.',
     },
     {
-      title: 'Four battered nails',
-      // BRIEF: batter angle 40–51°, three-dimensional soil interaction zone.
-      body: 'Driven at 40–51°, engaging a soil volume far larger than the node’s own footprint.',
+      title: 'Installed within hours',
+      body: 'No on-site foundation curing cycle at the end of the sequence.',
     },
     {
-      title: '2.0–2.6× bearing capacity',
-      // BRIEF core claims: Enhancement Factor field-validated at NIT Calicut.
-      body: 'Enhancement Factor, confirmed by field plate load tests at NIT Calicut.',
+      title: 'Immediate load readiness',
+      // HANDOFF claims-control, Load readiness: "Ready for approved
+      // superstructure connection after installation and quality checks." That
+      // row also says to avoid an unconditional "instant" guarantee, so the
+      // conditions stay in the sentence rather than being trimmed off it.
+      body: 'Ready for approved superstructure connection after installation and quality checks.',
     },
     {
-      title: 'Zero curing',
-      // BRIEF: load-bearing immediately, no 21-day wait.
-      body: 'Load-bearing the moment the last nail is driven and grouted.',
+      title: 'Less concrete and water',
+      // HANDOFF claims-control, Material: exact percentages only where the
+      // comparison model is stated. No model is stated here, so no percentage.
+      body: 'Substantially lower concrete and water use than conventional RCC footings.',
+    },
+    {
+      title: 'Qualified by evidence',
+      body: 'Soil- and load-qualified design supported by testing, simulation and field deployment.',
     },
   ],
   media: {
@@ -358,35 +424,44 @@ export const product: ProductContent = {
  */
 export const howItWorks: ProcessContent = {
   id: 'how-it-works',
-  heading: 'Four steps from site visit to structure',
-  lead: 'PEN is specified per project, not sold off a shelf. The layout, the point count and the driving depth all follow from what your ground and your structure actually need.',
+  // HANDOFF, PAGE 1: "Four steps from project enquiry to structure" — the
+  // sequence starts at the enquiry, not at a site visit, because step 01 is a
+  // desk review of what the customer sends.
+  heading: 'Four steps from project enquiry to structure',
+  // HANDOFF lead, verbatim.
+  lead: 'PEN is specified for the project, not sold as an unqualified off-the-shelf footing. The layout, number of points and installation configuration follow from the ground and the structure.',
+  /**
+   * All four bodies are HANDOFF's, verbatim.
+   *
+   * The versions they replace were BRIEF-sourced and carried hard numbers in
+   * the prose — "around two hours per point", "a Factor of Safety of 2.5 on a
+   * single plate load test", "three weeks of waiting". HANDOFF's verification
+   * box lists the final installation-time statement among the figures to
+   * reconcile before publishing, and its own note on this section says to
+   * retain the four-stage photography but remove hard installation-time claims
+   * from the graphic until verified. The code references and safety factors
+   * are still stated on /engineering, where the test context sits with them.
+   */
   steps: [
     {
       number: '01',
       title: 'Assess',
-      // BRIEF, soil selector: laterite, black cotton, sandy, rocky,
-      // waterlogged; "Understand what soil data you need before specifying PEN".
-      body: 'We look at the project, the site and the loads it has to carry. Soil condition matters most — laterite, black cotton, sandy, rocky and high-water-table sites each behave differently, and each changes how the system is set out.',
+      body: 'We review the project location, structural system, column reactions, site access and available soil information. Where required, soil suitability is established through appropriate field or geotechnical inputs.',
     },
     {
       number: '02',
       title: 'Engineer',
-      // BRIEF: IS 2911 Part 4; FoS 2.5 single test / 2.0 two or more tests;
-      // batter angle site-adjusted; min embedment 900 mm.
-      body: 'Our engineers size the solution: how many foundation points, where they go, what batter angle and embedment depth suit the ground. The design is worked to IS 2911 Part 4, with a Factor of Safety of 2.5 on a single plate load test or 2.0 where two or more are run.',
+      body: 'Our engineers develop the foundation layout and configuration for the approved project loads and qualified soil conditions. Point count, position, nail geometry and embedment are selected as part of the design process.',
     },
     {
       number: '03',
       title: 'Install',
-      // BRIEF: ~2 hours per point, no excavation, no water, grouted, bolted.
-      body: 'Nodes are placed on the surface and the four nails are driven and grouted — around two hours per point, with no digging, no formwork and no water trucked in. There is no curing wait at the end of it.',
+      body: 'The precast nodes are positioned, the engineered nails are driven into the soil and the system is completed in accordance with the approved installation method. There is no excavation, formwork or on-site foundation curing cycle.',
     },
     {
       number: '04',
       title: 'Build',
-      // BRIEF: "The moment the last nail is driven, the green signal is given —
-      // structure development begins the same day." Bolts: M12 IS 5624.
-      body: 'The superstructure bolts to the node through an M12 galvanised connection and work continues the same day. On a conventional footing this is where three weeks of waiting would start.',
+      body: 'Once installation and quality checks are completed, the superstructure can connect to the node and construction can continue without the conventional foundation waiting period.',
     },
   ],
   cta: { label: 'See where PEN applies', href: '#applications' },
@@ -397,63 +472,69 @@ export const howItWorks: ProcessContent = {
 /* -------------------------------------------------------------------------- */
 
 /**
- * Every category here is listed under "APPLICATIONS" in BROCH. Nothing has been
- * added to the brochure's list, and the supporting line for each says only what
- * the source documents support — the load ceiling in `note` is the honest
- * boundary, taken from DECK's own competitor slide.
+ * HANDOFF's PAGE 1 applications set, replacing the nine categories transcribed
+ * from BROCH.
+ *
+ * Six entries rather than nine. HANDOFF organises this section by customer
+ * outcome rather than by building type, and it drops four of BROCH's categories
+ * from the featured set — farm structures, mass housing and shelters, disaster
+ * rehabilitation, and compound walls and fencing. They are not disowned; the
+ * fuller list belongs on the Applications page, where HANDOFF's PAGE 4 spec
+ * puts the emerging and project-qualified uses behind their own framing.
+ *
+ * "Rehabilitation Housing" is gone from this section on HANDOFF's explicit
+ * instruction ("Remove Rehabilitation Housing from the featured set"), which is
+ * the same removal already applied to `proof` below.
+ *
+ * Ground-mounted solar is stated as an application UNDER DEVELOPMENT, in those
+ * words, because HANDOFF requires it: "Publish as an application under
+ * development or project-qualified use until the solar-specific product and
+ * economics are fully validated."
  */
 export const applications: ApplicationsContent = {
   id: 'applications',
-  heading: 'Where PEN is being specified',
-  lead: 'PEN suits structures where the foundation is repetitive, the programme is tight, or the ground should not be dug. These are the categories the system is built and sold for today.',
+  // HANDOFF headline, verbatim.
+  heading: 'Where PEN Foundation is being specified',
+  // HANDOFF lead, verbatim.
+  lead: 'PEN suits suitable low-rise structures where foundation points repeat, the programme is tight, access is constrained, or the ground should remain undisturbed.',
+  // Every body below is HANDOFF's, verbatim.
   items: [
     {
-      title: 'Low-rise residential',
-      // BRIEF, homeowner page: "G+1 home requires approximately 16–20 PEN units".
-      body: 'G+0 and G+1 homes. A typical G+1 house needs roughly 16–20 PEN units, set in a day rather than staged over a month.',
+      title: 'Residential',
+      body: 'A hassle-free foundation sequence with fewer wet-work dependencies, less site congestion and installation that follows the approved plan without a month-long footing cycle.',
     },
     {
-      title: 'Low-rise commercial',
-      body: 'Small commercial buildings where every week of programme carries a holding cost, and where a clean site matters to the neighbours.',
+      title: 'Commercial',
+      body: 'Faster foundation completion can bring the structure and the revenue-generating asset forward, while keeping the site cleaner and reducing programme uncertainty.',
+    },
+    {
+      title: 'Eco-resorts and farmstays',
+      body: 'Zero excavation helps preserve tree roots, soil structure, slopes and the natural character guests come to experience. Earlier project completion can also bring operations and revenue forward.',
+    },
+    {
+      title: 'Modular and prefab',
+      body: 'A foundation process aligned with factory-made structures: fast, repeatable, precise and capable of supporting relocatable design strategies where engineered accordingly.',
     },
     {
       title: 'Low-span industrial',
-      body: 'Sheds and light industrial buildings on regular column grids — the repetition is what makes a pre-engineered point economical.',
+      body: 'Repeated column grids and schedule-sensitive delivery make suitable sheds and light industrial structures a strong application for a pre-engineered foundation system.',
     },
     {
-      title: 'Modular and relocatable homes',
-      // BROCH key features: "Reusable & Relocatable — ideal for temporary or
-      // mobile structures". DECK Y1-Q3: partnerships with prefab and modular.
-      body: 'Prefab and modular structures. Components are recoverable at end of life, so a relocatable building can take its foundation with it.',
-    },
-    {
-      title: 'Resorts and hospitality',
-      // BRIEF case study: Black Langur Resort, Wayanad — forest department
-      // zero-excavation mandate, protected tree roots.
-      body: 'Ecologically sensitive sites. Zero excavation keeps root systems, soil layers and slopes intact — which is often what the approval depends on.',
-    },
-    {
-      title: 'Farm structures',
-      body: 'Agricultural buildings on soft or seasonal ground, away from batching plants and water supply.',
-    },
-    {
-      title: 'Mass housing and shelters',
-      // BRIEF case study: Rehabilitation Housing, Wayanad — post-landslide slope.
-      body: 'Housing programmes at volume, including rehabilitation work on ground too disturbed for conventional excavation.',
-    },
-    {
-      title: 'Disaster rehabilitation',
-      body: 'Quick temporary shelters, where the foundation cannot be the thing that delays occupation.',
-    },
-    {
-      title: 'Compound walls and fencing',
-      body: 'Boundary walls and fence lines — long runs of small, identical, repeated foundation points.',
+      title: 'Ground-mounted solar',
+      // The "under development" framing is HANDOFF's requirement, not a hedge
+      // added here. Its claims-control table also forbids implying the
+      // solar-specific economics are settled.
+      body: 'An application under development, focused on faster repetitive installation and reduced concrete, water, spoil and site disturbance. Published as a development pathway until the solar-specific product and economics are fully validated.',
     },
   ],
-  // DECK's competitor slide states plainly that rival systems are "not fit for
-  // G+1 above structures"; BRIEF's Phase-2 roadmap puts mid-rise beyond the
-  // current product. Saying so is what makes the rest of the list credible.
-  note: 'PEN is engineered for low-rise construction. Structures above G+2 are on the development roadmap, not in the current product. Every project is assessed on its own soil data and loads before the system is specified.',
+  // HANDOFF claims-control, Suitability: "Every project requires review of
+  // loads, soil and site conditions. Repeat near calculators, specifications
+  // and forms." The G+2 ceiling stays: DECK's competitor slide states rival
+  // systems are "not fit for G+1 above structures" and BRIEF's Phase-2 roadmap
+  // puts mid-rise beyond the current product. HANDOFF's guardrails forbid
+  // "works in every soil" and "replaces all foundations", which is the same
+  // boundary stated from the other side.
+  note: 'PEN is engineered for suitable low-rise construction. Structures above G+2 are on the development roadmap, not in the current product. Every project requires review of loads, soil and site conditions before the system is specified.',
   cta: { label: 'Check PEN for my project', href: '#contact' },
 };
 
@@ -471,23 +552,31 @@ export const applications: ApplicationsContent = {
  */
 export const proof: ProofContent = {
   id: 'projects',
+  // HANDOFF, PAGE 5 hero: "Built across soils, seasons and states." Already the
+  // heading here, so it stands.
   heading: 'Built across soils, seasons and states',
+  /**
+   * HANDOFF's five named projects, in its order.
+   *
+   * `ProofProject` has one `challenge` field where HANDOFF's card format has
+   * two — "Foundation challenge" and "Why PEN". Rather than add a field and
+   * change the component, each entry states the challenge and then the reason
+   * PEN answered it in the same paragraph, which is how the card already reads.
+   * Scope and "evidence available" are not carried: HANDOFF asks for them, but
+   * no scope figures or document links were supplied with the copy, and its own
+   * instruction is to avoid invented savings or performance numbers.
+   *
+   * Two entries are renamed from the previous set on HANDOFF's spelling:
+   * "Devagiri Library" → "Devagiri College Library" and "Calicut" → "Kozhikode";
+   * "Startup EcoAshram" → "Startup Eco-Ashram". `ProjectGlyph` keys its
+   * drawings by name, so those keys moved with them.
+   *
+   * Bethel Residency and Bengaluru Farmhouse are new and have no supplied
+   * imagery, so they carry no `image` — the section's own rule is that the
+   * field is set only where the picture depicts the project named. Their cards
+   * show the ground-condition drawing instead, which is the designed fallback.
+   */
   projects: [
-    {
-      name: 'Devagiri Library',
-      location: 'Calicut, Kerala',
-      application: 'Retrofit under an occupied building',
-      image: {
-        src: '/media/images/homepage/devagiri-library.png',
-        alt: 'The Devagiri Library at night: a tall cylindrical reading tower in a black steel grid, lit from within, with a figure walking past at ground level',
-      },
-      challenge:
-        'Foundations had to go in underneath an existing, occupied building. No tolerance for vibration or structural disruption, and the existing flooring could not be broken.',
-      // DECK: "Our First Pilot Project winning SSMB'24 Award for Best Steel
-      // Structure"; award also credited to the founder in DECK's team slide.
-      result:
-        'Installed without disrupting the structure above. The building stayed operational throughout, with zero downtime. The project went on to win Best Steel Structure in India at SSMB 2024.',
-    },
     {
       name: 'Black Langur Resort',
       location: 'Wayanad, Kerala',
@@ -504,24 +593,56 @@ export const proof: ProofContent = {
         alt: 'Visualisation of the Black Langur Resort: a two-storey block with a tiled roof and pool, built among standing jackfruit trees',
       },
       challenge:
-        'A dense forest site with live root systems of protected trees close to every foundation point, under a forest department zero-excavation mandate.',
+        'An eco-sensitive, forested and sloping site where excavation could disturb tree roots, soil and terrain. PEN offered a zero-excavation foundation approach aligned with the project’s environmental intent.',
       result:
-        'Every foundation installed without disturbing a single root system. Forest department approval retained and the site left undisturbed after installation.',
+        'Foundation installation with minimal site disturbance, supporting construction while preserving the character of the land.',
     },
     {
-      name: 'Startup EcoAshram',
+      name: 'Startup Eco-Ashram',
       location: 'Kudal, Maharashtra',
       application: 'First commercial-scale deployment',
       image: {
         src: '/media/images/homepage/startup-ecoashram.png',
-        alt: 'A pavilion at Startup EcoAshram: a curved shingled roof over white walls, raised above a wooded slope on a splayed bamboo frame',
+        alt: 'A pavilion at Startup Eco-Ashram: a curved shingled roof over white walls, raised above a wooded slope on a splayed bamboo frame',
       },
-      // DECK traction slide is the only source for this project; it gives the
-      // scale and nothing else, so the challenge line stays factual about that.
       challenge:
-        'The first deployment at commercial scale — over 200 foundation units on one site, outside Kerala and outside laterite soil.',
+        'Deliver PEN at commercial scale outside its initial Kerala deployments and across a new site context. PEN offered repeatable manufactured foundation points, rapid installation and reduced wet work.',
       result:
-        'Delivered as a single commercial-scale installation, taking PEN from pilot projects to repeatable volume.',
+        'A major deployment that helped move PEN from pilots toward repeatable commercial delivery.',
+    },
+    {
+      name: 'Devagiri College Library',
+      location: 'Kozhikode, Kerala',
+      application: 'Institutional building on a constrained site',
+      image: {
+        src: '/media/images/homepage/devagiri-library.png',
+        alt: 'The Devagiri College Library at night: a tall cylindrical reading tower in a black steel grid, lit from within, with a figure walking past at ground level',
+      },
+      challenge:
+        'Install foundations in a constrained institutional context while limiting disruption. PEN offered compact equipment, minimal excavation and an engineered installation sequence.',
+      // HANDOFF states the award as "SSMB 2024 Best Commercial Steel Structure".
+      // The previous wording here was "Best Steel Structure in India at SSMB
+      // 2024", from DECK. HANDOFF is the later document and names the category
+      // more narrowly, so it wins.
+      result:
+        'The completed structure received the SSMB 2024 Best Commercial Steel Structure recognition.',
+    },
+    {
+      name: 'Bethel Residency',
+      location: 'Kozhikode, Kerala',
+      application: 'Low-rise residential',
+      challenge:
+        'Deliver a low-rise residential foundation through a faster and less site-intensive process. PEN offered reduced excavation and curing dependency, with engineered points supporting the approved structure.',
+      result: 'A built residential reference for the PEN system.',
+    },
+    {
+      name: 'Bengaluru Farmhouse',
+      location: 'Bengaluru region, Karnataka',
+      application: 'Remote-site farmhouse',
+      challenge:
+        'Remote-site execution, labour constraints and a time-sensitive programme. PEN offered a rapid, low-wet-work installation process with reduced dependency on excavation and prolonged site activity.',
+      result:
+        'Foundation installation completed within the planned rapid execution window, enabling the structure to proceed quickly.',
     },
   ],
   cta: { label: 'See all projects', href: '/projects' },
@@ -570,53 +691,83 @@ export const validationLogos = [
 /* -------------------------------------------------------------------------- */
 
 /**
- * Homepage time & cost estimator.
+ * Homepage project estimator.
  *
- * The arithmetic lives in lib/calculator/savings.ts and is untouched. The rates
- * quoted in `basis` are that module's constants written out in prose — they are
- * printed on the card so a visitor can check the figures above them, and if a
- * constant ever moves, this text moves with it.
+ * REBUILT to HANDOFF's PAGE 1 calculator spec. Three changes, all of them its
+ * instructions rather than preferences:
  *
- * The third result card is computed too. It used to advertise a carbon
- * calculator that did not exist, then stated a static material figure; it now
- * runs off the slider like the other two, from the IKEA Foundation case study
- * rate of 106 kg CO₂ per unit (≈5 trees).
+ *   1. The input is BUILT-UP AREA in square feet. "Use built-up area in sq. ft.
+ *      as the primary input, not foundation-point count."
+ *   2. The COST CARD IS GONE. "REMOVE: the current cost-savings output. Cost is
+ *      too project- and site-dependent for a generic public calculator."
+ *   3. Figures are BANDS. The unit count is sourced as a range and everything
+ *      downstream of it inherits that range.
+ *
+ * The arithmetic lives in lib/calculator/savings.ts. The rates quoted in
+ * `basis` are that module's constants written out in prose — they are printed
+ * on the card so a visitor can check the figures above them, and if a constant
+ * ever moves, this text moves with it.
+ *
+ * The programme card states approved wording rather than a computed number.
+ * HANDOFF's verification box lists "final installation-time statement" among
+ * the seven items to reconcile before publishing, and its claims-control table
+ * says to use "installs within hours, with no on-site foundation curing cycle"
+ * until one exact duration is signed off. A day count derived from an
+ * unreconciled rate is exactly what that instruction rules out.
  */
 export const calculator: CalculatorContent = {
+  // HANDOFF section heading, verbatim — already the heading here.
   heading: 'What could PEN mean for your project?',
   body: {
-    lead: 'Set the number of foundation points and the project type to see the programme time and site cost PEN removes. The estimate uses Kerala project averages — for a figure against your own drawings and soil data, ',
+    // HANDOFF supporting line, then the assessment link this section has always
+    // ended on. The old lead promised "programme time and site cost", which the
+    // card no longer computes.
+    lead: 'A foundation that gives time back to the programme and leaves more of the land intact. Set your built-up area to see the indicative scale of a PEN foundation for it — for figures against your own drawings and soil data, ',
     linkLabel: 'ask for a project assessment',
     linkHref: '#contact',
     trail: '.',
   },
   parametersTitle: 'Project Parameters',
-  pointsLabel: 'Foundation Points',
-  points: { min: 4, max: 60, step: 1, initial: 4 },
+  areaLabel: 'Built-up area',
+  areaUnit: 'sq ft',
+  // 500–10,000 sq ft in 100 sq ft steps, opening on the 1,000 sq ft structure
+  // HANDOFF works its illustrative output from. The band is the low-rise range
+  // the system is sold for; above it the note about G+2 in `applications`
+  // becomes the governing statement, not this slider.
+  area: { min: 500, max: 10_000, step: 100, initial: 1_000 },
+  // Context for the assessment request, not an input to the arithmetic —
+  // HANDOFF: "Show project type only as a supporting selector." Solar Farm is
+  // retained but sits alongside the note in `applications` marking it an
+  // application under development.
   projectTypes: [
-    { id: 'residential', label: 'Residential', factor: 1 },
-    { id: 'commercial', label: 'Commercial', factor: 1.35 },
-    { id: 'solar', label: 'Solar Farm', factor: 1.6 },
-    { id: 'eco-resort', label: 'Eco Resort', factor: 1.15 },
+    { id: 'residential', label: 'Residential' },
+    { id: 'commercial', label: 'Commercial' },
+    { id: 'eco-resort', label: 'Eco Resort' },
+    { id: 'solar', label: 'Solar Farm' },
   ],
-  // Mirrors TRADITIONAL_DAYS_PER_POINT, PEN_HOURS_PER_POINT and
-  // COST_SAVED_PER_POINT in lib/calculator/savings.ts. Keep in step with them.
+  // Mirrors UNITS_PER_SQFT_MIN/MAX and CO2_SAVED_KG_PER_UNIT in
+  // lib/calculator/savings.ts. Keep in step with them.
   basis: [
-    'Based on Kerala project averages.',
-    'Traditional: 2.1 days/point · PEN: ~2 hours/point.',
-    'Cost saved: ₹45,000/point on excavation, spoil and curing time.',
-    // Sourced separately from the time and cost rates, and stated as such —
-    // the carbon figure is the one a sustainability consultant will check.
-    'CO₂: 106 kg/point, ≈5 trees — IKEA Foundation case study.',
-    'Project type scales time and cost. Carbon is per unit, so it does not.',
-    'Indicative only — not a quotation.',
+    // HANDOFF illustrative output, stated as the rate the slider applies.
+    '≈16–20 PEN units per 1,000 sq ft of built-up area.',
+    'Subject to structural layout, soil and design.',
+    // Sourced separately from the unit rate, and stated as such — the carbon
+    // figure is the one a sustainability consultant will check. HANDOFF's
+    // claims-control table permits it in public copy only with the comparison
+    // basis, boundary and source stated, which is what this line does.
+    'CO₂e: ≈106 kg/unit avoided against a conventional RCC footing, ≈5 trees — IKEA Foundation case study.',
+    'Project type is recorded for the assessment; it does not change the figures above.',
+    // HANDOFF requires this exact qualification on the calculator output.
+    'Indicative only — not a design or a quotation.',
   ],
-  timeLabel: 'Time Saved',
-  timeNote: 'off your programme',
-  costLabel: 'Cost Savings',
-  costNote: 'Saved on excavation & curing',
+  unitsLabel: 'PEN units',
+  unitsNote: 'Indicative point count for this area',
+  // Written, not computed. See the block comment above.
+  programmeValue: 'Hours, not weeks',
+  programmeLabel: 'Foundation programme',
+  programmeNote: 'Installed without an on-site foundation curing cycle',
   carbon: {
-    label: 'CO₂ Avoided',
+    label: 'CO₂e avoided',
     treesPrefix: 'Equivalent to planting',
     treesSuffix: 'trees',
     linkLabel: 'see what goes into the ground',
@@ -830,9 +981,22 @@ export const faq: FaqContent = {
  * than the outcome. `submitLabel` is passed through to ContactForm so the last
  * click on the page says what it gets you; /contact keeps the default.
  */
+/**
+ * HANDOFF's CLOSING CTA for PAGE 1.
+ *
+ * The heading is its sentence broken across the two lines this component takes.
+ * The intro is its body copy verbatim, which is more specific than the version
+ * it replaces: it names what to send (location, structure, drawings, soil
+ * information) and what comes back (suitability, missing inputs, next step).
+ *
+ * HANDOFF's contact-page guidance applies to this block too — "Avoid promising
+ * an instant design or quotation from the public form" — which is why the reply
+ * is described as a review with a recommended next step rather than an answer.
+ */
 export const homeForm: HomeFormContent = {
-  titleLines: ['Tell us about your project', 'and we will tell you if PEN fits'],
+  titleLines: ['Tell us about your project.', 'We will tell you whether PEN fits.'],
   intro:
-    'Our engineers will review your site and loads and come back with whether the system suits the project — and if it does not, we will say so.',
-  submitLabel: 'Request project assessment',
+    'Share your location, proposed structure, drawings and available soil information. Our engineering team will review the project and respond with whether PEN Foundation is suitable, what further inputs are required, and the next step for assessment.',
+  // HANDOFF primary CTA, verbatim.
+  submitLabel: 'Request a Project Assessment',
 };

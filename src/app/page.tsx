@@ -59,7 +59,7 @@ export const metadata = createMetadata({
  */
 export default function HomePage() {
   return (
-    <div className="home-clone flex min-h-screen flex-col bg-[var(--c-white)] text-[var(--c-dark-green)]">
+    <div className="flex min-h-screen flex-col bg-[var(--c-white)] text-[var(--c-dark-green)]">
       {/* ================================================== UNDERSTAND ==== */}
 
       {/* The scrubbed opening. Three viewport heights of scroll, two of them
@@ -102,7 +102,13 @@ export default function HomePage() {
       {/* Who validated it. The evidence table that used to sit under this wall
           is gone; the FAQ's "What testing has been done?" entry carries the
           methodology now, so the chapter is the heading and the marks. */}
-      <SectionIntro id="validation" heading={builtBy.heading} className="min-h-svh" />
+      {/* No height override. This carried `min-h-svh`, which made a section
+          holding one heading a full screen tall on every viewport — 900px on a
+          desktop, 1366 on a portrait tablet, 844 on a phone, almost all of it
+          empty. The page's other two chapter openings are the same component
+          with no floor and render around 460–650px, so removing it makes this
+          one match its siblings as well as removing the hole. */}
+      <SectionIntro id="validation" heading={builtBy.heading} />
 
       <LogoWall
         cells={validationLogos.map((logo) => ({ reel: [logo] }))}

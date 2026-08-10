@@ -239,7 +239,15 @@ export function ClockIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-export function RupeeIcon(props: SVGProps<SVGSVGElement>) {
+/**
+ * One PEN unit, seen from the side: the cap plate on the grade line with four
+ * battered legs below it.
+ *
+ * The same four-stroke motif the project marks in `Proof/ProjectGlyph` are all
+ * built around, reduced to a 24-unit icon grid. It replaced `RupeeIcon` on the
+ * estimator when the cost card was removed and the point count took its place.
+ */
+export function NodeIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -249,11 +257,11 @@ export function RupeeIcon(props: SVGProps<SVGSVGElement>) {
       aria-hidden
       {...props}
     >
-      <path
-        d="M7 5h10M7 9h10M15 5c0 4-3.2 5.4-6.4 5.4H7l7.6 8.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      {/* Grade, then the cap plate sitting on it. */}
+      <path d="M3 8h18" strokeLinecap="round" opacity="0.45" />
+      <path d="M8 8h8" strokeLinecap="round" />
+      {/* Four legs, battered apart into the ground. */}
+      <path d="M9.5 8 6 20M11.2 8l-1 12M12.8 8l1 12M14.5 8l3.5 12" strokeLinecap="round" />
     </svg>
   );
 }

@@ -3,10 +3,15 @@ import type { MetadataRoute } from 'next';
 import { siteConfig } from '@/config/site';
 
 /**
- * Crawl rules. The two disallowed paths are the same two the sitemap omits and
- * that carry `noIndex: true` — `/applications` is an empty placeholder and
- * `/resources` still holds clone copy. Both should come off this list the day
- * they get real content.
+ * Crawl rules.
+ *
+ * `/resources` carries `noIndex: true` and still holds clone copy; it comes off
+ * this list the day it gets PEN's own words.
+ *
+ * `/applications` is disallowed for a different reason: it is a 307 to
+ * `/#applications` (see next.config.ts), so there is no document at that URL to
+ * index. Keeping it listed stops a crawler spending requests rediscovering the
+ * redirect, and it is still absent from the sitemap for the same reason.
  */
 export default function robots(): MetadataRoute.Robots {
   return {

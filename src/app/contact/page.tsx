@@ -21,13 +21,14 @@ export const metadata = createMetadata({
  * which would have doubled the site chrome and tripped `arch:check`'s
  * singleton rule.
  *
- * `contact-clone` opts the page out of the site-wide Fraunces heading rule —
- * this is a sans-serif design, the same arrangement `/about` uses. `pt-nav`
- * clears the fixed header pill.
+ * The wrapper carried a `contact-clone` class, whose only job was to opt the
+ * route out of a site-wide serif heading rule. That rule is gone — headings are
+ * Suisse everywhere now — so the class selected nothing and has been dropped.
+ * `pt-nav` clears the fixed header pill.
  */
 export default function ContactPage() {
   return (
-    <div className="contact-clone pt-nav">
+    <div className="pt-nav">
       {/* The header's "Demo" action deep-links to this anchor. */}
       <div id="contact-form" className="scroll-mt-nav">
         <HeroFormSection />

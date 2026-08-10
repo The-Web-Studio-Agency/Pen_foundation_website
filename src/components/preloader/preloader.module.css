@@ -1,6 +1,6 @@
 /*
  * The entry panel: a cream ground, a technical line field drawn onto it, and
- * the mark cleared out of a mask at its centre.
+ * the statement written into the centre the drawing leaves empty.
  *
  * Every entrance animation in here is CSS, deliberately — the panel ships in
  * the server HTML and is painted long before the bundle arrives, so the drawing
@@ -102,17 +102,20 @@
 .field {
   position: absolute;
   inset: 0;
-  transition: opacity 900ms var(--ease-expo);
+  transition: opacity 900ms var(--ease-expo) var(--pre-recede-delay, 0ms);
 }
 
 /*
  * Held back while the statement is being written.
  *
- * The field is the subject for the first two seconds and the ground for the
- * nine after it — at full strength behind 80px type it is two things competing
- * for the same centre. Opacity only, and slowly, so it reads as the drawing
+ * The field is the subject for the first second and the ground for the nine
+ * after it — at full strength behind 80px type it is two things competing for
+ * the same centre. Opacity only, and slowly, so it reads as the drawing
  * receding rather than as a light going out. The corner brackets are outside
  * this: they are the frame, and a frame does not recede.
+ *
+ * The delay is `RECEDE_DELAY_MS`, which holds the fade until the last path has
+ * finished drawing — see timeline.ts for why that matters.
  */
 .field[data-recede='true'] {
   opacity: 0.42;
@@ -121,10 +124,11 @@
 /*
  * `slice` so the geometry is cropped by the viewport rather than squashed into
  * it — an engineering drawing whose circles turn into ellipses on a phone has
- * stopped being one. The square viewBox keeps the mark's own centre at the
- * centre of the crop on every aspect ratio, and means the field loses its top
- * and bottom on a desktop and its left and right on a phone: only ever parts of
- * the large paths are on screen, which is the point of drawing them that large.
+ * stopped being one. The square viewBox keeps the drawing's own centre — the
+ * one the statement is later written into — at the centre of the crop on every
+ * aspect ratio, and means the field loses its top and bottom on a desktop and
+ * its left and right on a phone: only ever parts of the large paths are on
+ * screen, which is the point of drawing them that large.
  */
 .fieldSvg {
   display: block;
@@ -273,116 +277,6 @@
   overflow: visible;
 }
 
-/* ---------------------------------------------------------------- the mark */
-
-.markWrap {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* The clipping window and the scan line share this box, so both are measured
-   against the same height and cannot drift apart. */
-.markStage {
-  position: relative;
-  /* Small, per the brief: a mark at the centre of a large field, not a splash
-     screen. Roughly 96px on a laptop, 76px on a phone. */
-  width: clamp(76px, 8.2vw, 116px);
-}
-
-/*
- * The reveal.
- *
- * Bottom to top, not a left-to-right wipe: the mark is a structure standing on
- * piles, and clearing the mask upward reads as it being set on its foundation.
- * It is also the same axis the panel later retracts along, so the entry opens
- * and closes on one line of movement instead of two.
- */
-.markClip {
-  display: block;
-  clip-path: inset(100% 0% 0% 0%);
-  animation: pen-mark-reveal var(--pre-mark-reveal) var(--ease-expo) var(--pre-mark-delay) forwards;
-}
-
-@keyframes pen-mark-reveal {
-  to {
-    clip-path: inset(0% 0% 0% 0%);
-  }
-}
-
-/*
- * The mark clearing again, to hand the centre to the statement.
- *
- * The wipe carries on in the direction it was already going: the reveal's front
- * edge travelled up the mark, and this one does too, eating it from the bottom
- * until there is nothing left at the top. Retracting it back down instead would
- * undo the reveal, and the two together would read as a mistake being corrected.
- *
- * It has to be a second CSS animation rather than a Framer value, because a
- * running `animation` with `fill: forwards` outranks any inline style Framer
- * could write for `clip-path`. Swapping the animation is the only way to move a
- * property the stylesheet already owns.
- */
-.markClip[data-clearing='true'] {
-  animation: pen-mark-clear var(--pre-mark-clear) var(--ease-expo) forwards;
-}
-
-@keyframes pen-mark-clear {
-  from {
-    clip-path: inset(0% 0% 0% 0%);
-  }
-  to {
-    clip-path: inset(0% 0% 100% 0%);
-  }
-}
-
-.markImage {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-/*
- * The line the mask is cut with.
- *
- * A full-height box whose top border is the visible hairline, translated by a
- * percentage of its own height — which is the mark's height. That is what keeps
- * it welded to the mask edge: the clip's top inset and this translation are the
- * same fraction of the same box, driven by the same duration, delay and easing,
- * so they cannot separate however the curve is retuned. It runs slightly wider
- * than the mark, the way a measuring line overruns the thing it measures.
- */
-.scan {
-  position: absolute;
-  top: 0;
-  right: -9%;
-  left: -9%;
-  height: 100%;
-  border-top: 1px solid var(--c-accent, #057c86);
-  opacity: 0;
-  transform: translateY(100%);
-  animation: pen-mark-scan var(--pre-mark-reveal) var(--ease-expo) var(--pre-mark-delay) forwards;
-}
-
-@keyframes pen-mark-scan {
-  0% {
-    opacity: 0;
-    transform: translateY(100%);
-  }
-  14% {
-    opacity: 0.85;
-  }
-  82% {
-    opacity: 0.85;
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(0%);
-  }
-}
-
 /* ----------------------------------------------------------- the statement */
 
 /*
@@ -442,8 +336,10 @@
   font-weight: 400;
   font-size: min(1.5rem, 5.5vw);
   line-height: 1.04;
-  /* Stated, not inherited: the site-wide Fraunces rule in globals.css targets
-     every h1, and this one is sans. */
+  /* Stated rather than inherited. It matches what headings now inherit anyway
+     — there is no serif rule left in globals.css to override — but the entry
+     panel paints before hydration and is the first thing a visitor ever sees,
+     so it names its own typeface instead of depending on a cascade elsewhere. */
   font-family: var(--font-sans, system-ui, sans-serif);
 }
 
@@ -466,7 +362,7 @@
  * A word group and its mask. The group is the clipping window; the span inside
  * is what rises into it. Two effects only — a mask and a translate — because
  * the reveal is meant to read as type being set, not as an effects reel. It is
- * the same instrument as the mark's own mask, at the scale of a word.
+ * the same instrument the panel exits on, at the scale of a word.
  */
 .group {
   display: inline-block;
@@ -588,12 +484,12 @@
 /* ------------------------------------------------------------ reduced motion */
 
 /*
- * Nothing is drawn, cleared or retracted.
+ * Nothing is drawn or retracted.
  *
  * Every entrance here is a CSS animation, so switching them off means switching
- * off the reveal as well as the movement — hence the explicit resting states:
- * paths fully drawn, mask fully open, scan line gone. The exit is handled on
- * the React side, which drops the retraction for a short fade.
+ * off the reveal as well as the movement — hence the explicit resting state:
+ * every path fully drawn from the first frame. The exit is handled on the React
+ * side, which drops the retraction for a short fade.
  *
  * The stylesheet has to carry this itself. `MotionConfig reducedMotion="user"`
  * governs Framer only, and the whole entrance is deliberately outside Framer.
@@ -610,23 +506,13 @@
     animation: none;
   }
 
+  /* Nothing was drawn, so there is nothing to hold the fade back for. */
+  .field {
+    transition: none;
+  }
+
   .trace {
     display: none;
   }
 
-  .markClip {
-    clip-path: none;
-    animation: none;
-  }
-
-  /* Stated separately because the attribute selector outranks the rule above,
-     and a `display: none` is the honest reduced-motion form of a wipe. */
-  .markClip[data-clearing='true'] {
-    animation: none;
-    display: none;
-  }
-
-  .scan {
-    display: none;
-  }
 }

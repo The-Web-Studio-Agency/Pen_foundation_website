@@ -75,9 +75,13 @@ export function HeroHeadline({
     appliedRef.current = [];
 
     if (frozen) {
+      // Only the opening heading stands; the rest of the sequence stays mounted
+      // (so the markup matches the server's) but invisible. Without the index
+      // test every heading would be revealed at once, stacked in the same slot.
+      const revealed = index === 0 ? '1' : '0';
       for (const span of chars) {
         if (!span) continue;
-        span.style.opacity = '1';
+        span.style.opacity = revealed;
         span.style.color = CHAR_REVEALED_COLOR;
       }
       return;

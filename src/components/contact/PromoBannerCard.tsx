@@ -32,7 +32,7 @@ export function PromoBannerCard() {
             'p-[clamp(1.75rem,6vw,3rem)_clamp(1.25rem,5vw,2.5rem)]',
             'lg:p-[3.5rem_2rem_3.5rem_3rem]',
             'xl:p-[4.5rem_2.5rem_4.5rem_4.5rem]',
-            'min-[1440px]:p-[5.5rem_3rem_5.5rem_6.5rem]',
+            'wide:p-[5.5rem_3rem_5.5rem_6.5rem]',
           )}
         >
           <p className="text-[clamp(0.875rem,1.6vw,1.25rem)] leading-[1.1] text-[var(--c-dark-gray)] lg:leading-[0.95]">

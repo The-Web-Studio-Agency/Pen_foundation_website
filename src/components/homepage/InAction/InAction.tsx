@@ -26,8 +26,8 @@ export function InAction() {
     <section
       id={inAction.id}
       className={cn(
-        'flex min-h-svh scroll-mt-nav flex-col justify-center',
-        'px-5 py-15 lg:px-[4.375rem] lg:py-[5.625rem]',
+        'flex section-screen scroll-mt-nav flex-col justify-center',
+        'site-column py-15 lg:py-[5.625rem]',
       )}
     >
       <div className="mb-10 flex flex-col gap-4 text-center lg:mb-16">

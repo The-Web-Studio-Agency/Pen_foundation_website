@@ -25,7 +25,8 @@ export function ProjectsBody() {
         <div className="mx-auto max-w-[1500px]">
           <Reveal>
             <Kicker n="—" label="Deployment explorer" />
-            <Statement size="lg" className="mt-6 max-w-[18ch] text-ink">
+            {/* The route's `h1` — see the note in EngineeringBody. */}
+            <Statement as="h1" size="lg" className="mt-6 max-w-[18ch] text-ink">
               Where PEN is already ground.
             </Statement>
           </Reveal>
@@ -59,9 +60,11 @@ export function ProjectsBody() {
                     aspect="aspect-[4/3]"
                   />
                   <div className="mt-4 flex items-baseline justify-between gap-4">
-                    <h3 className="text-xl font-medium tracking-tight text-ink transition-colors group-hover:text-teal">
+                    {/* `h2`, not `h3`: these cards are the page's content and
+                        sit directly under its `h1`. Styling is on the class. */}
+                    <h2 className="text-xl font-medium tracking-tight text-ink transition-colors group-hover:text-teal">
                       {p.name}
-                    </h3>
+                    </h2>
                     <Mono className="text-ink/40">{p.industry}</Mono>
                   </div>
                   <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1">

@@ -61,7 +61,9 @@ export function Article({ article }: { article: ArticleType }) {
       {/* header */}
       <header className="mx-auto max-w-4xl px-6 pt-20 pb-12 md:px-0">
         <Kicker n={article.category} label={`${article.readTime} read`} />
-        <Statement size="lg" className="mt-6 max-w-[22ch] text-ink">
+        {/* The article's `h1`. The body's section headings below are `h2`s,
+            so promoting the title is what makes that outline well-formed. */}
+        <Statement as="h1" size="lg" className="mt-6 max-w-[22ch] text-ink">
           {article.title}
         </Statement>
         <p className="mt-6 max-w-[54ch] text-lg text-ink-soft">{article.dek}</p>
@@ -71,7 +73,23 @@ export function Article({ article }: { article: ArticleType }) {
         <MediaFrame label={article.cover} aspect="aspect-[16/9]" className="mt-10" />
       </header>
 
-      <div className="mx-auto grid max-w-6xl grid-cols-12 gap-10 px-6 pb-32 md:px-0">
+      {/*
+       * `gap-y-10 md:gap-x-10`, never a plain `gap-10`.
+       *
+       * A 12-track grid has an intrinsic minimum width of eleven column gaps —
+       * 11 × 40px = 440px — no matter how narrow its content is willing to go.
+       * On a 390px phone the content box is 342px, so the track row alone
+       * overflowed it by ~100px and the body column ran off the right edge.
+       * Nothing scrolled sideways to reveal it either: `html`/`body` are
+       * `overflow-x: clip`, so the text was simply cut off.
+       *
+       * Dropping the COLUMN gap below `md` fixes it at the cause: the tracks
+       * are `minmax(0, 1fr)`, so with no gap between them they sum to exactly
+       * the container width. Every child here already stacks with
+       * `col-span-12 md:col-span-N`, so nothing sits side by side at that size
+       * and there is no gap to lose. Row gap and the `md` layout are untouched.
+       */}
+      <div className="mx-auto grid max-w-6xl grid-cols-12 gap-y-10 px-6 pb-32 md:gap-x-10 md:px-0">
         {/* sticky TOC */}
         <aside className="col-span-3 hidden md:block">
           <div className="sticky top-24 space-y-3 border-l border-ink/12 pl-6">
@@ -116,12 +134,16 @@ export function Article({ article }: { article: ArticleType }) {
             </section>
           ))}
 
-          <a
-            href="#"
+          {/* Was `href="#"` — a call to action that scrolled you to the top of
+              the article and did nothing else. The spec sheet is not a file in
+              this repo, so this asks for it rather than pretending to serve it:
+              the label now says what the click does. */}
+          <Link
+            href="/contact#contact-form"
             className="mt-4 inline-block border-b border-teal/40 pb-2 font-mono text-[11px] tracking-[0.3em] text-teal uppercase transition-colors hover:border-ink hover:text-ink"
           >
-            Get the spec sheet →
-          </a>
+            Request the spec sheet →
+          </Link>
         </div>
       </div>
 

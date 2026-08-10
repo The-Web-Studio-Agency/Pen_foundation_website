@@ -8,10 +8,11 @@ import { ARTICLES } from '@/content/data/research';
  * The sitemap, built from the same data the routes are built from, so a new
  * project or article appears here by existing rather than by being remembered.
  *
- * `/applications` and `/resources` are deliberately absent: both carry
- * `noIndex: true` in their metadata — one is an empty placeholder, the other
- * still has clone copy — and listing a page you have asked not to be indexed
- * is a contradiction a crawler reports back to you.
+ * `/applications` and `/resources` are deliberately absent. `/resources`
+ * carries `noIndex: true` and still has clone copy, and listing a page you have
+ * asked not to be indexed is a contradiction a crawler reports back to you.
+ * `/applications` is not a page at all any more — it redirects to the homepage
+ * section that holds its content — so there is nothing there to list.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const url = (path: string) => `${siteConfig.url}${path}`;

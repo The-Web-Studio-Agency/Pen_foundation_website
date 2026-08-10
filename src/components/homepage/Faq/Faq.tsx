@@ -95,13 +95,25 @@ export function Faq() {
        clearance that keeps content off the footer's notched lip. */
     <section
       id={faq.id}
-      className="flex min-h-svh scroll-mt-nav flex-col justify-center overflow-x-hidden pt-[5.625rem] pb-28"
+      className="flex section-screen scroll-mt-nav flex-col justify-center overflow-x-hidden pt-[5.625rem] pb-28"
     >
+      {/*
+       * On the page's content column, not a gutter of its own.
+       *
+       * This was `px-5 lg:px-[4.375rem]` with no max-width, which put the FAQ
+       * heading 70px from the viewport edge at 1440 while the sections above it
+       * started at 120px — so the last block before the footer visibly stepped
+       * outward.
+       *
+       * `.site-column` is the page's one content measure (globals.css). The FAQ
+       * cannot use `SectionShell` itself, because it needs its own two-column
+       * grid as the direct child, but it can share the column.
+       */}
       <div
         className={cn(
-          'grid grid-cols-1 gap-16 px-5',
-          'lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] lg:items-start lg:px-[4.375rem]',
-          'min-[1440px]:gap-31',
+          'site-column grid grid-cols-1 gap-16',
+          'lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] lg:items-start',
+          'wide:gap-31',
         )}
       >
         <div className="flex flex-col gap-6 lg:gap-12">
