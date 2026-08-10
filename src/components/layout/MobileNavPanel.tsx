@@ -154,7 +154,10 @@ export function MobileNavPanel({
             className={cn(
               'rounded-lg px-6 py-3.5 text-center text-[11px] font-semibold tracking-wide uppercase transition-colors duration-300',
               action.emphasis === 'primary'
-                ? 'bg-teal text-white'
+                ? // Matches the header's Contact button (#012c32). The panel is
+                  // `bg-ink/95`, i.e. the same colour, so the ring is what makes
+                  // the button visible at all here.
+                  'bg-ink text-white ring-1 ring-white/20 ring-inset'
                 : 'bg-white text-[#012c32] hover:bg-white/90',
             )}
           >

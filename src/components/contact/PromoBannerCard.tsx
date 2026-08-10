@@ -20,7 +20,7 @@ export function PromoBannerCard() {
   };
 
   return (
-    <section className="px-5 py-6 lg:px-[4.375rem]">
+    <section className="site-gutter py-6">
       <div
         className={cn(
           'relative mx-auto grid max-w-[120rem] grid-cols-1 overflow-hidden rounded-3xl',

@@ -8,6 +8,18 @@
 }
 
 @theme {
+  /*
+   * Wide-desktop breakpoint, above `xl`.
+   *
+   * Registered here rather than written inline as `min-[1680px]:` because an
+   * arbitrary variant is emitted ahead of the named ones: the `xl` block landed
+   * *after* the 1680 block in the stylesheet, so at 1680px and up `xl` won every
+   * time and the wider values were dead. That is why the contact hero's columns
+   * stayed at their `xl` widths on a 1920 screen instead of growing. Naming the
+   * breakpoint puts it in the sorted scale, after `xl`, where it belongs.
+   */
+  --breakpoint-3xl: 105rem;
+
   /* dark tokens — used by the WebGL film (overlay layer) */
   --color-pen-deep: #060f11; /* film base, near-black */
   --color-pen-dark: #0a1f24; /* soil-depth brand dark */

@@ -212,7 +212,10 @@ export function SiteHeader() {
                 className={cn(
                   buttonBase,
                   action.emphasis === 'primary'
-                    ? 'bg-teal text-white hover:bg-[#012c32] hover:text-teal-bright'
+                    ? // `bg-ink` is #012c32. The pill behind it is `bg-ink/30`,
+                      // so the fill alone would not read as a button — the ring
+                      // keeps its edge without changing its height.
+                      'bg-ink text-white ring-1 ring-white/20 ring-inset hover:text-teal-bright'
                     : 'bg-white text-[#012c32] hover:bg-[#012c32] hover:text-teal-bright',
                 )}
               >

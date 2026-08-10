@@ -50,13 +50,13 @@ export function HomeFormSection() {
             card reads as a form rather than a full-width panel.
 
             All three breakpoints have to be restated: ContactForm carries its
-            own `xl:max-w-[33.75rem]` and `min-[1680px]:max-w-[40rem]` caps for
+            own `xl:max-w-[33.75rem]` and `3xl:max-w-[40rem]` caps for
             /contact, and twMerge keeps only the last max-width it sees at each
             breakpoint — setting the base alone would leave those two winning
             on wide screens. */}
         <ContactForm
           submitLabel={homeForm.submitLabel}
-          className="mt-14 max-w-[54rem] min-[1680px]:max-w-[54rem] xl:max-w-[54rem]"
+          className="mt-14 max-w-[54rem] 3xl:max-w-[54rem] xl:max-w-[54rem]"
         />
       </div>
     </section>

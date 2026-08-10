@@ -105,7 +105,9 @@ export function ContactForm({ className, submitLabel = 'Submit' }: ContactFormPr
       className={cn(
         'flex w-full flex-col rounded-[1.0625rem] bg-[var(--c-dark-green)] p-7',
         'shadow-[inset_0_1px_#ffffff0f,0_2.5rem_5rem_#012c3240]',
-        'min-[1680px]:max-w-[40rem] min-[1680px]:p-16 lg:p-12 xl:max-w-[33.75rem] xl:justify-self-center',
+        /* Mirrors the copy column: pinned to the container's right edge so the
+           two blocks bracket the section and the outer margins match. */
+        '3xl:max-w-[40rem] 3xl:p-16 lg:p-12 xl:max-w-[33.75rem] xl:justify-self-end',
         className,
       )}
     >

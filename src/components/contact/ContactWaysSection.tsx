@@ -192,8 +192,11 @@ function WayCard({ way }: { way: ContactWay }) {
 
 export function ContactWaysSection() {
   return (
-    <section className="px-5 py-12 md:pt-[4.375rem] md:pb-[5.625rem] lg:px-[4.375rem]">
-      <div className="mx-auto max-w-[93.75rem]">
+    <section className="site-gutter py-12 md:pt-[4.375rem] md:pb-[5.625rem]">
+      {/* Was capped at 93.75rem, which is narrower than the gutter leaves free
+          on a wide screen — so this section alone pulled in to 210px while its
+          neighbours sat at 70px. The cap now matches the banner above it. */}
+      <div className="mx-auto max-w-[120rem]">
         <header className="mb-8 text-center md:mb-15">
           <p className="m-0 text-xl leading-[0.95] text-[var(--c-light-gray)]">
             Other ways to connect

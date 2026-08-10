@@ -24,7 +24,11 @@ export function HeroFormSection() {
       <GridBeam duration={11} />
 
       <div className="relative z-[1]">
-        <div className="flex flex-col gap-8 px-5 py-12">
+        {/* `site-gutter`, not the `px-5` this was ported with: it is the gutter
+            every other section on the site uses, including the two below this
+            one and the footer. With a gutter of its own, nothing on the page
+            shared a left edge. */}
+        <div className="site-gutter flex flex-col gap-8 py-12">
           <div className="mx-auto text-center text-balance text-[var(--c-dark-green)]">
             <RevealText
               as="h1"
@@ -56,7 +60,11 @@ export function HeroFormSection() {
             <div
               className={cn(
                 'flex w-full min-w-0 flex-col gap-10 lg:gap-12',
-                'min-[1680px]:max-w-[47.5rem] xl:max-w-[37.5rem] xl:justify-self-center',
+                /* Anchored to the container's left edge, not centred inside its
+                   grid cell. Centring two different-width blocks in two equal
+                   cells is what left the outer margins unequal (180px against
+                   210px at 1920) and opened a 390px trench up the middle. */
+                '3xl:max-w-[47.5rem] xl:max-w-[37.5rem] xl:justify-self-start',
               )}
             >
               <RevealText
@@ -94,7 +102,14 @@ export function HeroFormSection() {
               </div>
             </div>
 
-            <ContactForm />
+            {/* Fills its half of the row rather than sitting at the component's
+                own 33.75rem/40rem cap. Those caps are narrower than the column
+                on a wide screen, and because the copy opposite is capped too,
+                the two together left ~380px of empty grid up the middle of the
+                section at 1920. The panel is the element that can absorb the
+                width — its fields are already a two-column grid — where the
+                copy cannot without pushing the measure past a readable line. */}
+            <ContactForm className="xl:max-w-none 3xl:max-w-none" />
           </div>
         </div>
       </div>

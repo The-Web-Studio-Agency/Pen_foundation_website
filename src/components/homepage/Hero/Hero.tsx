@@ -1,7 +1,7 @@
 'use client';
 
 import { useReducedMotion } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, type CSSProperties } from 'react';
 
 import { HeroBackground } from './HeroBackground';
 import { HeroContent } from './HeroContent';
@@ -72,6 +72,20 @@ const HERO_VIDEO = '/media/videos/hero.mp4';
  */
 const HERO_POSTER = '/media/images/homepage/hero-poster.webp';
 
+/**
+ * Scroll each heading owns, in `svh`.
+ *
+ * The runway was a flat `300svh`: one viewport for the stage plus 200 of scrub,
+ * split evenly by however many headings there were — 50svh each at the original
+ * four. The script is six beats now, and holding the runway flat would have
+ * silently made every reveal a third faster rather than adding room for the two
+ * new ones. Deriving it keeps one beat's pacing fixed no matter how long the
+ * script gets, which is the property worth preserving: the scrub speed is the
+ * reading speed.
+ */
+const SCRUB_PER_HEADING_SVH = 50;
+const STAGE_SVH = 100;
+
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const sizerRef = useRef<HTMLDivElement>(null);
@@ -88,7 +102,15 @@ export function Hero() {
       className={cn(styles.section, reducedMotion && styles.reduced)}
       aria-label={hero.sequence[0]?.lines.join(' ')}
     >
-      <div ref={sizerRef} className={styles.sizer}>
+      <div
+        ref={sizerRef}
+        className={styles.sizer}
+        style={
+          {
+            '--hero-sizer-height': `${STAGE_SVH + hero.sequence.length * SCRUB_PER_HEADING_SVH}svh`,
+          } as CSSProperties
+        }
+      >
         <HeroBackground
           src={HERO_VIDEO}
           poster={HERO_POSTER}

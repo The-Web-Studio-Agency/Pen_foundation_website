@@ -44,7 +44,13 @@ const NO_SCRIPT_STYLES = `[data-preloader]{display:none!important}`;
  */
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en" className={`${fontVariables} antialiased`}>
+    /* `suppressHydrationWarning`: ENTRY_FLAG_SCRIPT below stamps
+       `data-pen-entered` on this element before React hydrates, so on a return
+       visit the client tree carries an attribute the server tree does not.
+       React cannot patch that up and logs a mismatch on every such visit. The
+       flag is scoped to this element's own attributes — children are still
+       fully checked — which is exactly the case it exists for. */
+    <html lang="en" className={`${fontVariables} antialiased`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: ENTRY_FLAG_SCRIPT }} />
         <noscript>

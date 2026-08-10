@@ -15,75 +15,111 @@ import styles from './preloader.module.css';
  * it. That is what lets the two compositions sit on top of each other without
  * a reflow when the overlay dissolves.
  *
- * Within those lines the words arrive in groups, which is the progression the
- * brief asks for:
+ * The words arrive one at a time, in reading order, straight through the line
+ * break:
  *
- *   When → When was the last time → + a foundation → + surprised you?
+ *   When · was · the · last · time · a · foundation · surprised · you?
  *
- * Each group rises into a mask. Two properties move — a clip window and a
+ * Each word rises into its own mask. Two properties move — a clip window and a
  * translate — and nothing else: no fade on the words themselves, no scale, no
  * blur. Type being set, rather than an effects reel.
+ *
+ * The stagger is deliberately tighter than the per-word duration, so a word is
+ * still arriving as the next one starts. Words that waited for each other to
+ * finish would read as nine separate events instead of one sentence being
+ * written.
  */
 
-/** Word counts that cut each line into its reveal groups, in order. */
-const GROUPS_PER_LINE = [
-  [1, 4], // "When" | "was the last time"
-  [2, 2], // "a foundation" | "surprised you?"
-];
+/** Gap between one word starting and the next, in seconds. */
+const WORD_STAGGER = 0.09;
+/** How long a single word takes to rise into place. */
+const WORD_DURATION = 0.55;
+/**
+ * Extra beat held after a word that ends in an ellipsis.
+ *
+ * "about foundations... was wrong?" is written with the pause in it, so the
+ * reveal has to observe it — otherwise the three dots are just characters and
+ * the line reads at an even clip, which is the opposite of what they ask for.
+ */
+const ELLIPSIS_PAUSE = 0.34;
+/** The beat between the sentence landing and the caption signing it. */
+const CAPTION_GAP = 0.12;
+const CAPTION_DURATION = 0.5;
 
-const GROUP_DURATION = 0.55;
-/** When each group starts, in seconds. The last lands at ~1.17s. */
-const GROUP_DELAYS = [0, 0.18, 0.42, 0.62];
+function wordsOf(line: string) {
+  return line.trim().split(/\s+/).filter(Boolean);
+}
 
-function splitIntoGroups(line: string, counts: number[]) {
-  const words = line.split(' ');
-  const groups: string[] = [];
-  let cursor = 0;
-  for (const count of counts) {
-    groups.push(words.slice(cursor, cursor + count).join(' '));
-    cursor += count;
-  }
-  // Anything the counts did not account for stays with the last group rather
-  // than being dropped — the copy is locked, but this must not lose words if
-  // it ever changes.
-  if (cursor < words.length) {
-    groups[groups.length - 1] = [groups[groups.length - 1], ...words.slice(cursor)].join(' ');
-  }
-  return groups.filter(Boolean);
+/**
+ * Each word's start time, in seconds, laid out line by line.
+ *
+ * Accumulated rather than `index * WORD_STAGGER` because the ellipsis makes the
+ * spacing uneven — once one gap can differ, position no longer determines time.
+ * The clock runs continuously across the line break, so a two-line beat is one
+ * sentence being written rather than two lines being animated.
+ */
+function wordDelays(lines: string[]) {
+  let elapsed = 0;
+  return lines.map((line) =>
+    wordsOf(line).map((word) => {
+      const start = elapsed;
+      elapsed += WORD_STAGGER + (/(\.{3}|…)$/.test(word) ? ELLIPSIS_PAUSE : 0);
+      return { text: word, delay: start };
+    }),
+  );
+}
+
+/** When the last word has settled, in seconds. */
+function sentenceRevealSeconds(lines: string[]) {
+  const last = wordDelays(lines).flat().at(-1);
+  return (last?.delay ?? 0) + WORD_DURATION;
+}
+
+/**
+ * The reveal's own length, in ms.
+ *
+ * Exported because the Preloader has to know when the sentence is finished in
+ * order to time its hold, and that number used to be a literal copied into
+ * Preloader.tsx. Any change to the stagger here silently desynchronised the
+ * two; now it cannot.
+ */
+export function statementRevealMs(lines: string[]) {
+  return Math.round(sentenceRevealSeconds(lines) * 1000);
 }
 
 export interface PreloaderStatementProps {
-  /** `hero.sequence[0].lines` — the hero's own hand-broken composition. */
+  /** One beat's hand-broken composition, from `preloaderSequence`. */
   lines: string[];
   /** Reduced motion: the finished composition, painted once. */
   still: boolean;
+  /**
+   * Draws the rule and the system name under the sentence.
+   *
+   * Only the closing beat sets this. Repeating the signature under all three
+   * would make it part of the type rather than the sign-off it is, and the
+   * sequence would read as three captioned slides instead of one argument.
+   */
+  signed?: boolean;
 }
 
-export function PreloaderStatement({ lines, still }: PreloaderStatementProps) {
+export function PreloaderStatement({ lines, still, signed }: PreloaderStatementProps) {
   const sentence = lines.join(' ');
 
-  /* Each group's delay is its position in the whole sentence, not in its line,
-     so the four beats run continuously across the line break. Resolved here
-     rather than counted during render — a running index mutated while
-     rendering JSX is exactly what `react-hooks/immutability` exists to stop. */
-  const composed = useMemo(() => {
-    const perLine = lines.map((line, i) =>
-      splitIntoGroups(line, GROUPS_PER_LINE[i] ?? [line.split(' ').length]),
-    );
-    // Where each line's first group falls in the sentence-wide beat order.
-    const startOfLine = perLine.reduce<number[]>(
-      (acc, groups, i) => [...acc, (acc[i] ?? 0) + groups.length],
-      [0],
-    );
+  /* Resolved here rather than counted during render — a running index mutated
+     while rendering JSX is exactly what `react-hooks/immutability` exists to
+     stop. `wordDelays` keeps its accumulator to itself. */
+  const composed = useMemo(
+    () =>
+      wordDelays(lines).map((words, lineIndex) => ({
+        line: lines[lineIndex] ?? '',
+        words,
+      })),
+    [lines],
+  );
 
-    return perLine.map((groups, lineIndex) => ({
-      line: lines[lineIndex] ?? '',
-      groups: groups.map((text, i) => {
-        const beat = (startOfLine[lineIndex] ?? 0) + i;
-        return { text, delay: GROUP_DELAYS[Math.min(beat, GROUP_DELAYS.length - 1)] ?? 0 };
-      }),
-    }));
-  }, [lines]);
+  /* Follows the sentence rather than sitting on a literal of its own, so it
+     stays put if the copy or the stagger changes. */
+  const captionDelay = still ? 0 : sentenceRevealSeconds(lines) + CAPTION_GAP;
 
   return (
     <div>
@@ -92,23 +128,24 @@ export function PreloaderStatement({ lines, still }: PreloaderStatementProps) {
             same split the hero uses for its per-character spans. */}
         <span className={styles.srOnly}>{sentence}</span>
 
-        {composed.map(({ line, groups }) => (
+        {composed.map(({ line, words }) => (
           <span key={line} className={styles.line} aria-hidden>
-            {groups.map(({ text, delay }, i, all) => (
-              <span key={text}>
+            {words.map(({ text, delay }, i, all) => (
+              // Keyed on both, because a sentence may repeat a word.
+              <span key={`${text}-${i}`}>
                 <span className={styles.group}>
                   <motion.span
                     className={styles.groupInner}
                     initial={still ? false : { y: '110%' }}
                     animate={{ y: '0%' }}
-                    transition={{ duration: GROUP_DURATION, delay, ease: EASE_OUT_EXPO }}
+                    transition={{ duration: WORD_DURATION, delay, ease: EASE_OUT_EXPO }}
                   >
                     {text}
                   </motion.span>
                 </span>
-                {/* The groups are inline-block masks, so the space between them
+                {/* The words are inline-block masks, so the space between them
                     has to sit outside the mask or it gets clipped along with
-                    the words. */}
+                    the word itself. */}
                 {i < all.length - 1 ? ' ' : null}
               </span>
             ))}
@@ -116,23 +153,25 @@ export function PreloaderStatement({ lines, still }: PreloaderStatementProps) {
         ))}
       </h1>
 
-      {/* Arrives after the sentence has finished, so it reads as a signature
-          rather than as part of the statement. */}
-      <motion.div
-        className={styles.caption}
-        initial={still ? false : { opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: still ? 0 : 1.05, ease: EASE_OUT_EXPO }}
-        aria-hidden
-      >
-        <motion.span
-          className={styles.rule}
-          initial={still ? false : { scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ duration: 0.6, delay: still ? 0 : 1.05, ease: EASE_OUT_EXPO }}
-        />
-        <span className={styles.captionText}>{siteConfig.tagline}</span>
-      </motion.div>
+      {!signed ? null : (
+        // Arrives after the sentence has finished, so it reads as a signature
+        // rather than as part of the statement.
+        <motion.div
+          className={styles.caption}
+          initial={still ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: CAPTION_DURATION, delay: captionDelay, ease: EASE_OUT_EXPO }}
+          aria-hidden
+        >
+          <motion.span
+            className={styles.rule}
+            initial={still ? false : { scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 0.6, delay: captionDelay, ease: EASE_OUT_EXPO }}
+          />
+          <span className={styles.captionText}>{siteConfig.tagline}</span>
+        </motion.div>
+      )}
     </div>
   );
 }

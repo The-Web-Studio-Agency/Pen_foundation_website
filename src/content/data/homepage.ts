@@ -41,22 +41,48 @@ import type {
  */
 
 /* -------------------------------------------------------------------------- */
-/* HERO — LOCKED. Approved as-is; do not edit this block or Hero.tsx.          */
+/* HERO                                                                        */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * The scrub script. Six beats, one per shot in hero.mp4.
+ *
+ * Previously LOCKED and four beats ("When was the last time a foundation
+ * surprised you?" …). Ridha replaced the script on 2026-08-10; the lock is
+ * lifted for the copy, and this is now the approved version.
+ *
+ * EACH ENTRY IS TIMED TO A SHOT, NOT JUST ORDERED. `HeroContent` gives every
+ * entry an equal slice of the scrub and `HeroBackground` seeks the film off the
+ * same progress value, so entry *n* is on screen during the *n*th sixth of the
+ * footage. The beats below are written against those shots:
+ *
+ *   1  camera rotates around the node      the reveal
+ *   2  exploded view                       why the parts are the parts
+ *   3  nails drive into the soil           the objection being answered
+ *   4  camera pulls back, one PEN → twenty scale
+ *   5  building time-lapse                 time, which is the real product
+ *   6  camera below grade, building above  the closing line
+ *
+ * Adding or removing a beat re-times all of them. The runway in `Hero.tsx`
+ * scales off `sequence.length` so each keeps the same amount of scroll.
+ *
+ * NO FACTUAL CLAIMS HERE, deliberately — this is the argument, not the
+ * evidence. Every number it implies (no curing, no excavation, ~2 hours) is
+ * stated with its source further down the page, in `whyPen` and
+ * `capabilitySteps`. Beat 3 says "No waiting weeks" rather than naming the
+ * 21 days for that reason: the figure belongs where it can be cited.
+ *
+ * Lines are hand-broken. The reveal runs one continuous wave across the breaks,
+ * so a break is a compositional choice, not a wrap.
+ */
 export const hero: HeroContent = {
   sequence: [
-    { lines: ['When was the last time', 'a foundation surprised you?'] },
-    { lines: ['Twenty-one days of curing.', 'Or two hours.'] },
-    {
-      lines: [
-        'Zero excavation.',
-        'Immediate load-bearing.',
-        'Validated by NIT Calicut',
-        'and IIT Kanpur.',
-      ],
-    },
-    { lines: ['Nature figured this out.', 'We engineered it.'] },
+    { lines: ['Meet the future', 'of foundations.'] },
+    { lines: ['Every component has one purpose.', 'Maximum strength.', 'Minimum complexity.'] },
+    { lines: ['No excavation.', 'No concrete curing.', 'No waiting weeks.'] },
+    { lines: ['Designed to scale.', 'From one home', 'to entire communities.'] },
+    { lines: ["Because projects shouldn't", 'wait for foundations.'] },
+    { lines: ["The future isn't built", 'from the top down.', 'It begins underground.'] },
   ],
   scrollLabel: 'Scroll to find out',
 };

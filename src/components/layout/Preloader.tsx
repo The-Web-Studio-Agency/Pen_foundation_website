@@ -1,29 +1,33 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 
 import { EASE_OUT_EXPO } from '@/lib/motion';
-import { hero } from '@/content/data/homepage';
+import { preloaderSequence } from '@/content/data/preloader';
 import { TechnicalGridBackground } from '@/components/shared/backgrounds/TechnicalGridBackground';
-import { PreloaderStatement } from './preloader/PreloaderStatement';
+import { PreloaderStatement, statementRevealMs } from './preloader/PreloaderStatement';
 import styles from './preloader/preloader.module.css';
 
 /**
- * The entry layer: `hero.sequence[0]` shown as an opening statement, then
+ * The entry layer: `preloaderSequence` set one sentence at a time, then
  * dissolved into the hero that was loading underneath it the whole time.
  *
- * WHY THE SAME SENTENCE TWICE IS NOT A REPEAT. The statement is the hero's own
- * first heading, and the hero paints that heading at `opacity: 0` until the
- * scrub has moved (`REVEAL_START = 0.12` in heroAnimation.ts). So at rest the
- * hero shows the film and nothing else: the overlay lifts, the sentence is
- * gone, and scrolling writes it back one character at a time. The overlay
- * states the question; the hero answers it on the reader's action.
+ * THE SEQUENCE IS AN ARGUMENT, NOT A SLIDESHOW. Three beats — a question, the
+ * settled position, and a two-word reversal — each written a word at a time and
+ * separated by a pause. They are timed so the sentence that turns the argument
+ * ("Until now.") is the shortest to write and the longest to sit, which is what
+ * makes it read as an answer rather than as a third slide.
  *
- * That is also why the type is transcribed exactly (see preloader.module.css):
- * the sentence sits at the position and the scale the hero would set it at, so
- * the dissolve reveals footage already in place and nothing shifts or
- * re-lays-out.
+ * IT USED TO BORROW THE HERO'S FIRST LINE. `hero.sequence[0]`, on the reasoning
+ * that the overlay states the question and the hero answers it on scroll. The
+ * copy is its own now (`content/data/preloader.ts`), which also gets a layout
+ * component out of the LOCKED hero block. The hero still writes its own first
+ * line on scroll; the two no longer have to agree.
+ *
+ * The type is still transcribed from the hero's (see preloader.module.css) —
+ * not to line the two sentences up any more, but because it is the one heading
+ * scale on the site big enough to carry a sentence alone on the screen.
  *
  * THE GROUND IS THE "THREE WEEKS…" SECTION'S, NOT THE HERO'S. It was `#000`,
  * matching the hero stage behind its video, which made the hand-off invisible.
@@ -48,42 +52,102 @@ const SESSION_KEY = 'pen-entered';
 /** Mirrors the attribute the inline script in the root layout sets. */
 const ENTERED_ATTR = 'data-pen-entered';
 
-/** The last word lands at ~1.17s; this is the beat of silence after it. */
-const HOLD_MS = 380;
+/**
+ * The stillness after a sentence has finished writing itself.
+ *
+ * Two values, because the last beat is doing a different job. Between
+ * sentences the pause only has to be long enough to read a line and register
+ * that it has ended — hold longer and the three beats stop feeling like one
+ * argument. After "Until now." the hold is the turn itself: the point of the
+ * sequence, and the only line the visitor should still be holding when the
+ * film appears.
+ */
+const BEAT_HOLD_MS = 1200;
+const FINAL_HOLD_MS = 2500;
+/** One sentence clearing out before the next writes itself in. */
+const BEAT_EXIT_MS = 260;
 const EXIT_MS = 620;
-/** Reduced motion: the composition, read, and out. No rising type, no drift. */
-const REDUCED_HOLD_MS = 520;
+/**
+ * Reduced motion keeps both holds. That setting asks for less movement, not
+ * less reading time — and since each beat is painted at once rather than
+ * written, cutting the holds would leave no time to read them at all.
+ */
 const REDUCED_EXIT_MS = 200;
+
+/**
+ * Whether this entry is a return within the session.
+ *
+ * Read through `useSyncExternalStore` rather than resolved in an effect: the
+ * value has to be known during render so the scroll lock and the schedule can
+ * both branch on it, and setting state from an effect to learn it is what
+ * `react-hooks/set-state-in-effect` exists to stop. The server snapshot is
+ * `false` — the markup always contains the overlay, and the inline script in
+ * the root layout is what hides it before paint for a returning visitor.
+ *
+ * The value cannot change while the page is open, so `subscribe` registers
+ * nothing and returns a no-op teardown.
+ */
+const subscribeToSession = () => () => {};
+
+function readReturning() {
+  try {
+    return window.sessionStorage.getItem(SESSION_KEY) === '1';
+  } catch {
+    // Private modes can throw on access. Showing the overlay once more is a
+    // better failure than crashing the page over a curtain.
+    return false;
+  }
+}
+
+const readReturningOnServer = () => false;
+
+/** Reveal + hold for one beat, in ms. Reduced motion has no reveal to wait on. */
+function beatDurationMs(index: number, reducedMotion: boolean) {
+  const beat = preloaderSequence[index];
+  const isLast = index === preloaderSequence.length - 1;
+  const reveal = reducedMotion || !beat ? 0 : statementRevealMs(beat.lines);
+  return reveal + (isLast ? FINAL_HOLD_MS : BEAT_HOLD_MS);
+}
 
 export function Preloader() {
   const reducedMotion = useReducedMotion() === true;
   const [visible, setVisible] = useState(true);
-  // Set synchronously on the first client render so the exit choreography and
-  // the scroll lock agree about which schedule they are on.
-  const skipped = useRef(false);
+  const [beat, setBeat] = useState(0);
+  const returning = useSyncExternalStore(
+    subscribeToSession,
+    readReturning,
+    readReturningOnServer,
+  );
 
+  /**
+   * Walks the sequence: one timer per beat, re-armed as `beat` advances.
+   *
+   * The wait is the beat's own length plus, for every beat after the first,
+   * the time the previous sentence takes to clear out — `AnimatePresence` in
+   * `mode="wait"` does not mount the incoming beat until the outgoing one has
+   * finished exiting, so its words do not start writing until then. Without
+   * that term the schedule would run ahead of what is on screen, and the error
+   * would compound across the sequence.
+   */
   useEffect(() => {
-    let entered = false;
-    try {
-      entered = window.sessionStorage.getItem(SESSION_KEY) === '1';
-    } catch {
-      // Private modes can throw on access. Showing the overlay once more is a
-      // better failure than crashing the page over a curtain.
-    }
-
-    skipped.current = entered;
-
-    const hold = reducedMotion ? REDUCED_HOLD_MS : HOLD_MS;
-    // The reveal's own length, then the hold. Reduced motion has no reveal.
-    const revealMs = reducedMotion ? 0 : 1170;
     /* Already entered this session: drop it on the next tick rather than
        synchronously here. The stylesheet has had it at display:none since
        before the first paint, so there is nothing to see either way — this
        just takes the node out. */
-    const timer = window.setTimeout(() => setVisible(false), entered ? 0 : revealMs + hold);
+    if (returning) {
+      const timer = window.setTimeout(() => setVisible(false), 0);
+      return () => window.clearTimeout(timer);
+    }
+
+    const isLast = beat === preloaderSequence.length - 1;
+    const clearOut = beat === 0 ? 0 : reducedMotion ? REDUCED_EXIT_MS : BEAT_EXIT_MS;
+    const timer = window.setTimeout(
+      () => (isLast ? setVisible(false) : setBeat((current) => current + 1)),
+      beatDurationMs(beat, reducedMotion) + clearOut,
+    );
 
     return () => window.clearTimeout(timer);
-  }, [reducedMotion]);
+  }, [beat, returning, reducedMotion]);
 
   /**
    * Hold the page still while the curtain is up.
@@ -95,7 +159,7 @@ export function Preloader() {
    * does not shift the layout by the 4px the custom scrollbar occupies.
    */
   useEffect(() => {
-    if (!visible || skipped.current) return;
+    if (!visible || returning) return;
 
     const root = document.documentElement;
     const gutter = window.innerWidth - root.clientWidth;
@@ -112,7 +176,7 @@ export function Preloader() {
       root.style.overflow = previousOverflow;
       root.style.paddingRight = previousPadding;
     };
-  }, [visible]);
+  }, [visible, returning]);
 
   /** Written once the overlay is on its way out, so a refresh does not replay it. */
   const remember = () => {
@@ -159,7 +223,27 @@ export function Preloader() {
               ease: EASE_OUT_EXPO,
             }}
           >
-            <PreloaderStatement lines={hero.sequence[0]?.lines ?? []} still={reducedMotion} />
+            {/* `mode="wait"` so a sentence is fully gone before the next
+                starts writing — two beats crossfading over each other would be
+                unreadable at this size. `initial={false}` because each beat
+                animates itself in a word at a time; a fade on the wrapper as
+                well would blunt the first word of every sentence. */}
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={beat}
+                exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -12 }}
+                transition={{
+                  duration: (reducedMotion ? REDUCED_EXIT_MS : BEAT_EXIT_MS) / 1000,
+                  ease: EASE_OUT_EXPO,
+                }}
+              >
+                <PreloaderStatement
+                  lines={preloaderSequence[beat]?.lines ?? []}
+                  still={reducedMotion}
+                  signed={beat === preloaderSequence.length - 1}
+                />
+              </motion.div>
+            </AnimatePresence>
           </motion.div>
         </motion.div>
       ) : null}
