@@ -64,7 +64,7 @@ export function Applications() {
 
       <motion.p
         variants={SECTION_RISE}
-        className="mt-10 max-w-3xl font-mono text-xs leading-relaxed text-[var(--c-dark-gray)]"
+        className="mt-10 max-w-3xl font-mono text-[0.6875rem] leading-relaxed text-[var(--c-dark-gray)]"
       >
         {applications.note}
       </motion.p>

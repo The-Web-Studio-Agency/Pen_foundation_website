@@ -273,7 +273,7 @@ export function WhatIsPen() {
         variants={SECTION_RISE}
         // Tracks the matrix width above it, so the note's edges line up with
         // the table it annotates rather than sitting inset from it.
-        className="mx-auto mt-10 max-w-5xl font-mono text-xs leading-relaxed text-[var(--c-dark-gray)]"
+        className="mx-auto mt-10 max-w-5xl font-mono text-[0.6875rem] leading-relaxed text-[var(--c-dark-gray)]"
       >
         {product.comparison.note}
       </motion.p>

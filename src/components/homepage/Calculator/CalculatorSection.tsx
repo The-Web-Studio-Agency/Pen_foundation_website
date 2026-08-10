@@ -202,7 +202,12 @@ export function CalculatorSection() {
                 </div>
               </fieldset>
 
-              <p className="mt-8 font-mono text-xs leading-relaxed text-[var(--c-dark-gray)]">
+              {/* Fine print sits at 11px — the site's smallest mono size, the
+                one `label-4` uses — so this block reads as an annotation under
+                the controls rather than as a second column of copy. The same
+                size is set on the matching notes in WhatIsPen and Applications;
+                the three are one type style and move together. */}
+              <p className="mt-8 font-mono text-[0.6875rem] leading-relaxed text-[var(--c-dark-gray)]">
                 {calculator.basis.map((line) => (
                   <span key={line} className="block">
                     {line}
