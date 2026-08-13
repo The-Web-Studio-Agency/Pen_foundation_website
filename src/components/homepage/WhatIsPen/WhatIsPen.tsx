@@ -40,11 +40,29 @@ import type { BodyParagraph } from '@/types/homepage';
  * the three columns cannot drift apart. The PEN column is the widest of the
  * two system columns: it is the one being read.
  */
-const GRID = 'grid grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)] gap-0';
+const GRID =
+  // Below `sm` the two answer columns are fixed at 3.75rem and the label takes
+  // everything else. On the ratio template a 390px phone gave the label 152px
+  // and each answer column 95px — so "Installs on disturbed or sloping ground
+  // without excavation" wrapped to five lines beside a 24px tick floating in
+  // four times the space it needs. Fixed answer columns put those 90px back
+  // into the only column with words in it, which roughly halves every row.
+  'grid grid-cols-[minmax(0,1fr)_4.5rem_4.5rem] gap-0 ' +
+  'sm:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)]';
 
-/** Column-header type. Steps up with the viewport instead of using the
- *  single-line `title-h4` scale, which collides when a header wraps. */
-const HEAD = 'text-[0.9375rem] leading-[1.3] sm:text-[1.125rem] lg:text-[1.375rem]';
+/**
+ * Column-header type. Steps up with the viewport instead of using the
+ * single-line `title-h4` scale, which collides when a header wraps.
+ *
+ * 11px below `sm`, where the answer columns are a fixed 4.5rem: at the previous
+ * 15px "Conventional" alone measured about 90px and overran its 72px column,
+ * so both headers were clipped. `break-words` is the belt to that braces — a
+ * header can wrap anywhere rather than push past its column, whatever copy
+ * these get next.
+ */
+const HEAD =
+  'text-[0.625rem] leading-[1.25] break-words ' +
+  'sm:text-[1.125rem] sm:leading-[1.3] lg:text-[1.375rem]';
 
 /**
  * A paragraph with its one emphasised phrase set in a `<strong>`.
@@ -76,6 +94,18 @@ function Paragraph({ text, emphasis }: BodyParagraph) {
 }
 
 /** A tick, or nothing — with the state named for assistive tech either way. */
+/**
+ * A cell's yes/no.
+ *
+ * The "no" used to be `sr-only` text and nothing else, so every false cell was
+ * visually EMPTY — and since the conventional-footing column is false on most
+ * rows, that column read as missing data rather than as the answer. A
+ * comparison table whose second column is blank cannot be compared.
+ *
+ * The negative is a rule rather than a cross: a ✕ against a ✓ turns a neutral
+ * specification table into a scorecard, and the note under the matrix is
+ * careful not to. A dash says "not this one" without editorialising.
+ */
 function Mark({ on, className }: { on: boolean; className?: string }) {
   return on ? (
     <>
@@ -83,7 +113,10 @@ function Mark({ on, className }: { on: boolean; className?: string }) {
       <span className="sr-only">Yes</span>
     </>
   ) : (
-    <span className="sr-only">No</span>
+    <>
+      <span aria-hidden className={cn('h-px w-4 rounded-full bg-current opacity-45', className)} />
+      <span className="sr-only">No</span>
+    </>
   );
 }
 
@@ -204,7 +237,7 @@ export function WhatIsPen() {
           <p
             role="columnheader"
             className={cn(
-              'rounded-t-3xl bg-ink px-3 py-6 text-center font-[450] text-[var(--c-white)] sm:px-4 sm:py-8',
+              'rounded-t-3xl bg-ink px-1 py-6 text-center font-[450] text-[var(--c-white)] sm:px-4 sm:py-8',
               // Not `title-h4`: at 390px these columns are about 97px wide and
               // that scale wraps "Conventional footing" into an overlapping
               // stack, since its line-height is tuned for a single line.
@@ -217,7 +250,7 @@ export function WhatIsPen() {
           <p
             role="columnheader"
             className={cn(
-              'px-3 py-6 text-center font-[450] text-[var(--c-dark-green)] sm:px-4 sm:py-8',
+              'px-1 py-6 text-center font-[450] text-[var(--c-dark-green)] sm:px-4 sm:py-8',
               HEAD,
             )}
           >

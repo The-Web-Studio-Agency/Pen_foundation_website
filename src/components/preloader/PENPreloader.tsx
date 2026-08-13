@@ -293,19 +293,35 @@ export function PENPreloader() {
    * that would have caused it still do, and they are the honest signal that
    * someone is trying to get past this.
    *
-   * Armed after `MOUNT_GRACE_MS`. An input event already in flight when the
-   * overlay mounts — momentum from a trackpad, a key held down through a
-   * reload — would otherwise dismiss the entry before its first frame, so the
-   * visitor would never see it at all on exactly the fast connections it is
-   * there to fill.
+   * Armed `MOUNT_GRACE_MS` after FIRST PAINT, not after mount. An input event
+   * already in flight when the panel appears — momentum from a trackpad, a key
+   * held down through a reload — would otherwise dismiss the entry before its
+   * first frame, so the visitor would never see it at all on exactly the fast
+   * connections it is there to fill.
+   *
+   * Measuring from mount instead left a dead window nobody could see: hydration
+   * on this bundle lands several hundred milliseconds after paint, and adding
+   * another 220ms on top meant a gesture in roughly the first second of the
+   * entry was silently dropped. Measured in the browser, a keypress at 900ms
+   * did nothing at all while the same key at 1800ms exited in 400ms — so the
+   * control was dead exactly when an impatient visitor would first reach for
+   * it, which reads as a broken page rather than a considered intro.
+   *
+   * Anchoring to paint collapses that to zero in the normal case: by the time
+   * React runs, the grace period has usually already elapsed and the skip is
+   * live on the first frame it could possibly be used.
    */
   useEffect(() => {
     if (returning || phase === 'exiting' || phase === 'gone') return;
 
-    let armed = false;
-    const arm = window.setTimeout(() => {
-      armed = true;
-    }, MOUNT_GRACE_MS);
+    const sincePaint = elapsedSincePaint() ?? 0;
+    const armIn = Math.max(MOUNT_GRACE_MS - sincePaint, 0);
+    let armed = armIn === 0;
+    const arm = armed
+      ? 0
+      : window.setTimeout(() => {
+          armed = true;
+        }, armIn);
 
     const skip = (event: Event) => {
       if (!armed) return;

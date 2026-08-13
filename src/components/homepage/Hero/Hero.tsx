@@ -52,15 +52,29 @@ import { hero } from '@/content/data/homepage';
  *              make scrubbing lurch, and reversing worst of all, because the
  *              decoder has to run forward from the previous one every time.
  *   15fps      for a scrub, frame rate is scroll granularity, not motion
- *              smoothness. 542 frames over the pinned range is already a new
+ *              smoothness. 626 frames over the pinned range is already a new
  *              frame every few pixels; 30 would double the weight to no effect.
+ *   no audio   the film is never played, only seeked. A muted track that can
+ *              never be heard is bytes the scrub has to fetch past.
  *   faststart  `moov` ahead of `mdat`, so `duration` arrives early instead of
  *              after the download and the scrub can start mapping immediately.
  *
- * Cut from the 180MB 36s master with ffmpeg (720p, crf25) at ~15MB. The master
- * lives outside the repo, at TWS/media-masters/ — it is a mezzanine file and
- * was never servable: at 40Mbps the browser cannot fetch and decode it fast
- * enough to keep up with a scroll.
+ * Cut from the 183MB 41.7s master with ffmpeg (720p, crf28) at ~16.8MB. The
+ * master lives outside the repo, at TWS/media-masters/ — it is a mezzanine file
+ * and was never servable: at 35Mbps the browser cannot fetch and decode it fast
+ * enough to keep up with a scroll, and at 183MB git will not take it either
+ * (GitHub hard-rejects a blob over 100MB, and this repo has no LFS).
+ *
+ * REPLACING THE FILM MEANS RE-RUNNING THIS ENCODE. Dropping a master in at
+ * `public/media/videos/hero.mp4` looks like it works — the first frame paints —
+ * and then the scrub lurches, because every property above is a property of the
+ * file rather than of this component:
+ *
+ *   ffmpeg -i master.mp4 -an -vf "scale=-2:720,fps=15" \
+ *     -c:v libx264 -profile:v high -pix_fmt yuv420p -crf 28 -preset slow \
+ *     -g 5 -keyint_min 5 -sc_threshold 0 -movflags +faststart hero.mp4
+ *
+ * The poster below is frame 0 of the result, so it is re-cut at the same time.
  */
 const HERO_VIDEO = '/media/videos/hero.mp4';
 

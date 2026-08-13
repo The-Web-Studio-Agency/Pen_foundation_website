@@ -110,13 +110,12 @@ export const footerColumns: FooterLinkColumn[] = [
     links: [
       { label: 'Home', href: '/' },
       { label: 'About', href: '/about' },
-      // Points at the homepage's system block, not `/engineering`. That route is
-  // not ready for visitors yet, so nothing in the chrome sends anyone to it —
-  // the same arrangement Applications has had. `WhatIsPen` renders with
-  // `id="technology"`: the mechanism, the parts with their specifications and
-  // the comparison against a conventional footing, which is the engineering
-  // story a visitor clicking this expects.
-  { label: 'Engineering', href: '/#technology' },
+      // No Engineering row. The header keeps the label (pointed at the
+      // homepage's `#technology` block) because that is the handoff's
+      // information architecture, but the footer is a route index and
+      // `/engineering` is not ready for visitors — so it is simply absent here
+      // rather than listed as a link to somewhere else. Restore it when the
+      // route is relinked.
       // Points at the homepage section, not `/applications`: that route renders
       // an empty `<section aria-hidden />` placeholder, so the footer was
       // sending visitors to a blank white page. The homepage section is the
@@ -131,10 +130,7 @@ export const footerColumns: FooterLinkColumn[] = [
     heading: 'Evidence',
     links: [
       { label: 'Projects', href: '/projects' },
-      // Points at the homepage's validation block for the same reason. That is the
-  // NIT Calicut testing chapter — the evidence a visitor clicking "Research"
-  // is after — while `/research` and its articles stay unlinked.
-  { label: 'Research', href: '/#validation' },
+      // No Research row, for the same reason as Engineering above.
       { label: 'Gallery', href: '/gallery' },
       // TODO(content): /resources stays out of the header AND the footer while
       // it still carries clone copy and is noIndex'd. HANDOFF suggests hanging
