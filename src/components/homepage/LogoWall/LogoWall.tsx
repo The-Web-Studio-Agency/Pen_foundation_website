@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { RevealText } from '@/components/motion';
 import { cn } from '@/lib/utils';
+import ScrollAnimationText from '@/features/gallery/components/ScrollAnimationText';
 
 /**
  * The wall of customer marks. Each square cell holds a vertical reel of logos
@@ -136,7 +137,8 @@ export function LogoWall({ heading, note, cells, className, perRow: perRowProp }
               'lg:px-[4.375rem] lg:pt-[min(3.125vw,80px)]',
             )}
           >
-            <RevealText as="h2" text={heading} className="title-si" />
+            {/* <RevealText as="h2" text={heading} className="title-si" /> */}
+            <ScrollAnimationText dimColor='#9aa5a5' highlightColor='#012c32' className='title-si ' text={heading}/>
             {note ? (
               <p className="body-3 mx-auto mt-6 max-w-2xl text-[var(--c-dark-green)]/70">{note}</p>
             ) : null}

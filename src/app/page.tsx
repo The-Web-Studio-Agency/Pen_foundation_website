@@ -1,6 +1,7 @@
 import { Applications } from '@/components/homepage/Applications/Applications';
 import { CalculatorSection } from '@/components/homepage/Calculator/CalculatorSection';
 import { Capabilities } from '@/components/homepage/Capabilities/Capabilities';
+import StickyScrollFeature from '@/components/homepage/Capabilities/StickyScrollAnimation';
 import { Faq } from '@/components/homepage/Faq/Faq';
 import { Hero } from '@/components/homepage/Hero/Hero';
 import { HomeFormSection } from '@/components/homepage/HomeForm/HomeFormSection';
@@ -80,7 +81,10 @@ export default function HomePage() {
           a colon and Capabilities is the list it promises. */}
       <WhyPen />
 
-      <Capabilities />
+      {/* components  */}
+      {/* <Capabilities /> */}
+      {/* components  */}
+      <StickyScrollFeature highlightColor='#012c32' />
 
       {/* Only now does the page say what the thing actually is: the mechanism,
           the parts with their real specifications, and the comparison against

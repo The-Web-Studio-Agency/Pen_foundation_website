@@ -197,6 +197,8 @@ export function SiteHeader() {
                   <button
                     type="button"
                     aria-expanded={openMenu === item.label}
+                    
+
                     // Hover opens it on a mouse; this is what makes it work on
                     // a touchscreen, where `onMouseEnter` never fires.
                     onClick={() => {

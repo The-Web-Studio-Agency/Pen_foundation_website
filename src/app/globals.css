@@ -123,7 +123,15 @@ body {
    catches the ones that do not. Never `:focus` — a mouse click should not
    leave a ring behind. */
 @layer base {
-  :where(a, button, input, select, textarea, summary, [tabindex]:not([tabindex='-1'])):focus-visible {
+  :where(
+    a,
+    button,
+    input,
+    select,
+    textarea,
+    summary,
+    [tabindex]:not([tabindex='-1'])
+  ):focus-visible {
     outline: 2px solid var(--c-accent);
     outline-offset: 3px;
   }
@@ -366,17 +374,17 @@ body {
    * and about 43 characters per line.
    */
   .body-1 {
-    font-size: clamp(1.1250rem, 0.9328rem + 0.7886vw, 1.4375rem);
+    font-size: clamp(1.125rem, 0.9328rem + 0.7886vw, 1.4375rem);
     letter-spacing: min(-0.014375rem, -0.059vw);
     line-height: 1.26;
   }
   .body-3 {
-    font-size: clamp(1.0000rem, 0.8462rem + 0.6309vw, 1.2500rem);
+    font-size: clamp(1rem, 0.8462rem + 0.6309vw, 1.25rem);
     letter-spacing: -0.0125rem;
     line-height: 1.46;
   }
   .body-4 {
-    font-size: clamp(0.9375rem, 0.8222rem + 0.4732vw, 1.1250rem);
+    font-size: clamp(0.9375rem, 0.8222rem + 0.4732vw, 1.125rem);
     letter-spacing: 0.0225rem;
     line-height: 1.4;
   }
@@ -657,22 +665,22 @@ html.lenis body {
     line-height: 1.46;
   }
   .body-1 {
-    font-size: clamp(1.1250rem, 0.9328rem + 0.7886vw, 1.4375rem);
+    font-size: clamp(1.125rem, 0.9328rem + 0.7886vw, 1.4375rem);
     letter-spacing: min(-0.014375rem, -0.059vw);
     line-height: 1.26;
   }
   .body-2 {
-    font-size: clamp(1.0000rem, 0.8462rem + 0.6309vw, 1.2500rem);
+    font-size: clamp(1rem, 0.8462rem + 0.6309vw, 1.25rem);
     letter-spacing: -0.01em;
     line-height: 1.26;
   }
   .body-3 {
-    font-size: clamp(1.0000rem, 0.8462rem + 0.6309vw, 1.2500rem);
+    font-size: clamp(1rem, 0.8462rem + 0.6309vw, 1.25rem);
     letter-spacing: -0.0125rem;
     line-height: 1.46;
   }
   .body-4 {
-    font-size: clamp(0.9375rem, 0.8222rem + 0.4732vw, 1.1250rem);
+    font-size: clamp(0.9375rem, 0.8222rem + 0.4732vw, 1.125rem);
     letter-spacing: 0.0225rem;
     line-height: 1.4;
   }
@@ -856,4 +864,12 @@ html.lenis body {
   .sparkle-edge {
     animation: none;
   }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

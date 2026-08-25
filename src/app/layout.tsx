@@ -8,6 +8,7 @@ import { SiteHeader } from '@/components/layout/SiteHeader';
 import { SiteFooter } from '@/components/layout/SiteFooter';
 import { PENPreloader } from '@/components/preloader/PENPreloader';
 import './globals.css';
+import PageWipeTransition from '@/components/motion/PageTransition';
 
 export const metadata: Metadata = rootMetadata;
 
@@ -84,7 +85,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
               jump would move the viewport but leave focus in the header, so the
               next Tab would go straight back into the nav that was skipped. */}
           <main id="main" tabIndex={-1}>
-            {children}
+            <PageWipeTransition>{children}</PageWipeTransition>
           </main>
           <SiteFooter />
         </AppProviders>

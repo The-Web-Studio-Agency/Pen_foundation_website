@@ -61,8 +61,64 @@ export const primaryNav: NavItem[] = [
   // `id="technology"`: the mechanism, the parts with their specifications and
   // the comparison against a conventional footing, which is the engineering
   // story a visitor clicking this expects.
-  { label: 'Engineering', href: '/#technology' },
-  { label: 'Applications', href: '/#applications' },
+  { label: 'About', href: '/about' },
+  { label: 'Tech', href: '/#tech' },
+  // {
+  //   label: 'Engineering',
+  //   href: '/#technology',
+  //   items: [
+  //     { label: 'Mechanism', href: '/#technology', description: '...' },
+  //     { label: 'Specifications', href: '/#specs', description: '...' },
+  //   ],
+  // },
+  {
+    label: 'Application',
+    href: '/',
+    items: [
+      {
+        label: 'Civil Engineer/Architect',
+        href: '/engineers',
+        description: 'Will this pass structural scrutiny',
+      },
+      {
+        label: 'HomeOwner',
+        href: '/homeowner',
+        description: 'Will my house be safe ? Will it make a mess ?',
+      },
+      {
+        label: 'Solar/EPC Developer',
+        href: '/solar',
+        description: 'Will this slow my commissioning timeline ?',
+      },
+      {
+        label: 'Eco-Resort/Hospitality Builder',
+        href: '/builders',
+        description: "Will this damage the ecology I'm selling ?",
+      },
+    ],
+  },
+  {
+    label: 'Resources',
+    href: '/',
+    items: [
+      {
+        label: 'Blog',
+        href: '/blog',
+        description: 'Will this pass structural scrutiny',
+      },
+      {
+        label: 'Faq',
+        href: '/faq',
+        description: 'Will my house be safe ? Will it make a mess ?',
+      },
+      {
+        label: 'Gallery',
+        href: '/gallery',
+        description: 'Will this slow my commissioning timeline ?',
+      },
+    
+    ],
+  },
   // The homepage `Proof` section, not the `/projects` route — asked for: the
   // header should move you down the page rather than navigate away from it.
   // `SectionShell` renders that section with `id="projects"` and
@@ -75,8 +131,7 @@ export const primaryNav: NavItem[] = [
   // Points at the homepage's validation block for the same reason. That is the
   // NIT Calicut testing chapter — the evidence a visitor clicking "Research"
   // is after — while `/research` and its articles stay unlinked.
-  { label: 'Research', href: '/#validation' },
-  { label: 'About', href: '/about' },
+
   { label: 'Contact', href: '/contact' },
 ];
 
