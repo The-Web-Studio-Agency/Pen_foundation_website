@@ -33,8 +33,13 @@ import type { HeroProgressSource } from './useHeroProgress';
  * to the grid removes those without moving the image.
  *
  * The film is encoded at 15fps deliberately: for a scrub, frame rate is scroll
- * granularity rather than motion smoothness, and 542 frames across the pinned
+ * granularity rather than motion smoothness, and 626 frames across the pinned
  * range is already a new frame every few pixels of scroll.
+ *
+ * This constant is therefore tied to the encode, not a free tuning knob: it has
+ * to match the `fps` in `Hero.tsx`'s ffmpeg recipe. Set it finer than the frame
+ * grid and the extra seeks cannot change the picture; set it coarser and the
+ * scrub visibly skips frames the file actually has.
  */
 const SEEK_EPSILON = 1 / 15;
 

@@ -10,22 +10,7 @@ export const metadata = createMetadata({
   path: '/contact',
 });
 
-/**
- * The page now ends at "Other ways to connect". The resource grids, comparison
- * carousel, FAQ and testimonial that used to follow live at /resources — they
- * were a library bolted onto a contact flow, and splitting them keeps this
- * route single-purpose.
- *
- * No header or footer is rendered here: the root layout already wraps every
- * route in the one SiteHeader and SiteFooter. The clone shipped its own pair,
- * which would have doubled the site chrome and tripped `arch:check`'s
- * singleton rule.
- *
- * The wrapper carried a `contact-clone` class, whose only job was to opt the
- * route out of a site-wide serif heading rule. That rule is gone — headings are
- * Suisse everywhere now — so the class selected nothing and has been dropped.
- * `pt-nav` clears the fixed header pill.
- */
+
 export default function ContactPage() {
   return (
     <div className="pt-nav">
