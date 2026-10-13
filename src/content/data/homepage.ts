@@ -232,7 +232,7 @@ export const capabilitySteps: CapabilityStep[] = [
   {
     title: 'Zero excavation — soil stratification and groundwater flow preserved',
     media: {
-      src: '/media/images/homepage/capability-02.svg',
+      src: '/media/videos/capability-01.mp4',
       alt: 'Undisturbed ground around an installed foundation point',
     },
   },
@@ -247,21 +247,21 @@ export const capabilitySteps: CapabilityStep[] = [
   {
     title: 'Enhancement Factor of 2.0–2.6× SBC, field-validated at NIT Calicut',
     media: {
-      src: '/media/images/homepage/capability-04.svg',
+      src: '/media/videos/capability-01.mp4',
       alt: 'Plate load test results from field validation',
     },
   },
   {
     title: 'Governed by IS 2911 Part 4 — Factor of Safety 2.0–2.5',
     media: {
-      src: '/media/images/homepage/capability-05.svg',
+      src: '/media/videos/capability-01.mp4',
       alt: 'Engineering drawing annotated with the governing code',
     },
   },
   {
     title: 'Over 80% less concrete. Components recoverable at end of life',
     media: {
-      src: '/media/images/homepage/capability-06.svg',
+      src: '/media/videos/capability-01.mp4',
       alt: 'Material comparison against a conventional isolated footing',
     },
   },
@@ -627,18 +627,22 @@ export const proof: ProofContent = {
       result:
         'The completed structure received the SSMB 2024 Best Commercial Steel Structure recognition.',
     },
-    {
-      name: 'Bethel Residency',
-      location: 'Kozhikode, Kerala',
-      application: 'Low-rise residential',
-      challenge:
-        'Deliver a low-rise residential foundation through a faster and less site-intensive process. PEN offered reduced excavation and curing dependency, with engineered points supporting the approved structure.',
-      result: 'A built residential reference for the PEN system.',
-    },
+    // {
+    //   name: 'Bethel Residency',
+    //   location: 'Kozhikode, Kerala',
+    //   application: 'Low-rise residential',
+    //   challenge:
+    //     'Deliver a low-rise residential foundation through a faster and less site-intensive process. PEN offered reduced excavation and curing dependency, with engineered points supporting the approved structure.',
+    //   result: 'A built residential reference for the PEN system.',
+    // },
     {
       name: 'Bengaluru Farmhouse',
       location: 'Bengaluru region, Karnataka',
       application: 'Remote-site farmhouse',
+      image: {
+        src: '/media/images/homepage/Benglaru-Farmhouse.png',
+        alt: 'The Devagiri College Library at night: a tall cylindrical reading tower in a black steel grid, lit from within, with a figure walking past at ground level',
+      },
       challenge:
         'Remote-site execution, labour constraints and a time-sensitive programme. PEN offered a rapid, low-wet-work installation process with reduced dependency on excavation and prolonged site activity.',
       result:
