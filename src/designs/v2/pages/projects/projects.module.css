@@ -10,116 +10,7 @@
   font: inherit;
 }
 
-/* ---- deployments (the homepage's proof projects) ------------------------- */
-
-.deployments {
-  display: grid;
-  gap: 1.25rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.deployment {
-  display: grid;
-  min-width: 0;
-  grid-template-rows: auto 1fr;
-  border-radius: var(--hv2-radius-lg);
-  overflow: hidden;
-  background: var(--hv2-paper);
-}
-
-.deploymentMedia {
-  position: relative;
-  aspect-ratio: 16 / 10;
-  max-width: 100%;
-  overflow: hidden;
-  background: var(--hv2-paper-alt);
-}
-
-.deploymentImg {
-  object-fit: cover;
-  transition: transform 1.2s var(--hv2-ease);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .deployment:hover .deploymentImg {
-    transform: scale(1.03);
-  }
-}
-
-.mediaNote {
-  position: absolute;
-  left: 1rem;
-  bottom: 1rem;
-  padding: 0.35rem 0.5rem 0.3rem;
-  border-radius: 0.25rem;
-  background: rgba(3, 34, 42, 0.72);
-  color: var(--hv2-white);
-  font-size: 0.6875rem;
-  letter-spacing: 0.06em;
-  backdrop-filter: blur(6px);
-}
-
-.deploymentBody {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1rem;
-  padding: clamp(1.25rem, 2.5vw, 2rem);
-}
-
-.deploymentBody {
-  min-width: 0;
-}
-
-/* Long application labels wrap on phones instead of stretching the card. */
-.wrapChip {
-  max-width: 100%;
-  white-space: normal;
-  line-height: 1.2;
-}
-
-.deploymentName {
-  margin: 0.5rem 0 0;
-}
-
-.deploymentLocation {
-  margin: 0;
-  color: var(--hv2-ink-soft);
-}
-
-.deploymentCopy {
-  max-width: 44ch;
-  margin: 0;
-  font-size: 1rem;
-  line-height: 1.45;
-  color: var(--hv2-ink-soft);
-}
-
-.deploymentResult {
-  display: grid;
-  gap: 0.5rem;
-  width: 100%;
-  margin-top: auto;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--hv2-line-light);
-}
-
-.deploymentResult p {
-  margin: 0;
-  max-width: 44ch;
-  font-size: 1.0625rem;
-  line-height: 1.35;
-  letter-spacing: -0.01em;
-}
-
-.deploymentResult p:first-child {
-  font-size: 0.75rem;
-  color: var(--hv2-ink-soft);
-}
-
-/* ---- case-study cards ---------------------------------------------------- */
+/* ---- project cards ------------------------------------------------------- */
 
 .studies {
   display: grid;
@@ -160,6 +51,51 @@
   background: var(--hv2-white);
   border: 1px solid var(--hv2-line-light);
   color: var(--hv2-ink);
+}
+
+.studyHasPhoto {
+  color: var(--hv2-white);
+  border-color: transparent;
+}
+
+.studyPhoto {
+  z-index: -3;
+  object-fit: cover;
+  transition: filter 0.45s var(--hv2-ease);
+}
+
+.studyPhotoShade {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: linear-gradient(
+    180deg,
+    rgba(1, 31, 37, 0.35) 0%,
+    rgba(1, 31, 37, 0.2) 40%,
+    rgba(1, 31, 37, 0.88) 100%
+  );
+}
+
+.study:not(.studyStatic):hover .studyPhoto,
+.study:focus-visible .studyPhoto {
+  filter: grayscale(1);
+}
+
+/* A project without a page of its own: a card, not a link. */
+.studyStatic {
+  cursor: default;
+}
+
+.studySummary {
+  margin: auto 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--hv2-line-light);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
+
+.studyHasPhoto .studySummary {
+  border-top-color: rgba(255, 255, 255, 0.28);
 }
 
 .studyTint {
@@ -206,6 +142,12 @@
   background: var(--hv2-paper);
 }
 
+/* On a photo: a yellow disc, so the arrow reads over any picture. */
+.studyHasPhoto .studyArrow {
+  background: var(--hv2-accent);
+  color: var(--hv2-on-accent);
+}
+
 .studyMain {
   display: grid;
   gap: 0.75rem;
@@ -238,6 +180,10 @@
   border-top-color: var(--hv2-line-light);
 }
 
+.studyHasPhoto .studyFigures {
+  border-top-color: rgba(255, 255, 255, 0.28);
+}
+
 .studyFigures div {
   display: grid;
   align-content: start;
@@ -258,31 +204,31 @@
   line-height: 1.1;
 }
 
-.study:hover,
+.study:not(.studyStatic):hover,
 .study:focus-visible {
   color: var(--hv2-on-accent);
   border-color: var(--hv2-accent);
 }
 
-.study:hover .studyTint,
+.study:not(.studyStatic):hover .studyTint,
 .study:focus-visible .studyTint {
   opacity: 1;
 }
 
-.study:hover .studyTag,
+.study:not(.studyStatic):hover .studyTag,
 .study:focus-visible .studyTag {
   background: var(--hv2-on-accent);
   color: var(--hv2-accent);
 }
 
-.study:hover .studyArrow,
+.study:not(.studyStatic):hover .studyArrow,
 .study:focus-visible .studyArrow {
   background: var(--hv2-on-accent);
   color: var(--hv2-accent);
   transform: rotate(-45deg);
 }
 
-.study:hover .studyFigures,
+.study:not(.studyStatic):hover .studyFigures,
 .study:focus-visible .studyFigures {
   border-top-color: rgba(3, 34, 42, 0.2);
 }
@@ -564,9 +510,6 @@
 }
 
 @media (min-width: 64rem) {
-  .deployments {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
   .studies {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -586,7 +529,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .deploymentImg,
+  .studyPhoto,
   .study,
   .studyTint,
   .studyTag,

@@ -1,0 +1,320 @@
+/*
+ * Audience sections on /applications/[slug] (AudienceSections.tsx): the
+ * conventional-versus-PEN bars, card rows, review chips, FAQ and closing
+ * call. Grounds and section heads come from styles/page.module.css.
+ */
+
+.points {
+  margin: 0 0 clamp(2rem, 4vw, 3rem);
+  font-size: clamp(1.125rem, 0.6vw + 1rem, 1.5rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+/* ---- conventional vs PEN bars --------------------------------------------- */
+
+.contrast {
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 2rem);
+  padding: clamp(1.5rem, 3.5vw, 3rem);
+  border-radius: var(--hv2-radius-lg);
+  background: var(--hv2-ground);
+  color: var(--hv2-white);
+}
+
+.rowsHeading {
+  max-width: 22ch;
+  margin: 0 0 0.5rem;
+}
+
+.row {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 64rem) {
+  .row {
+    grid-template-columns: minmax(12rem, 0.28fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 2rem;
+  }
+}
+
+.rowHead {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.rowLabel {
+  font-size: 0.6875rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.rowTitle {
+  font-size: clamp(1.25rem, 0.8vw + 1rem, 1.625rem);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.rowPen .rowTitle {
+  color: var(--hv2-accent-bright);
+}
+
+.track {
+  min-width: 0;
+}
+
+.bar {
+  display: flex;
+  gap: 3px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stage {
+  display: flex;
+  flex-basis: 0;
+  align-items: center;
+  min-width: 0;
+  min-height: 3.25rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: var(--hv2-radius-sm);
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 0.75rem;
+  line-height: 1.15;
+}
+
+.stage span {
+  overflow-wrap: anywhere;
+}
+
+/* The long stage (curing) reads strongest. */
+.stageLong {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* On phones the stages stack as a list rather than squeezing into a bar. */
+@media (max-width: 47.99rem) {
+  .bar {
+    flex-wrap: wrap;
+    width: 100% !important;
+  }
+  .stage {
+    flex: 1 1 auto !important;
+    min-height: 0;
+  }
+}
+
+.solid {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem 1rem;
+}
+
+.solidBar {
+  flex: none;
+  min-width: 0.5rem;
+  height: 3.25rem;
+  border-radius: var(--hv2-radius-sm);
+  background: var(--hv2-accent);
+}
+
+/* A full-width solid bar carries its text inside it. */
+.solidFull {
+  display: flex;
+  align-items: center;
+  min-height: 3.25rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--hv2-radius-sm);
+  background: var(--hv2-accent);
+  color: var(--hv2-on-accent);
+  font-size: 0.875rem;
+  line-height: 1.35;
+}
+
+.solidText {
+  margin-top: -4rem;
+  padding-inline: 1rem;
+  min-height: 3.25rem;
+  display: flex;
+  align-items: center;
+  color: var(--hv2-on-accent);
+  position: relative;
+}
+
+.solidText {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.note {
+  margin: 0.25rem 0 0;
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* ---- review chips ----------------------------------------------------------- */
+
+.tagsWrap {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+.tagsLabel {
+  margin: 0;
+  font-size: 0.6875rem;
+  opacity: 0.65;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tags li {
+  padding: 0.55rem 0.95rem;
+  border: 1px solid var(--hv2-line-light);
+  border-radius: 999px;
+  font-size: 0.875rem;
+}
+
+.tagsDark li {
+  border-color: var(--hv2-line-dark);
+}
+
+/* ---- cards ------------------------------------------------------------------ */
+
+.cards {
+  display: grid;
+  gap: 1rem;
+  margin: clamp(2rem, 4vw, 3rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tagsWrap + .cards {
+  margin-top: 0;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: clamp(1.25rem, 2vw, 1.75rem);
+  border-radius: var(--hv2-radius);
+  background: var(--hv2-paper);
+}
+
+.cardsDark .card {
+  border: 1px solid var(--hv2-line-dark);
+  background: var(--hv2-navy);
+}
+
+/* On the paper ground the cards go white. */
+.cardsOnPaper .card {
+  background: var(--hv2-white);
+}
+
+.cardNum {
+  margin-bottom: 1.25rem;
+  font-size: clamp(2rem, 2vw + 1rem, 3rem);
+  font-weight: 500;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  color: var(--hv2-ink-soft);
+}
+
+.cardsDark .cardNum {
+  color: var(--hv2-accent-bright);
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: clamp(1.1875rem, 0.6vw + 1rem, 1.5rem);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+.cardBody {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  opacity: 0.75;
+}
+
+@media (min-width: 48rem) {
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .cards {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .cardsFive {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.caption {
+  max-width: 48rem;
+  margin: clamp(1.5rem, 3vw, 2.5rem) 0 0;
+  padding-left: 1rem;
+  border-left: 3px solid var(--hv2-accent);
+  font-size: clamp(1.0625rem, 0.5vw + 0.95rem, 1.375rem);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+/* ---- closing call ---------------------------------------------------------- */
+
+.closing {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem 2rem;
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  border-radius: var(--hv2-radius-lg);
+  background: var(--hv2-ground);
+  color: var(--hv2-white);
+}
+
+.closingDark {
+  border: 1px solid var(--hv2-line-dark);
+  background: var(--hv2-navy);
+}
+
+.closingText {
+  display: grid;
+  gap: 0.5rem;
+  max-width: 40rem;
+}
+
+.closingHeading {
+  margin: 0;
+  font-size: clamp(1.375rem, 1.2vw + 1rem, 2rem);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.closingLead {
+  margin: 0;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.72);
+}

@@ -1,0 +1,372 @@
+/* Homepage testimonials — heading and the people quoted on the dark ground,
+   one large white quote card beside them. */
+
+.section {
+  position: relative;
+  padding-block: var(--hv2-section-y);
+  background:
+    radial-gradient(60rem 30rem at 85% 0%, rgba(247, 220, 46, 0.07), transparent 60%),
+    var(--hv2-ground);
+  color: var(--hv2-white);
+  overflow: hidden;
+}
+
+.layout {
+  display: grid;
+  gap: clamp(2.5rem, 5vw, 4rem);
+}
+
+@media (min-width: 64rem) {
+  .layout {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    align-items: stretch;
+    gap: clamp(3rem, 6vw, 6rem);
+  }
+}
+
+/* ---- left: heading, people, controls ------------------------------------ */
+
+.side {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.title {
+  max-width: 14ch;
+  margin: 1.25rem 0 0;
+}
+
+.people {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: clamp(2rem, 4vw, 3rem);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.people::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 64rem) {
+  .people {
+    flex-direction: column;
+    gap: 0;
+    overflow: visible;
+    border-top: 1px solid var(--hv2-line-dark);
+  }
+}
+
+.person {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.6rem 1rem 0.6rem 0.6rem;
+  border: 1px solid var(--hv2-line-dark);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  opacity: 0.6;
+  transition:
+    opacity 0.3s var(--hv2-ease),
+    background-color 0.3s var(--hv2-ease),
+    border-color 0.3s var(--hv2-ease);
+}
+
+.person[aria-selected='true'] {
+  opacity: 1;
+  border-color: var(--hv2-accent);
+  background: rgba(247, 220, 46, 0.08);
+}
+
+@media (min-width: 64rem) {
+  .person {
+    padding: 1.1rem 0 1.1rem 1.25rem;
+    border: 0;
+    border-bottom: 1px solid var(--hv2-line-dark);
+    border-radius: 0;
+  }
+
+  /* The active row is marked by a yellow bar instead of a pill outline. */
+  .person::before {
+    content: '';
+    position: absolute;
+    top: 0.9rem;
+    bottom: 0.9rem;
+    left: 0;
+    width: 3px;
+    border-radius: 3px;
+    background: var(--hv2-accent);
+    transform: scaleY(0);
+    transition: transform 0.35s var(--hv2-ease);
+  }
+
+  .person[aria-selected='true'] {
+    border-color: var(--hv2-line-dark);
+    background: transparent;
+  }
+
+  .person[aria-selected='true']::before {
+    transform: scaleY(1);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .person:hover {
+    opacity: 1;
+  }
+}
+
+.personText {
+  display: grid;
+  gap: 0.2rem;
+  white-space: nowrap;
+}
+
+.personText b {
+  font-weight: 500;
+  font-size: 0.9375rem;
+}
+
+.personText span {
+  font-size: 0.625rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 64rem) {
+  .controls {
+    margin-top: auto;
+    padding-top: 2rem;
+  }
+}
+
+.counter {
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.counter b {
+  font-weight: 400;
+  color: var(--hv2-accent-bright);
+}
+
+.arrows {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.arrow {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid var(--hv2-line-dark);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--hv2-white);
+  cursor: pointer;
+  transition:
+    background-color 0.3s var(--hv2-ease),
+    border-color 0.3s var(--hv2-ease),
+    color 0.3s var(--hv2-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .arrow:hover {
+    border-color: var(--hv2-accent);
+    background: var(--hv2-accent);
+    color: var(--hv2-on-accent);
+  }
+}
+
+/* ---- avatar ---------------------------------------------------------------- */
+
+.avatar {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--hv2-accent);
+  color: var(--hv2-on-accent);
+  font-family: var(--hv2-mono);
+  letter-spacing: 0.02em;
+}
+
+.avatarSm {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 0.75rem;
+}
+
+.avatarLg {
+  width: 3.5rem;
+  height: 3.5rem;
+  font-size: 0.9375rem;
+}
+
+.avatarImg {
+  object-fit: cover;
+}
+
+/* ---- right: the quote card ------------------------------------------------- */
+
+.card {
+  position: relative;
+  display: grid;
+  align-content: space-between;
+  min-height: clamp(22rem, 34vw, 30rem);
+  margin: 0;
+  padding: clamp(1.75rem, 4vw, 3.5rem);
+  border-radius: var(--hv2-radius-lg);
+  background: var(--hv2-white);
+  color: var(--hv2-ink);
+  box-shadow: 0 30px 80px rgba(0, 12, 15, 0.35);
+  overflow: hidden;
+}
+
+/* A thin yellow edge along the top. */
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: var(--hv2-accent);
+}
+
+.mark {
+  width: clamp(2.5rem, 4vw, 3.5rem);
+  height: auto;
+  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+  fill: var(--hv2-accent);
+}
+
+.body {
+  display: grid;
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+  animation: quote-in 0.6s var(--hv2-ease) both;
+}
+
+@keyframes quote-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.highlight {
+  max-width: 20ch;
+  margin: 0;
+  font-size: clamp(1.75rem, 2.6vw + 0.75rem, 3rem);
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.quote {
+  margin: 0;
+}
+
+.quote p {
+  max-width: 52ch;
+  margin: 0;
+  font-size: clamp(1.0625rem, 0.5vw + 0.95rem, 1.25rem);
+  line-height: 1.5;
+  color: var(--hv2-ink-soft);
+}
+
+/* Without a highlight, the quote itself is set large. */
+.quoteLarge p {
+  max-width: 26ch;
+  font-size: clamp(1.5rem, 1.8vw + 0.9rem, 2.375rem);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--hv2-ink);
+}
+
+.cite {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.25rem;
+  padding-top: clamp(1.25rem, 2.5vw, 1.75rem);
+  border-top: 1px solid var(--hv2-line-light);
+}
+
+.citeText {
+  display: grid;
+  gap: 0.3rem;
+  margin-right: auto;
+}
+
+.citeText b {
+  font-weight: 500;
+  font-size: 1.125rem;
+}
+
+.citeText span {
+  font-size: 0.6875rem;
+  color: var(--hv2-ink-soft);
+}
+
+.source {
+  opacity: 0.75;
+}
+
+.project {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: var(--hv2-radius-sm);
+  background: var(--hv2-paper);
+  color: var(--hv2-ink);
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: background-color 0.3s var(--hv2-ease);
+}
+
+.project > span:first-child {
+  font-size: 0.625rem;
+  color: var(--hv2-ink-soft);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a.project:hover {
+    background: var(--hv2-accent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .body {
+    animation: none;
+  }
+
+  .person,
+  .person::before,
+  .arrow,
+  .project {
+    transition: none;
+  }
+}

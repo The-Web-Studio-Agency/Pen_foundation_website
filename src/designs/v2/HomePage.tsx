@@ -5,8 +5,10 @@ import { MediaStatement } from './components/MediaStatement';
 import { Opening } from './components/opening/Opening';
 import { ProblemCollage } from './components/ProblemCollage';
 import { Process } from './components/Process';
+import { ProjectEstimator } from './components/ProjectEstimator';
 import { ProjectsCarousel } from './components/ProjectsCarousel';
 import { SystemChapter } from './components/SystemChapter';
+import { Testimonials } from './components/Testimonials';
 import { Validation } from './components/Validation';
 
 /**
@@ -18,6 +20,8 @@ import { Validation } from './components/Validation';
  *   white   applications
  *   black   the system → anatomy → evidence → "hours, not weeks"
  *   paper   the problem collage → process → projects → validation
+ *   white   project calculator
+ *   dark    testimonials (hidden while the list is empty)
  *   white   FAQ
  */
 export function HomePage() {
@@ -32,6 +36,8 @@ export function HomePage() {
       <Process />
       <ProjectsCarousel />
       <Validation />
+      <ProjectEstimator />
+      <Testimonials />
       <FaqTabs />
     </>
   );

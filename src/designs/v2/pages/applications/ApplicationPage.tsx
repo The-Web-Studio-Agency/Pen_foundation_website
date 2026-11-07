@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { applicationAudiences } from '@/content/data/application-audiences';
+
 import { PageHero } from '../../components/page/PageHero';
 import { SectionHead } from '../../components/page/SectionHead';
 import { ArrowRight, ButtonLink, Chip, cx, stagger } from '../../components/primitives';
@@ -8,6 +10,7 @@ import cards from '../../styles/applications.module.css';
 import p from '../../styles/page.module.css';
 import t from '../../styles/theme.module.css';
 import { CaseStudyCard } from '../projects/CaseStudyCard';
+import { AudienceSections } from './AudienceSections';
 import { applicationPage, type ApplicationItem } from './content';
 import s from './applications.module.css';
 
@@ -17,12 +20,38 @@ import s from './applications.module.css';
  * application page carries — the product highlights with the suitability
  * note, the four-step process, matching case studies, and the other five
  * applications as the homepage's lime-on-hover cards.
+ *
+ * Residential and Modular and prefab also carry the matching audience page
+ * from the client's V3 handoff (content/data/application-audiences.ts): its
+ * opening sections after the hero, its FAQ after the process.
  */
 export function ApplicationPage({ item }: { item: ApplicationItem }) {
   const c = applicationPage(item);
+  const audience = applicationAudiences[item.slug];
+  const faqs = audience
+    ? [...audience.before, ...audience.after].flatMap((b) => (b.kind === 'faq' ? b.items : []))
+    : [];
+  const jsonLd =
+    faqs.length > 0
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: faqs.map((f) => ({
+            '@type': 'Question',
+            name: f.q,
+            acceptedAnswer: { '@type': 'Answer', text: f.a },
+          })),
+        }
+      : null;
 
   return (
     <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+        />
+      )}
       <PageHero
         kicker={c.hero.kicker}
         title={c.hero.title}
@@ -31,6 +60,8 @@ export function ApplicationPage({ item }: { item: ApplicationItem }) {
         crumbs={c.hero.crumbs}
         actions={c.hero.actions}
       />
+
+      {audience && <AudienceSections blocks={audience.before} />}
 
       <section className={cx(p.section, p.light)} aria-labelledby="app-highlights">
         <div className={t.gutter}>
@@ -78,6 +109,8 @@ export function ApplicationPage({ item }: { item: ApplicationItem }) {
           </ol>
         </div>
       </section>
+
+      {audience && <AudienceSections blocks={audience.after} offset={audience.before.length} />}
 
       {c.related.items.length > 0 && (
         <section className={cx(p.section, p.paper)} aria-labelledby="app-related">

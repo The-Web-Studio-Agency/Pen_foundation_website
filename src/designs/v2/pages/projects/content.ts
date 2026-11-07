@@ -2,18 +2,22 @@
  * Copy for /projects and /projects/[slug].
  *
  * Nothing factual is written here — the same rule as `designs/v2/content.ts`.
- * Projects come from two existing sources:
+ * Projects and case studies are the same thing: /projects lists every project
+ * once, merged from two existing sources:
  *
- *   proof     `content/data/homepage.ts` — the named deployments the homepage
- *             carousel shows, sourced from BRIEF and DECK. No pages of their own.
- *   PROJECTS  `content/data/projects.ts` — the case studies with a slug and a
- *             page under /projects/[slug].
+ *   PROJECTS  `content/data/projects.ts` — projects with a slug and a page
+ *             under /projects/[slug].
+ *   proof     `content/data/homepage.ts` — the named projects the homepage
+ *             carousel shows. Listed too, without a link, until they get a
+ *             page; one that already has a page (see PROOF_PAGES) is listed
+ *             once, under its page.
  *
  * This file adds only UI labels and the helpers that keep unfilled
  * placeholders ("[Year]", "[Region]", …) off the page.
  */
 
 import { applicationHref } from '@/config/navigation';
+import { storyFor } from '@/content/data/case-studies';
 import { applications, proof } from '@/content/data/homepage';
 import { PROJECTS, type Project } from '@/content/data/projects';
 
@@ -33,6 +37,65 @@ export function filled(value: string | undefined): string | undefined {
 
 export const projectHref = (slug: string) => `/projects/${slug}`;
 
+/** One card on /projects, whichever source the project came from. */
+export interface ProjectListItem {
+  key: string;
+  name: string;
+  tag: string;
+  location?: string;
+  image?: { src: string; alt: string };
+  /** Set when the project has its own page. */
+  href?: string;
+  figures: { label: string; value: string }[];
+  /** Shown in place of figures when there are none. */
+  summary?: string;
+}
+
+/** Homepage proof projects that already have a page, by proof name → slug. */
+const PROOF_PAGES: Record<string, string> = {
+  'Black Langur Resort': 'black-langur-retreat',
+  'Devagiri College Library': 'devagiri-library-book-tower',
+};
+
+export function projectItem(project: Project): ProjectListItem {
+  return {
+    key: project.slug,
+    name: project.name,
+    tag: project.industry,
+    location: filled(project.location),
+    image: project.image,
+    href: projectHref(project.slug),
+    figures:
+      project.cardFigures ??
+      [
+        { label: caseStudyLabels.figures.duration, value: filled(project.installDuration) },
+        { label: caseStudyLabels.figures.capacity, value: filled(project.capacity) },
+        { label: caseStudyLabels.figures.concrete, value: filled(project.concreteSaved) },
+      ].filter((f): f is { label: string; value: string } => Boolean(f.value)),
+  };
+}
+
+/**
+ * Every project, once: projects with a full story first, then the homepage's
+ * named projects that have no page yet, then the remaining short case studies.
+ */
+function allProjects(): ProjectListItem[] {
+  const withStory = PROJECTS.filter((p) => storyFor(p.slug));
+  const rest = PROJECTS.filter((p) => !storyFor(p.slug));
+  const proofOnly = proof.projects
+    .filter((p) => !PROOF_PAGES[p.name])
+    .map((p): ProjectListItem => ({
+      key: p.name,
+      name: p.name,
+      tag: p.application,
+      location: p.location,
+      image: p.image,
+      figures: [],
+      summary: p.result,
+    }));
+  return [...withStory.map(projectItem), ...proofOnly, ...rest.map(projectItem)];
+}
+
 /**
  * The application page each case-study industry belongs to. Keys are
  * `Project['industry']`, values are slugs in `applications.items`.
@@ -40,6 +103,8 @@ export const projectHref = (slug: string) => `/projects/${slug}`;
 const industryToApplication: Record<Project['industry'], string> = {
   Residential: 'residential',
   Commercial: 'commercial',
+  // The site already pictures Commercial with the Devagiri library.
+  Institutional: 'commercial',
   'Eco Resort': 'eco-resorts-and-farmstays',
   Solar: 'ground-mounted-solar',
 };
@@ -53,41 +118,6 @@ export function applicationForProject(project: Project) {
 export function projectsForApplication(slug: string): Project[] {
   return PROJECTS.filter((p) => industryToApplication[p.industry] === slug);
 }
-
-/* ---- /projects ----------------------------------------------------------- */
-
-export const projectsIndex = {
-  hero: {
-    kicker: 'Projects',
-    title: proof.heading,
-    image: assets.brickHouse,
-    actions: [ASSESSMENT, { label: 'Case studies', href: '#case-studies', tone: 'ghost' as const }],
-  },
-  deployments: {
-    chip: 'Deployments',
-    // The proof section's own title in homepage.ts.
-    heading: 'Projects already in the ground',
-    resultLabel: 'Result',
-    /** Shown on images whose alt text says they are renders, not site photos. */
-    visualisation: 'Visualisation',
-    items: proof.projects.map((p) => ({
-      ...p,
-      image: p.image,
-    })),
-  },
-  caseStudies: {
-    chip: 'Deployment explorer',
-    heading: 'Case studies',
-    items: PROJECTS,
-  },
-  applications: {
-    chip: 'Applications',
-    heading: applications.heading,
-    lead: applications.lead,
-    items: applications.items.map((a) => ({ title: a.title, href: applicationHref(a.slug) })),
-    note: applications.note,
-  },
-};
 
 /* ---- /projects/[slug] ---------------------------------------------------- */
 
@@ -122,5 +152,28 @@ export const caseStudyLabels = {
     // The previous case study's fourth figure; zero excavation is a sourced
     // product property (homepage `product.highlights`).
     excavated: { label: 'Soil excavated', value: '0 m³' },
+  },
+};
+
+/* ---- /projects ----------------------------------------------------------- */
+
+export const projectsIndex = {
+  hero: {
+    kicker: 'Projects',
+    title: proof.heading,
+    image: assets.brickHouse,
+    actions: [ASSESSMENT, { label: 'All projects', href: '#all-projects', tone: 'ghost' as const }],
+  },
+  list: {
+    chip: 'Projects',
+    heading: 'Projects already in the ground',
+    items: allProjects(),
+  },
+  applications: {
+    chip: 'Applications',
+    heading: applications.heading,
+    lead: applications.lead,
+    items: applications.items.map((a) => ({ title: a.title, href: applicationHref(a.slug) })),
+    note: applications.note,
   },
 };

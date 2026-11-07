@@ -26,6 +26,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: url('/blogs'), changeFrequency: 'monthly', priority: 0.6 },
     { url: url('/docs'), changeFrequency: 'monthly', priority: 0.6 },
     { url: url('/certifications'), changeFrequency: 'yearly', priority: 0.6 },
+    { url: url('/partners'), changeFrequency: 'monthly', priority: 0.6 },
     { url: url('/gallery'), changeFrequency: 'monthly', priority: 0.5 },
     { url: url('/contact'), changeFrequency: 'yearly', priority: 0.9 },
   ];

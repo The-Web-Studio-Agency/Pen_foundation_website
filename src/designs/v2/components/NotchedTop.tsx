@@ -51,11 +51,7 @@ export function NotchedTop({
   }, []);
 
   return (
-    <div
-      ref={ref}
-      className={className}
-      style={path ? { clipPath: `path('${path}')` } : undefined}
-    >
+    <div ref={ref} className={className} style={path ? { clipPath: `path('${path}')` } : undefined}>
       {children}
     </div>
   );

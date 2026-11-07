@@ -1,0 +1,297 @@
+/* Homepage project estimator — parameters on paper, results on the dark ground.
+   Same controls as the Technology page's calculator. */
+
+.section {
+  padding-block: var(--hv2-section-y);
+  background: var(--hv2-white);
+  color: var(--hv2-ink);
+  scroll-margin-top: 4rem;
+}
+
+.head {
+  display: grid;
+  gap: 1.5rem;
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+@media (min-width: 64rem) {
+  .head {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: end;
+    gap: clamp(2rem, 5vw, 5rem);
+  }
+}
+
+.title {
+  max-width: 18ch;
+  margin: 1.25rem 0 0;
+}
+
+.lead {
+  max-width: 40rem;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.lead a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+}
+
+.calc {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+  gap: 1.25rem;
+}
+
+@media (min-width: 64rem) {
+  .calc {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
+}
+
+.inputs,
+.results {
+  display: grid;
+  align-content: start;
+  gap: 2rem;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  border-radius: var(--hv2-radius-lg);
+}
+
+.inputs {
+  background: var(--hv2-paper);
+}
+
+.results {
+  align-content: space-between;
+  background: var(--hv2-ground);
+  color: var(--hv2-white);
+}
+
+.panelTitle {
+  margin: 0;
+  font-size: 0.75rem;
+}
+
+.field {
+  display: grid;
+  gap: 1rem;
+}
+
+.fieldRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+.fieldLabel {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--hv2-ink-soft);
+}
+
+.areaValue {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: clamp(2rem, 2vw + 1.25rem, 2.75rem);
+  font-weight: 500;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.areaUnit {
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  color: var(--hv2-ink-soft);
+}
+
+.range {
+  width: 100%;
+  height: 1.5rem;
+  margin: 0;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.range::-webkit-slider-runnable-track {
+  height: 0.375rem;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--hv2-ink) 0 var(--fill, 0%),
+    var(--hv2-paper-alt) var(--fill, 0%) 100%
+  );
+}
+
+.range::-moz-range-track {
+  height: 0.375rem;
+  border-radius: 999px;
+  background: var(--hv2-paper-alt);
+}
+
+.range::-moz-range-progress {
+  height: 0.375rem;
+  border-radius: 999px;
+  background: var(--hv2-ink);
+}
+
+.range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: -0.5625rem;
+  border: 3px solid var(--hv2-ink);
+  border-radius: 999px;
+  background: var(--hv2-accent);
+}
+
+.range::-moz-range-thumb {
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 3px solid var(--hv2-ink);
+  border-radius: 999px;
+  background: var(--hv2-accent);
+}
+
+.rangeEnds {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -0.5rem;
+  font-size: 0.6875rem;
+  color: var(--hv2-ink-soft);
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.option {
+  padding: 0.7rem 0.9rem 0.65rem;
+  border: 1px solid var(--hv2-line-light);
+  border-radius: var(--hv2-radius-sm);
+  background: var(--hv2-white);
+  color: var(--hv2-ink);
+  font-family: var(--hv2-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color 0.3s var(--hv2-ease),
+    border-color 0.3s var(--hv2-ease),
+    color 0.3s var(--hv2-ease);
+}
+
+.option[aria-pressed='true'] {
+  background: var(--hv2-ink);
+  border-color: var(--hv2-ink);
+  color: var(--hv2-accent-bright);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .option[aria-pressed='false']:hover {
+    border-color: rgba(3, 34, 42, 0.4);
+  }
+}
+
+.basis {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 1.25rem 0 0;
+  border-top: 1px solid var(--hv2-line-light);
+  list-style: none;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--hv2-ink-soft);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0;
+}
+
+@media (max-width: 30rem) {
+  .cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.card {
+  display: grid;
+  align-content: start;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  border-radius: var(--hv2-radius);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.cardWide {
+  grid-column: 1 / -1;
+}
+
+.card dt {
+  font-size: 0.6875rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.card dd {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.value {
+  font-size: clamp(2rem, 2.4vw + 1rem, 3.25rem);
+  font-weight: 500;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.note {
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.noteLink {
+  color: var(--hv2-accent-bright);
+  text-underline-offset: 0.2em;
+}
+
+.cardAccent {
+  border-color: var(--hv2-accent);
+  background: var(--hv2-accent);
+  color: var(--hv2-on-accent);
+}
+
+.cardAccent dt,
+.cardAccent .note {
+  color: rgba(3, 34, 42, 0.66);
+}
+
+.cta {
+  justify-self: start;
+  max-width: 100%;
+  white-space: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .option {
+    transition: none;
+  }
+}
