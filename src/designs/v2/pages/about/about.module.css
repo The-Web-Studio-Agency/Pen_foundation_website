@@ -1,0 +1,372 @@
+/*
+ * /about — page-specific layout. Grounds, the hero and section heads come
+ * from styles/page.module.css; type and chips from styles/theme.module.css.
+ */
+
+/* In-page anchors clear the fixed header. */
+.anchor {
+  scroll-margin-top: 4rem;
+}
+
+.wideHead.wideHead {
+  margin-bottom: clamp(2.5rem, 5vw, 4.5rem);
+}
+
+.wideHead h2 {
+  max-width: 20ch;
+}
+
+/* The opening belief is a full sentence, not a title: set it a step down. */
+.beliefHead h2 {
+  max-width: 24ch;
+  font-size: clamp(1.875rem, 2.4vw + 0.75rem, 3rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+}
+
+/* ---- where it began: alternating photo rows ----------------------------- */
+
+.chapters {
+  display: grid;
+  gap: clamp(3.5rem, 7vw, 6.5rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chapter {
+  display: grid;
+  gap: clamp(1.75rem, 3vw, 2.5rem);
+  align-items: center;
+}
+
+.chapterText {
+  display: grid;
+  gap: 1.25rem;
+  justify-items: start;
+  max-width: 34rem;
+}
+
+.chapterNum {
+  color: var(--hv2-ink-soft);
+}
+
+.chapterTitle {
+  margin: 0;
+}
+
+.chapterBody {
+  margin: 0;
+  font-size: clamp(1rem, 0.25vw + 0.95rem, 1.125rem);
+  line-height: 1.45;
+  color: var(--hv2-ink-soft);
+}
+
+.chapterMedia {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  border-radius: var(--hv2-radius-lg);
+  overflow: hidden;
+  background: var(--hv2-paper-alt);
+}
+
+.chapterImg {
+  object-fit: cover;
+  transition: transform 1.2s var(--hv2-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .chapterMedia:hover .chapterImg {
+    transform: scale(1.03);
+  }
+}
+
+@media (min-width: 64rem) {
+  .chapter {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+    gap: clamp(3rem, 6vw, 7rem);
+  }
+  .chapterFlip .chapterText {
+    order: 2;
+  }
+  .chapterFlip {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  }
+}
+
+/* ---- story & values (black) --------------------------------------------- */
+
+.story {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.storyInner {
+  position: relative;
+}
+
+.storyGlow {
+  position: absolute;
+  inset: -20% 10% auto auto;
+  z-index: -1;
+  width: min(60rem, 90vw);
+  aspect-ratio: 1;
+  background: radial-gradient(closest-side, rgba(247, 220, 46, 0.1), transparent 70%);
+  pointer-events: none;
+}
+
+.storyCols {
+  display: grid;
+  gap: 2.5rem;
+  margin-top: clamp(1rem, 3vw, 2.5rem);
+  padding-top: clamp(2rem, 4vw, 3rem);
+  border-top: 1px solid var(--hv2-line-dark);
+}
+
+.storyCol {
+  display: grid;
+  gap: 1.25rem;
+  align-content: start;
+}
+
+.storyLabel {
+  margin: 0;
+  color: var(--hv2-accent-bright);
+}
+
+.storyText {
+  margin: 0;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+@media (min-width: 56rem) {
+  .storyCols {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(3rem, 6vw, 6rem);
+  }
+}
+
+/* ---- our value: three proof cards --------------------------------------- */
+
+.valueGrid {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.valueCard {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: clamp(1.5rem, 2.4vw, 2.25rem);
+  border-radius: var(--hv2-radius-lg);
+  background: var(--hv2-white);
+}
+
+.valueNum {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 0.75rem;
+  border-radius: 999px;
+  background: var(--hv2-accent);
+  color: var(--hv2-on-accent);
+}
+
+.valueTitle {
+  margin: 0;
+  font-size: clamp(1.375rem, 1vw + 1rem, 1.75rem);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.valueBody {
+  margin: 0;
+  color: var(--hv2-ink-soft);
+}
+
+.proof {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: auto 0 0;
+  padding-top: 1.5rem;
+}
+
+.proofItem {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--hv2-line-light);
+}
+
+.proofValue {
+  margin: 0;
+  font-size: clamp(1.875rem, 1.6vw + 1.2rem, 2.5rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  white-space: nowrap;
+}
+
+.proofLabel {
+  font-size: 0.75rem;
+  line-height: 1.25;
+  color: var(--hv2-ink-soft);
+}
+
+@media (min-width: 64rem) {
+  .valueGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ---- team --------------------------------------------------------------- */
+
+.team {
+  display: grid;
+  gap: clamp(2rem, 3vw, 1.25rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.person {
+  display: grid;
+  gap: 1.25rem;
+  align-content: start;
+}
+
+.personPhoto {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border-radius: var(--hv2-radius-lg);
+  overflow: hidden;
+  background: var(--hv2-paper-alt);
+}
+
+.personImg {
+  object-fit: cover;
+  object-position: 50% 20%;
+  transition: transform 1.2s var(--hv2-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .person:hover .personImg {
+    transform: scale(1.03);
+  }
+}
+
+.personInitials {
+  font-size: 3rem;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  color: var(--hv2-ink-soft);
+}
+
+.personText {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.personRole {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--hv2-ink-soft);
+}
+
+.personName {
+  margin: 0;
+  font-size: clamp(1.5rem, 1vw + 1.1rem, 2rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
+.personBio {
+  max-width: 36ch;
+  margin: 0.25rem 0 0;
+  color: var(--hv2-ink-soft);
+}
+
+@media (min-width: 36rem) {
+  .team {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .personPhoto {
+    aspect-ratio: 4 / 5;
+  }
+}
+
+@media (min-width: 56rem) {
+  .team {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ---- supporters --------------------------------------------------------- */
+
+.supporters {
+  border-top: 1px solid var(--hv2-line-light);
+}
+
+.logos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.logo {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+  padding: clamp(1rem, 2vw, 1.75rem);
+  border-radius: var(--hv2-radius);
+  background: var(--hv2-white);
+}
+
+/* The supplied asset is artwork on a dark ground (see Partner.onDark). */
+.logoDark {
+  background: var(--hv2-ink);
+}
+
+.logoImg {
+  width: auto;
+  max-width: 82%;
+  height: auto;
+  max-height: 5.5rem;
+  object-fit: contain;
+}
+
+.logoName {
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+@media (min-width: 40rem) {
+  .logos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .logos {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}

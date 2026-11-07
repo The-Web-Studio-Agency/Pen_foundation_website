@@ -9,27 +9,23 @@ const nextConfig: NextConfig = {
   },
 
   async redirects() {
+    /*
+     * `permanent: false` (307) throughout: a 308 is cached hard by browsers and
+     * would be difficult to walk back if any of these addresses gets a page of
+     * its own again.
+     */
     return [
-      /*
-       * `/applications` has no page of its own; the content lives on the
-       * homepage.
-       *
-       * The route used to render `<section className="min-h-screen" aria-hidden />`
-       * — a placeholder that served roughly 2,000px of empty white above the
-       * footer to anyone who typed the URL or followed an older link. Nothing in
-       * the site's chrome pointed at it (the header and footer both link
-       * `/#applications`), so it was a dead end nobody meant to ship.
-       *
-       * Done here rather than as a `redirect()` in a page component so the route
-       * has no page at all: a page that only redirects still has to carry a
-       * `metadata` export to satisfy the conventions check, and that metadata
-       * would describe a document no visitor ever receives.
-       *
-       * `permanent: false` (307) on purpose. A 308 is cached hard by browsers
-       * and would be difficult to walk back on the day /applications gets a real
-       * page of its own.
-       */
+      // No index page for the six applications: the homepage section is that
+      // index, and the header's dropdown lists each one.
       { source: '/applications', destination: '/#applications', permanent: false },
+      // Renamed to match the navigation labels.
+      { source: '/engineering', destination: '/technology', permanent: false },
+      { source: '/research', destination: '/blogs', permanent: false },
+      { source: '/research/:slug', destination: '/blogs/:slug', permanent: false },
+      // The old resources page is split into Docs and Certifications.
+      { source: '/resources', destination: '/docs', permanent: false },
+      // The design concept's address, from before it became the homepage.
+      { source: '/home-v2', destination: '/', permanent: false },
     ];
   },
 };

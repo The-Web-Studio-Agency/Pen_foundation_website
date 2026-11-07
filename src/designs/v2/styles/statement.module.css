@@ -1,0 +1,318 @@
+/*
+ * Statement section: a pill of film that grows to fill the screen.
+ *
+ * MediaStatement.tsx writes two numbers onto .stage while it is pinned:
+ *   --g  0→1  the pill's growth (eased)
+ *   --c  0→1  the paragraph and cards fading in
+ */
+
+.section {
+  position: relative;
+  background: var(--hv2-paper);
+  color: var(--hv2-white);
+}
+
+.sizer {
+  position: relative;
+  height: calc(100svh + var(--pin, 0svh));
+}
+
+.stage {
+  --g: 0;
+  --c: 0;
+  /* The pill's starting inset: a wide capsule in the middle of the page. */
+  --pill-x: 20%;
+  --pill-y: 28%;
+
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  background: var(--hv2-paper);
+}
+
+@media (max-width: 48rem) {
+  .stage {
+    --pill-x: 7%;
+    --pill-y: 27%;
+  }
+}
+
+/* ---- the looping name behind the pill --------------------------------- */
+
+.marquee {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  /* Gone by the time the film has filled the screen. */
+  opacity: calc(1 - var(--g));
+}
+
+.marqueeRun {
+  display: flex;
+  flex: none;
+  animation: hv2-marquee-run 48s linear infinite;
+}
+
+.marqueeItem {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  font-size: clamp(5rem, 15vw, 15rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+  text-transform: uppercase;
+  /* Mild grey on the paper ground. */
+  color: rgba(3, 34, 42, 0.07);
+}
+
+.marqueeSep {
+  margin-inline: 0.35em;
+}
+
+@keyframes hv2-marquee-run {
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* The film frame. Its clip starts as a pill (insets + a radius larger than
+   half its height, which CSS caps to a perfect capsule) and opens to the
+   edges as --g reaches 1. */
+.frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--hv2-deep);
+  clip-path: inset(
+    calc((1 - var(--g)) * var(--pill-y)) calc((1 - var(--g)) * var(--pill-x)) round
+      calc((1 - var(--g)) * 50svh)
+  );
+  will-change: clip-path;
+}
+
+/* A gentle push-in while the pill opens, settling at 1:1 when full. */
+.filmWrap {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  transform: scale(calc(1.16 - var(--g) * 0.16));
+}
+
+/*
+ * capability-01.mp4 is 1280×720 with 100px black bars baked into each side,
+ * so the picture itself is 1080×720. Size the element so the PICTURE (not
+ * the frame) covers the screen: its width must be at least
+ * 100vw × 1280/1080 (= 118.5vw), and its height at least 100svh. The bars always fall
+ * outside the screen, at any aspect ratio.
+ */
+.film {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  /* 118.5vw is the exact fit; 120vw leaves ~1% of picture beyond each edge. */
+  width: max(120vw, 177.778svh);
+  /* Tailwind's base styles cap every <video> at max-width: 100%. */
+  max-width: none;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  transform: translate(-50%, -50%);
+}
+
+.shade {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgba(1, 18, 22, 0.5) 0%, rgba(1, 18, 22, 0) 38%),
+    linear-gradient(
+      0deg,
+      rgba(1, 18, 22, 0.82) 0%,
+      rgba(1, 18, 22, 0.35) 34%,
+      rgba(1, 18, 22, 0) 58%
+    );
+  opacity: calc(0.25 + var(--c) * 0.75);
+}
+
+/* ---- three cards with their dots, spread across the top --------------- */
+
+.spots {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+  opacity: var(--c);
+}
+
+/* A 0×0 anchor at the dot's centre; the card sits above it. */
+.spot {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: 0;
+  height: 0;
+}
+
+.dot {
+  position: absolute;
+  left: -1.5rem;
+  top: -1.5rem;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--hv2-accent-soft);
+  color: var(--hv2-ink);
+  cursor: pointer;
+  pointer-events: auto;
+  /* Dark gap, then a thin lime ring, then a soft glow — as in the reference. */
+  box-shadow:
+    0 0 0 4px rgba(1, 40, 47, 0.45),
+    0 0 0 5.5px rgba(247, 220, 46, 0.75),
+    0 0 26px 8px rgba(247, 220, 46, 0.22);
+  animation: hv2-dot-glow 2.8s var(--hv2-ease-soft) infinite;
+}
+
+@keyframes hv2-dot-glow {
+  50% {
+    box-shadow:
+      0 0 0 4px rgba(1, 40, 47, 0.45),
+      0 0 0 5.5px rgba(247, 220, 46, 0.75),
+      0 0 34px 12px rgba(247, 220, 46, 0.32);
+  }
+}
+
+.stage[data-content-hidden] .dot {
+  visibility: hidden;
+}
+
+.card {
+  position: absolute;
+  left: 0;
+  bottom: 2.6rem;
+  width: min(19rem, 26vw);
+  padding: 1.15rem 1.4rem 1.25rem;
+  border-radius: 0.75rem;
+  background: rgba(8, 32, 37, 0.74);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  color: var(--hv2-white);
+  transform: translate(-50%, calc((1 - var(--c)) * 1rem));
+}
+
+.cardTitle {
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+}
+
+.cardBody {
+  margin-top: 0.65rem;
+  font-size: 1rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+/* Below desktop there is no room for three cards side by side: each opens
+   from its dot on hover, focus or tap, kept inside the screen edges. */
+@media (max-width: 63.99rem) {
+  .card {
+    width: min(16rem, 78vw);
+    opacity: 0;
+    transform: translate(-50%, 0.5rem);
+    pointer-events: none;
+    transition:
+      opacity 0.35s var(--hv2-ease),
+      transform 0.45s var(--hv2-ease);
+  }
+  .spot:first-child .card {
+    left: -1.5rem;
+    transform: translate(0, 0.5rem);
+  }
+  .spot:last-child .card {
+    left: auto;
+    right: -1.5rem;
+    transform: translate(0, 0.5rem);
+  }
+  .spot:hover .card,
+  .spot:focus-within .card {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  .spot:first-child:hover .card,
+  .spot:first-child:focus-within .card,
+  .spot:last-child:hover .card,
+  .spot:last-child:focus-within .card {
+    transform: none;
+  }
+}
+
+/* ---- statement, bottom-left ------------------------------------------- */
+
+.copy {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(2.5rem, 9vh, 6rem);
+  opacity: var(--c);
+  transform: translateY(calc((1 - var(--c)) * 1.5rem));
+}
+
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin: 0 0 1.75rem;
+  font-family: var(--hv2-mono);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.kickerRule {
+  flex: none;
+  width: 4.25rem;
+  height: 0.3rem;
+  border-radius: 999px;
+  background: var(--hv2-accent);
+}
+
+.text {
+  /* Wide enough for the statement to sit on two lines on desktop; balanced
+     so the two lines come out roughly even. */
+  max-width: 66ch;
+  margin: 0;
+  font-size: clamp(1.625rem, 2.3vw + 0.25rem, 3rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  text-shadow: 0 2px 24px rgba(1, 18, 22, 0.45);
+}
+
+/* ---- reduced motion: no pin, no pill, everything visible -------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .sizer {
+    height: 100svh;
+  }
+  .frame {
+    clip-path: none;
+  }
+  .dot,
+  .marqueeRun {
+    animation: none;
+  }
+}

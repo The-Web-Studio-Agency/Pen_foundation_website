@@ -1,0 +1,601 @@
+/*
+ * /projects and /projects/[slug]. Grounds, hero and section heads come from
+ * styles/page.module.css; this module holds only what these pages add.
+ */
+
+/* ---- chip used as a section's h2 ----------------------------------------- */
+
+.chipHeading {
+  margin: 0 0 clamp(1.5rem, 2.5vw, 2rem);
+  font: inherit;
+}
+
+/* ---- deployments (the homepage's proof projects) ------------------------- */
+
+.deployments {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.deployment {
+  display: grid;
+  min-width: 0;
+  grid-template-rows: auto 1fr;
+  border-radius: var(--hv2-radius-lg);
+  overflow: hidden;
+  background: var(--hv2-paper);
+}
+
+.deploymentMedia {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  max-width: 100%;
+  overflow: hidden;
+  background: var(--hv2-paper-alt);
+}
+
+.deploymentImg {
+  object-fit: cover;
+  transition: transform 1.2s var(--hv2-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .deployment:hover .deploymentImg {
+    transform: scale(1.03);
+  }
+}
+
+.mediaNote {
+  position: absolute;
+  left: 1rem;
+  bottom: 1rem;
+  padding: 0.35rem 0.5rem 0.3rem;
+  border-radius: 0.25rem;
+  background: rgba(3, 34, 42, 0.72);
+  color: var(--hv2-white);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  backdrop-filter: blur(6px);
+}
+
+.deploymentBody {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+}
+
+.deploymentBody {
+  min-width: 0;
+}
+
+/* Long application labels wrap on phones instead of stretching the card. */
+.wrapChip {
+  max-width: 100%;
+  white-space: normal;
+  line-height: 1.2;
+}
+
+.deploymentName {
+  margin: 0.5rem 0 0;
+}
+
+.deploymentLocation {
+  margin: 0;
+  color: var(--hv2-ink-soft);
+}
+
+.deploymentCopy {
+  max-width: 44ch;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.45;
+  color: var(--hv2-ink-soft);
+}
+
+.deploymentResult {
+  display: grid;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: auto;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--hv2-line-light);
+}
+
+.deploymentResult p {
+  margin: 0;
+  max-width: 44ch;
+  font-size: 1.0625rem;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.deploymentResult p:first-child {
+  font-size: 0.75rem;
+  color: var(--hv2-ink-soft);
+}
+
+/* ---- case-study cards ---------------------------------------------------- */
+
+.studies {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.studies > li {
+  display: flex;
+}
+
+.study {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+  min-height: clamp(16rem, 24vw, 22rem);
+  padding: clamp(1.25rem, 2vw, 1.75rem);
+  border-radius: var(--hv2-radius-lg);
+  overflow: hidden;
+  isolation: isolate;
+  text-decoration: none;
+  transition:
+    color 0.45s var(--hv2-ease),
+    border-color 0.45s var(--hv2-ease);
+}
+
+.studyDark {
+  background: var(--hv2-navy);
+  border: 1px solid var(--hv2-line-dark);
+  color: var(--hv2-white);
+}
+
+.studyLight {
+  background: var(--hv2-white);
+  border: 1px solid var(--hv2-line-light);
+  color: var(--hv2-ink);
+}
+
+.studyTint {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--hv2-accent);
+  opacity: 0;
+  transition: opacity 0.45s var(--hv2-ease);
+}
+
+.studyTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.studyTag {
+  padding: 0.3rem 0.4rem 0.25rem;
+  border-radius: 0.25rem;
+  background: var(--hv2-accent);
+  color: var(--hv2-on-accent);
+  line-height: 1;
+  transition:
+    background-color 0.45s var(--hv2-ease),
+    color 0.45s var(--hv2-ease);
+}
+
+.studyArrow {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  transition:
+    background-color 0.45s var(--hv2-ease),
+    color 0.45s var(--hv2-ease),
+    transform 0.45s var(--hv2-ease);
+}
+
+.studyLight .studyArrow {
+  background: var(--hv2-paper);
+}
+
+.studyMain {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.studyName {
+  margin: 0;
+  font-size: clamp(1.5rem, 1.2vw + 0.9rem, 2.125rem);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+}
+
+.studyLocation {
+  margin: 0;
+  opacity: 0.66;
+}
+
+.studyFigures {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin: auto 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--hv2-line-dark);
+  transition: border-color 0.45s var(--hv2-ease);
+}
+
+.studyLight .studyFigures {
+  border-top-color: var(--hv2-line-light);
+}
+
+.studyFigures div {
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+}
+
+.studyFigures dt {
+  font-size: 0.6875rem;
+  line-height: 1.3;
+  opacity: 0.66;
+}
+
+.studyFigures dd {
+  margin: 0;
+  font-size: clamp(1.125rem, 0.6vw + 0.9rem, 1.5rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.study:hover,
+.study:focus-visible {
+  color: var(--hv2-on-accent);
+  border-color: var(--hv2-accent);
+}
+
+.study:hover .studyTint,
+.study:focus-visible .studyTint {
+  opacity: 1;
+}
+
+.study:hover .studyTag,
+.study:focus-visible .studyTag {
+  background: var(--hv2-on-accent);
+  color: var(--hv2-accent);
+}
+
+.study:hover .studyArrow,
+.study:focus-visible .studyArrow {
+  background: var(--hv2-on-accent);
+  color: var(--hv2-accent);
+  transform: rotate(-45deg);
+}
+
+.study:hover .studyFigures,
+.study:focus-visible .studyFigures {
+  border-top-color: rgba(3, 34, 42, 0.2);
+}
+
+/* ---- application links (on /projects) ------------------------------------ */
+
+.appList {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--hv2-line-light);
+}
+
+.appList > li {
+  border-bottom: 1px solid var(--hv2-line-light);
+}
+
+.appLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 0;
+  color: var(--hv2-ink);
+  font-size: clamp(1.375rem, 1.2vw + 0.9rem, 2rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  text-decoration: none;
+  transition:
+    padding 0.45s var(--hv2-ease),
+    background-color 0.45s var(--hv2-ease);
+}
+
+.appArrow {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: var(--hv2-accent);
+  color: var(--hv2-on-accent);
+  transition:
+    background-color 0.45s var(--hv2-ease),
+    color 0.45s var(--hv2-ease),
+    transform 0.45s var(--hv2-ease);
+}
+
+.appLink:hover,
+.appLink:focus-visible {
+  padding-inline: 1rem;
+  background: var(--hv2-accent);
+}
+
+.appLink:hover .appArrow,
+.appLink:focus-visible .appArrow {
+  background: var(--hv2-on-accent);
+  color: var(--hv2-accent);
+  transform: rotate(-45deg);
+}
+
+.note {
+  max-width: 60rem;
+  margin: 2.5rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  text-transform: none;
+  color: var(--hv2-ink-soft);
+}
+
+/* ---- case study: challenge + steps --------------------------------------- */
+
+.challenge {
+  display: grid;
+  justify-items: start;
+  margin-bottom: clamp(2.5rem, 5vw, 4.5rem);
+}
+
+.challengeText {
+  max-width: 28ch;
+  margin: 0;
+}
+
+.steps {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: clamp(1.25rem, 2vw, 1.75rem);
+  border-radius: var(--hv2-radius);
+  background: var(--hv2-paper);
+}
+
+.stepNum {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 0.75rem;
+  border-radius: 999px;
+  background: var(--hv2-accent);
+  color: var(--hv2-on-accent);
+  font-size: 1.125rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.stepTitle {
+  margin: 0;
+  font-size: clamp(1.375rem, 1vw + 1rem, 1.75rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.stepBody {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.4;
+  color: var(--hv2-ink-soft);
+}
+
+.stepMeta {
+  margin: auto 0 0;
+  padding-top: 0.875rem;
+  width: 100%;
+  border-top: 1px solid var(--hv2-line-light);
+  font-size: 0.75rem;
+}
+
+/* ---- case study: figures -------------------------------------------------- */
+
+.figures {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem 1.25rem;
+  margin: 0;
+}
+
+.figure {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--hv2-line-dark);
+}
+
+.figure dd {
+  margin: 0;
+  color: var(--hv2-accent-bright);
+  font-size: clamp(2.25rem, 3.6vw + 0.5rem, 4rem);
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+}
+
+.figure dt {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.lessons {
+  display: grid;
+  gap: 1rem;
+  max-width: 44rem;
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+
+.lessons h3,
+.lessons p {
+  margin: 0;
+}
+
+/* ---- case study: downloads + application ---------------------------------- */
+
+.docsGrid {
+  display: grid;
+  gap: clamp(2.5rem, 5vw, 4rem);
+}
+
+.rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--hv2-line-light);
+}
+
+.rows > li {
+  border-bottom: 1px solid var(--hv2-line-light);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 0;
+  color: var(--hv2-ink);
+  font-size: clamp(1.125rem, 0.6vw + 0.95rem, 1.375rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  transition:
+    padding 0.45s var(--hv2-ease),
+    background-color 0.45s var(--hv2-ease);
+}
+
+.rowAction {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--hv2-ink-soft);
+}
+
+.rowArrow {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--hv2-accent);
+  color: var(--hv2-on-accent);
+  transition: transform 0.45s var(--hv2-ease);
+}
+
+.row:hover,
+.row:focus-visible {
+  padding-inline: 1rem;
+  background: var(--hv2-accent);
+}
+
+.row:hover .rowAction,
+.row:focus-visible .rowAction {
+  color: var(--hv2-on-accent);
+}
+
+.row:hover .rowArrow,
+.row:focus-visible .rowArrow {
+  background: var(--hv2-on-accent);
+  color: var(--hv2-accent);
+  transform: rotate(-45deg);
+}
+
+.relatedHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: clamp(1.5rem, 2.5vw, 2rem);
+}
+
+.relatedHead .chipHeading {
+  margin: 0;
+}
+
+/* ---- breakpoints ---------------------------------------------------------- */
+
+@media (min-width: 48rem) {
+  .studies {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .deployments {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .studies {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .studies.pair {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .figures {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .docsGrid {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  }
+  .appList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deploymentImg,
+  .study,
+  .studyTint,
+  .studyTag,
+  .studyArrow,
+  .studyFigures,
+  .appLink,
+  .appArrow,
+  .row,
+  .rowArrow {
+    transition: none;
+  }
+}

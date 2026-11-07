@@ -1,0 +1,80 @@
+.section {
+  padding-block: var(--hv2-section-y);
+  background: var(--hv2-paper);
+  color: var(--hv2-ink);
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: clamp(2rem, 3.5vw, 3rem);
+  text-align: center;
+}
+
+.title {
+  max-width: 18ch;
+}
+
+.lead {
+  max-width: 44rem;
+  color: var(--hv2-ink-soft);
+}
+
+.grid {
+  display: grid;
+  gap: 1.25rem;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: clamp(1rem, 2.5vw, 2rem);
+  padding: 1.25rem;
+  border-radius: var(--hv2-radius);
+  background: var(--hv2-white);
+}
+
+.num {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 999px;
+  background: var(--hv2-accent);
+  color: var(--hv2-on-accent);
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.text {
+  display: grid;
+  gap: 0.5rem;
+  padding-top: 0.35rem;
+}
+
+.stepTitle {
+  font-size: clamp(1.375rem, 1vw + 1rem, 1.75rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.stepBody {
+  font-size: 1rem;
+  line-height: 1.35;
+  color: var(--hv2-ink-soft);
+}
+
+@media (min-width: 56rem) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

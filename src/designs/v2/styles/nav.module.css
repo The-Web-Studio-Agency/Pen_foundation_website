@@ -1,0 +1,627 @@
+/*
+ * The site navbar (components/layout/SiteHeader.tsx): one element, two states.
+ *
+ *   default      full-width transparent bar over each page's dark opening
+ *   [data-pill]  a floating forest-glass pill 16px down, max 1240px wide,
+ *                78px tall (64px on phones), 8px radius, 30px blur
+ *
+ * Both carry the same content — logo, links (two with dropdowns), phone
+ * button and "Request Assessment" — in Geist Mono, with the logo kept white.
+ * Every geometry and colour difference is a transition, so scrolling morphs
+ * the bar into the pill and back.
+ */
+
+.bar {
+  --pill-top: 1rem;
+  --pill-h: 4rem;
+  --morph: 0.6s var(--hv2-ease);
+  --glass: rgba(1, 40, 47, 0.78);
+
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  padding-top: env(safe-area-inset-top, 0px);
+  color: var(--hv2-white);
+  /* The outer strip is full width; only the bar itself takes clicks, so the
+     page stays clickable beside the pill. */
+  pointer-events: none;
+}
+
+@media (min-width: 64rem) {
+  .bar {
+    --pill-h: 78px;
+  }
+}
+
+.inner {
+  pointer-events: auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  width: 100%;
+  max-width: 100%;
+  height: 4.5rem;
+  margin-top: 0;
+  padding-inline: var(--hv2-gutter);
+  border-radius: 0;
+  background-color: rgba(1, 40, 47, 0);
+  -webkit-backdrop-filter: blur(0px);
+  backdrop-filter: blur(0px);
+  transition:
+    width var(--morph),
+    max-width var(--morph),
+    height var(--morph),
+    margin-top var(--morph),
+    padding var(--morph),
+    gap var(--morph),
+    border-radius var(--morph),
+    background-color 0.5s var(--hv2-ease),
+    -webkit-backdrop-filter 0.5s var(--hv2-ease),
+    backdrop-filter 0.5s var(--hv2-ease);
+}
+
+@media (min-width: 75rem) {
+  .inner {
+    height: 5.5rem;
+  }
+}
+
+.bar[data-pill] .inner {
+  width: calc(100% - 2rem);
+  max-width: 1240px;
+  height: var(--pill-h);
+  margin-top: var(--pill-top);
+  padding-inline: 1rem;
+  gap: 0.75rem;
+  border-radius: 0.5rem;
+  /* Forest glass: dense enough that the white links still read when the
+     pill passes over the light chapters. */
+  background-color: var(--glass);
+  -webkit-backdrop-filter: blur(30px);
+  backdrop-filter: blur(30px);
+}
+
+/* With a dropdown open at the top of the page, the bar picks up the glass
+   too, so the panel hangs from something rather than floating in space. */
+.bar[data-menu]:not([data-pill]) .inner {
+  background-color: rgba(1, 40, 47, 0.92);
+  -webkit-backdrop-filter: blur(30px);
+  backdrop-filter: blur(30px);
+}
+
+@media (min-width: 64rem) {
+  .bar[data-pill] .inner {
+    padding-inline: 1.5rem;
+    gap: 1rem;
+  }
+}
+
+/* ---- logo -------------------------------------------------------------- */
+
+.logo {
+  display: flex;
+  align-items: center;
+  flex: none;
+}
+
+.logoImg {
+  height: 2.5rem;
+  width: auto;
+  /* Pure white (monochrome): the mark is two teals on transparent, so
+     brightness(0) flattens it to black and invert(1) turns that white. */
+  filter: brightness(0) invert(1);
+  transition: height var(--morph);
+}
+
+.bar[data-pill] .logoImg {
+  height: 2rem;
+}
+
+@media (min-width: 64rem) {
+  .bar[data-pill] .logoImg {
+    height: 2.25rem;
+  }
+}
+
+/* ---- links ------------------------------------------------------------- */
+
+.links {
+  display: none;
+  margin-inline: auto;
+}
+
+.linkList {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.7rem;
+  border: 0;
+  border-radius: 0.375rem;
+  background: none;
+  font-family: var(--hv2-mono);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  transition: color 0.3s var(--hv2-ease);
+}
+
+/* Current page: a short lime rule under the label. */
+.link::after {
+  content: '';
+  position: absolute;
+  inset: auto 0.7rem 0.15rem;
+  height: 1px;
+  background: var(--hv2-accent-bright);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s var(--hv2-ease);
+}
+
+.link[aria-current='page']::after,
+.link[data-current]::after {
+  transform: scaleX(1);
+}
+
+.link[aria-expanded='true'] {
+  color: var(--hv2-accent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .link:hover {
+    color: var(--hv2-accent);
+  }
+}
+
+.caret {
+  transition: transform 0.35s var(--hv2-ease);
+}
+
+.link[aria-expanded='true'] .caret {
+  transform: rotate(180deg);
+}
+
+/* ---- dropdowns -----------------------------------------------------------
+   Hangs under its item; a transparent bridge (padding-top) keeps the hover
+   alive while the pointer crosses from the link to the panel. */
+
+.menuItem {
+  position: relative;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  z-index: 1;
+  width: 22rem;
+  padding-top: 1.1rem;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, -0.4rem);
+  transition:
+    opacity 0.25s var(--hv2-ease),
+    transform 0.35s var(--hv2-ease),
+    visibility 0.25s;
+}
+
+.dropdownVisual {
+  width: min(44rem, calc(100vw - 4rem));
+}
+
+.dropdown[data-open] {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
+.dropList {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.75rem;
+  background: rgba(1, 40, 47, 0.96);
+  -webkit-backdrop-filter: blur(30px);
+  backdrop-filter: blur(30px);
+  box-shadow: 0 1.5rem 3rem -1rem rgba(0, 0, 0, 0.5);
+  list-style: none;
+}
+
+.dropdownVisual .dropList {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.dropLink {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.75rem 0.875rem;
+  border-radius: 0.5rem;
+  color: var(--hv2-white);
+  text-decoration: none;
+  transition:
+    background-color 0.25s var(--hv2-ease),
+    color 0.25s var(--hv2-ease);
+}
+
+.dropdownVisual .dropLink {
+  padding: 0.5rem;
+}
+
+.dropThumb {
+  position: relative;
+  flex: none;
+  width: 4.5rem;
+  height: 3.25rem;
+  border-radius: 0.375rem;
+  overflow: hidden;
+  background: var(--hv2-deep);
+}
+
+.dropThumb img {
+  object-fit: cover;
+  transition: transform 0.6s var(--hv2-ease);
+}
+
+.dropText {
+  display: grid;
+  gap: 0.2rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.dropLabel {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.dropDesc {
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.25s var(--hv2-ease);
+}
+
+.dropArrow {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.25rem;
+  color: var(--hv2-accent);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition:
+    opacity 0.25s var(--hv2-ease),
+    transform 0.25s var(--hv2-ease);
+}
+
+.dropLink:hover,
+.dropLink:focus-visible,
+.dropLink[aria-current='page'] {
+  background: var(--hv2-accent);
+  color: var(--hv2-on-accent);
+}
+
+.dropLink:hover .dropDesc,
+.dropLink:focus-visible .dropDesc,
+.dropLink[aria-current='page'] .dropDesc {
+  color: rgba(3, 34, 42, 0.7);
+}
+
+.dropLink:hover .dropArrow,
+.dropLink:focus-visible .dropArrow {
+  color: var(--hv2-on-accent);
+  opacity: 1;
+  transform: none;
+}
+
+.dropLink:hover .dropThumb img {
+  transform: scale(1.06);
+}
+
+/* ---- actions: phone + Request Assessment ------------------------------- */
+
+.actions {
+  display: none;
+  align-items: center;
+  gap: 0.625rem;
+  flex: none;
+}
+
+.phone {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 0.5rem;
+  color: rgba(255, 255, 255, 0.85);
+  transition:
+    border-color 0.3s var(--hv2-ease),
+    color 0.3s var(--hv2-ease);
+}
+
+.pillButton {
+  display: inline-flex;
+  align-items: center;
+  height: 2.75rem;
+  padding: 0 1.5rem;
+  border-radius: 0.5rem;
+  background: var(--hv2-accent);
+  color: var(--hv2-on-accent);
+  font-family: var(--hv2-mono);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.3s var(--hv2-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .phone:hover {
+    border-color: var(--hv2-accent);
+    color: var(--hv2-accent);
+  }
+  .pillButton:hover {
+    background: var(--hv2-accent-soft);
+  }
+}
+
+/* ---- mobile toggle ------------------------------------------------------ */
+
+.toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-left: auto;
+  min-height: 2.75rem;
+  padding: 0.5rem 0;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  transition:
+    border-color var(--morph),
+    padding var(--morph);
+}
+
+.bar[data-pill] .toggle {
+  width: 2.75rem;
+  padding: 0;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.bar[data-pill] .toggleLabel {
+  display: none;
+}
+
+.toggleLabel {
+  font-family: var(--hv2-mono);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.burger,
+.burger::before {
+  display: block;
+  width: 1.25rem;
+  height: 1.5px;
+  background: currentColor;
+  transition: transform 0.4s var(--hv2-ease);
+}
+
+.burger {
+  position: relative;
+  transform: translateY(-3px);
+}
+
+.burger::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+}
+
+.burgerOpen {
+  transform: translateY(0) rotate(45deg);
+}
+
+.burgerOpen::before {
+  top: 0;
+  transform: rotate(-90deg);
+}
+
+/* ---- mobile panel -------------------------------------------------------
+   Full screen under the bar at the top of the page; a rounded drop-down
+   under the pill once scrolled. */
+
+.panel {
+  pointer-events: auto;
+  position: fixed;
+  inset: 4.5rem 0 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1rem var(--hv2-gutter) calc(2rem + env(safe-area-inset-bottom, 0px));
+  background: var(--hv2-ground);
+  overflow-y: auto;
+}
+
+.bar[data-pill] .panel {
+  inset: calc(var(--pill-top) + var(--pill-h) + 0.5rem) 1rem auto;
+  max-height: calc(100svh - var(--pill-top) - var(--pill-h) - 1.5rem);
+  justify-content: flex-start;
+  padding: 0.75rem 1.25rem 1.25rem;
+  border-radius: 0.5rem;
+  background: rgba(1, 40, 47, 0.97);
+  -webkit-backdrop-filter: blur(30px);
+  backdrop-filter: blur(30px);
+}
+
+/* `hidden` must win over the flex display above. */
+.panel[hidden],
+.panelSub[hidden] {
+  display: none;
+}
+
+.panelLinks {
+  display: flex;
+  flex-direction: column;
+}
+
+.panelLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.85rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--hv2-line-dark);
+  background: none;
+  font: inherit;
+  font-size: clamp(1.5rem, 6vw, 2.25rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  text-align: left;
+  text-decoration: none;
+  color: var(--hv2-white);
+  cursor: pointer;
+}
+
+.panelLink[aria-current='page'],
+.panelLink[aria-expanded='true'] {
+  color: var(--hv2-accent);
+}
+
+.panelLink .caret {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.panelLink[aria-expanded='true'] .caret {
+  transform: rotate(180deg);
+}
+
+.bar[data-pill] .panelLink {
+  padding: 0.7rem 0;
+  font-size: 1.125rem;
+  letter-spacing: normal;
+}
+
+.panelSub {
+  display: grid;
+  gap: 0.125rem;
+  margin: 0;
+  padding: 0.5rem 0 0.75rem;
+  border-bottom: 1px solid var(--hv2-line-dark);
+  list-style: none;
+}
+
+.panelSubLink {
+  display: block;
+  padding: 0.55rem 0 0.55rem 1rem;
+  border-left: 1px solid var(--hv2-line-dark);
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+}
+
+.panelSubLink:hover,
+.panelSubLink:focus-visible {
+  border-left-color: var(--hv2-accent);
+  color: var(--hv2-accent);
+}
+
+.panelActions {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.panelPhone {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--hv2-line-dark);
+  border-radius: var(--hv2-radius-sm);
+  color: var(--hv2-white);
+  font-family: var(--hv2-mono);
+  text-decoration: none;
+}
+
+.panelCta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.25rem;
+  border-radius: var(--hv2-radius-sm);
+  background: var(--hv2-accent);
+  color: var(--hv2-on-accent);
+  font-family: var(--hv2-mono);
+  font-weight: 600;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+/* Full navbar from 1200px; the burger menu below that. */
+@media (min-width: 75rem) {
+  .links {
+    display: block;
+  }
+  .actions {
+    display: flex;
+  }
+  .toggle,
+  .panel {
+    display: none;
+  }
+}
+
+@media (min-width: 87.5rem) {
+  .linkList {
+    gap: 0.5rem;
+  }
+  .link {
+    font-size: 0.875rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    --morph: 0.01s linear;
+  }
+  .dropdown,
+  .caret,
+  .dropArrow,
+  .dropThumb img {
+    transition: none;
+  }
+}

@@ -1,0 +1,204 @@
+/*
+ * /applications/[slug]. Grounds, hero and section heads come from
+ * styles/page.module.css and the "other applications" cards from
+ * styles/applications.module.css; this module holds only what the page adds.
+ */
+
+/* ---- product highlights -------------------------------------------------- */
+
+.highlights {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.highlight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: clamp(1.25rem, 2vw, 1.5rem);
+  border-radius: var(--hv2-radius);
+  background: var(--hv2-paper);
+}
+
+.highlightNum {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: 1.25rem;
+  border-radius: 999px;
+  background: var(--hv2-accent);
+  color: var(--hv2-on-accent);
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.highlightTitle {
+  margin: 0;
+  font-size: clamp(1.25rem, 0.6vw + 1rem, 1.5rem);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.highlightBody {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: var(--hv2-ink-soft);
+}
+
+/* ---- suitability note (claims control: must appear) ---------------------- */
+
+.suitability {
+  display: grid;
+  justify-items: start;
+  gap: 1rem;
+  margin-top: clamp(2rem, 4vw, 3rem);
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+  border-radius: var(--hv2-radius);
+  border: 1px solid var(--hv2-line-light);
+  border-left: 4px solid var(--hv2-accent);
+}
+
+.suitabilityText {
+  max-width: 60rem;
+  margin: 0;
+  font-size: clamp(1rem, 0.4vw + 0.9rem, 1.25rem);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+/* ---- process (dark) ------------------------------------------------------ */
+
+.steps {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: clamp(1.25rem, 2vw, 1.75rem);
+  border-radius: var(--hv2-radius);
+  border: 1px solid var(--hv2-line-dark);
+  background: var(--hv2-navy);
+}
+
+.stepNum {
+  margin-bottom: 1.5rem;
+  color: var(--hv2-accent-bright);
+  font-size: clamp(2.5rem, 2.5vw + 1rem, 3.5rem);
+  font-weight: 500;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+}
+
+.stepTitle {
+  margin: 0;
+  font-size: clamp(1.375rem, 1vw + 1rem, 1.75rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.stepBody {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* ---- related case studies ------------------------------------------------ */
+
+.relatedLayout {
+  display: grid;
+  gap: clamp(2rem, 3.5vw, 3rem);
+}
+
+.relatedHead {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.relatedHead .relatedTitle {
+  margin-bottom: 0;
+}
+
+.related {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.related > li {
+  display: flex;
+}
+
+/* ---- other applications ---------------------------------------------------- */
+
+.others .otherCard {
+  min-height: clamp(20rem, 26vw, 26rem);
+}
+
+/* Five cards: two wide over three on desktop, the odd one full width at two
+   columns. `ul.others` outranks the shared grid's column rules. */
+@media (min-width: 48rem) and (max-width: 63.99rem) {
+  ul.others > li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 64rem) {
+  ul.others {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  ul.others > li {
+    grid-column: span 2;
+  }
+  ul.others > li:nth-child(-n + 2):nth-last-child(n + 4) {
+    grid-column: span 3;
+  }
+  .relatedLayout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    align-items: start;
+  }
+}
+
+/* ---- breakpoints ------------------------------------------------------------ */
+
+@media (min-width: 48rem) {
+  .highlights,
+  .steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .highlights {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .steps {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 80rem) {
+  .highlights {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}

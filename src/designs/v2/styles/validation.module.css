@@ -1,0 +1,114 @@
+.section {
+  padding-block: var(--hv2-section-y);
+  background: var(--hv2-paper);
+  color: var(--hv2-ink);
+  border-top: 1px solid var(--hv2-line-light);
+}
+
+.title {
+  max-width: 22ch;
+  margin-top: 2rem;
+}
+
+.logos {
+  display: grid;
+  gap: 1.25rem;
+  margin: clamp(2rem, 3vw, 2.5rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.logoCard {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+  padding: 2rem;
+  border-radius: var(--hv2-radius-lg);
+  background: var(--hv2-white);
+}
+
+.logoImg {
+  width: auto;
+  max-width: 70%;
+  height: auto;
+  max-height: 7rem;
+  object-fit: contain;
+}
+
+@media (min-width: 48rem) {
+  .logos {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ---- supporter marquee ----------------------------------------------- */
+
+.marqueeBlock {
+  margin-top: clamp(4rem, 8vw, 6rem);
+}
+
+.marqueeLabel {
+  margin-bottom: 1.25rem;
+  font-size: 0.8125rem;
+  color: var(--hv2-ink-soft);
+}
+
+.marquee {
+  display: flex;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.reel {
+  display: flex;
+  flex: none;
+  gap: 1rem;
+  margin: 0;
+  padding: 0 0.5rem;
+  list-style: none;
+  animation: hv2-marquee 60s linear infinite;
+}
+
+.reelItem {
+  display: grid;
+  place-items: center;
+  width: 10rem;
+  height: 5.5rem;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background: var(--hv2-white);
+}
+
+.reelItemDark {
+  background: var(--hv2-ink);
+}
+
+.reelImg {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+@keyframes hv2-marquee {
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .marquee:hover .reel {
+    animation-play-state: paused;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reel {
+    animation: none;
+  }
+  .marquee {
+    overflow-x: auto;
+  }
+}

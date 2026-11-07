@@ -202,7 +202,7 @@ export const whyPen: WhyPenContent = {
   // stated, with their sources, in `capabilitySteps` and `product` below.
   intro:
     'A conventional cast-in-situ footing has to be excavated, formed, reinforced, poured and then left to cure before the structure can move forward. PEN Foundation changes that sequence. A factory-made node is positioned at ground level, engineered nails are driven into qualified soil, and the completed point is ready to receive the structure without an on-site curing cycle. The result is a faster programme, less wet work, less site disruption and a foundation process that works with the land rather than removing it. What that changes on a real project:',
-  link: { label: 'Understand the engineering', href: '/engineering' },
+  link: { label: 'Understand the engineering', href: '/technology' },
 };
 
 /* -------------------------------------------------------------------------- */
@@ -409,7 +409,7 @@ export const product: ProductContent = {
     note: 'PEN is governed by IS 2911 Part 4 (nail / pile system); a conventional isolated footing by IS 6403. Both are designed to code — the difference is which one, and what the ground has to go through to get there.',
   },
   // Routes to /engineering, which is where the specification now lives.
-  cta: { label: 'See the full specification', href: '/engineering' },
+  cta: { label: 'See the full specification', href: '/technology' },
 };
 
 /* -------------------------------------------------------------------------- */
@@ -500,26 +500,32 @@ export const applications: ApplicationsContent = {
   // Every body below is HANDOFF's, verbatim.
   items: [
     {
+      slug: 'residential',
       title: 'Residential',
       body: 'A hassle-free foundation sequence with fewer wet-work dependencies, less site congestion and installation that follows the approved plan without a month-long footing cycle.',
     },
     {
+      slug: 'commercial',
       title: 'Commercial',
       body: 'Faster foundation completion can bring the structure and the revenue-generating asset forward, while keeping the site cleaner and reducing programme uncertainty.',
     },
     {
+      slug: 'eco-resorts-and-farmstays',
       title: 'Eco-resorts and farmstays',
       body: 'Zero excavation helps preserve tree roots, soil structure, slopes and the natural character guests come to experience. Earlier project completion can also bring operations and revenue forward.',
     },
     {
+      slug: 'modular-and-prefab',
       title: 'Modular and prefab',
       body: 'A foundation process aligned with factory-made structures: fast, repeatable, precise and capable of supporting relocatable design strategies where engineered accordingly.',
     },
     {
+      slug: 'low-span-industrial',
       title: 'Low-span industrial',
       body: 'Repeated column grids and schedule-sensitive delivery make suitable sheds and light industrial structures a strong application for a pre-engineered foundation system.',
     },
     {
+      slug: 'ground-mounted-solar',
       title: 'Ground-mounted solar',
       // The "under development" framing is HANDOFF's requirement, not a hedge
       // added here. Its claims-control table also forbids implying the
@@ -641,7 +647,7 @@ export const proof: ProofContent = {
       application: 'Remote-site farmhouse',
       image: {
         src: '/media/images/homepage/Benglaru-Farmhouse.png',
-        alt: 'The Devagiri College Library at night: a tall cylindrical reading tower in a black steel grid, lit from within, with a figure walking past at ground level',
+        alt: 'Aerial view of a two-storey house with a tiled roof and a pool, set among palms',
       },
       challenge:
         'Remote-site execution, labour constraints and a time-sensitive programme. PEN offered a rapid, low-wet-work installation process with reduced dependency on excavation and prolonged site activity.',
@@ -775,7 +781,7 @@ export const calculator: CalculatorContent = {
     treesPrefix: 'Equivalent to planting',
     treesSuffix: 'trees',
     linkLabel: 'see what goes into the ground',
-    href: '#technology',
+    href: '/technology',
   },
   // Label and destination only. The title and supporting line that used to sit
   // above this button repeated the section's own heading and lead, so they were
@@ -811,7 +817,7 @@ export const inAction: InActionContent = {
       category: 'The system',
       title: 'One node, four nails',
       excerpt: 'The precast node and its four battered nails, before they go into the ground.',
-      href: '#technology',
+      href: '/technology',
       image: {
         src: '/media/images/pen.png',
         alt: 'Studio render of the PEN node with four galvanised nails splayed at a batter angle',

@@ -1,0 +1,221 @@
+/* The install film behind the highlights (capability-02, no baked-in bars). */
+.mediaFilm {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ======================================================================
+   HIGHLIGHTS — glass card + numbered accordion over the install film
+   ====================================================================== */
+
+.highlights {
+  position: relative;
+  min-height: 100svh;
+  color: var(--hv2-white);
+  background: var(--hv2-deep);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.highlightsShade {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    180deg,
+    rgba(1, 18, 22, 0.55) 0%,
+    rgba(1, 18, 22, 0.2) 40%,
+    rgba(1, 18, 22, 0.55) 100%
+  );
+}
+
+.highlightsInner {
+  display: grid;
+  gap: 2rem;
+  align-content: center;
+  min-height: 100svh;
+  padding-block: 7rem 4rem;
+}
+
+.highlightsTitle {
+  display: flex;
+  gap: 0.75rem;
+  max-width: 18ch;
+}
+
+.highlightsTitle svg {
+  flex: none;
+  margin-top: 0.35em;
+}
+
+.glassCard {
+  align-self: start;
+  max-width: 21rem;
+  padding: 1.5rem;
+  border-radius: var(--hv2-radius-lg);
+  background: var(--hv2-glass);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+}
+
+.glassTitle {
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.glassCaption {
+  margin-top: 0.4rem;
+  font-size: 0.6875rem;
+  opacity: 0.7;
+}
+
+.glassValue {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin-top: 1.75rem;
+  font-size: 3rem;
+  font-weight: 500;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.glassUnit {
+  font-family: var(--hv2-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0;
+  opacity: 0.7;
+}
+
+.range {
+  margin-top: 1.5rem;
+}
+
+.rangeTrack {
+  position: relative;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.rangeFill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+  background: var(--hv2-accent-bright);
+}
+
+.rangeScale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  font-size: 0.6875rem;
+  opacity: 0.65;
+}
+
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-width: 27rem;
+}
+
+.accItem {
+  background: rgba(48, 82, 86, 0.42);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: background-color 0.35s var(--hv2-ease);
+}
+
+.accItem[open] {
+  background: rgba(22, 50, 55, 0.7);
+}
+
+.accSummary {
+  display: grid;
+  grid-template-columns: 2.25rem 1fr auto;
+  align-items: start;
+  gap: 0.25rem;
+  padding: 1rem 0.75rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.accSummary::-webkit-details-marker {
+  display: none;
+}
+
+.accNum {
+  font-size: 0.8125rem;
+  opacity: 0.6;
+}
+
+.accTitle {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.accPlus {
+  position: relative;
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-top: 0.15rem;
+  transition: transform 0.4s var(--hv2-ease);
+}
+
+.accPlus::before,
+.accPlus::after {
+  content: '';
+  position: absolute;
+  inset: 50% 0 auto;
+  height: 1px;
+  background: currentColor;
+}
+
+.accPlus::after {
+  transform: rotate(90deg);
+}
+
+.accItem[open] .accPlus {
+  transform: rotate(45deg);
+}
+
+.accBody {
+  padding: 0 0.75rem 1.1rem 3rem;
+  font-size: 0.9375rem;
+  line-height: 1.35;
+  opacity: 0.85;
+}
+
+@media (min-width: 64rem) {
+  .highlightsInner {
+    grid-template-columns: 1fr 1fr 1.1fr;
+    grid-template-rows: auto 1fr;
+    align-content: stretch;
+  }
+  .highlightsTitle {
+    grid-column: 1 / 3;
+    padding-left: 18%;
+  }
+  .glassCard {
+    grid-column: 1 / 2;
+    grid-row: 2;
+    margin-left: 18%;
+    align-self: center;
+  }
+  .accordion {
+    grid-column: 3;
+    grid-row: 2;
+    align-self: center;
+    justify-self: start;
+  }
+}

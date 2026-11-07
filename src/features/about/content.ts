@@ -37,7 +37,7 @@ export const numberedFeatures: NumberedFeature[] = [
     body: 'For centuries, foundations have relied on excavation, concrete, curing time, and extensive site preparation. While construction technologies advanced rapidly above the ground, the process below it remained largely unchanged. We did not begin by asking how to build a better foundation — we began by asking whether the assumptions behind conventional foundations were still necessary.',
     imageSide: 'right',
     image: '/media/images/storysection1.png',
-    imageAlt: 'Conventional excavation-heavy foundation work on a construction site',
+    imageAlt: 'Concrete columns and steel beams rising from a slab among palm trees',
   },
   {
     number: '02',
@@ -45,8 +45,7 @@ export const numberedFeatures: NumberedFeature[] = [
     body: 'Tree roots distribute loads efficiently, adapt to changing soil conditions, and stabilize structures without disturbing the surrounding environment. Instead of forcing the ground to adapt to our designs, we asked how engineering could learn from nature\u2019s own foundation system. That principle became the core inspiration behind PEN Foundation\u2019s biomimetic design.',
     imageSide: 'left',
     image: '/media/images/storysection2.png',
-    imageAlt:
-      'Tree roots distributing load through soil — the design principle behind PEN Foundation',
+    imageAlt: 'Aerial view of a cleared plot set out with string lines, paddy fields either side',
   },
   {
     number: '03',

@@ -33,10 +33,19 @@ export const siteConfig = {
 
   /** Order here is the order rendered in the footer. */
   social: [
-    { label: 'LinkedIn', href: '#' },
-    { label: 'X', href: '#' },
-    { label: 'YouTube', href: '#' },
+    { id: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com/company/cdisctechnologiespvtltd/' },
+    { id: 'instagram', label: 'Instagram', href: 'https://www.instagram.com/cdisc_technologies_pvt.ltd/' },
+    { id: 'facebook', label: 'Facebook', href: 'https://www.facebook.com/cdisc.technologies' },
+    { id: 'youtube', label: 'YouTube', href: 'https://www.youtube.com/@CDISCTechnologiesPvtLtd' },
+    { id: 'x', label: 'X', href: 'https://x.com/CdiscL60792' },
   ],
+
+  /** Site credit, shown in the footer's bottom row. */
+  credit: {
+    prefix: 'Designed & Developed by',
+    label: 'TWS (The Web Studio)',
+    href: 'https://thewebstudio.agency',
+  },
 } as const;
 
 export type SiteConfig = typeof siteConfig;

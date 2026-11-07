@@ -1,0 +1,168 @@
+.section {
+  padding-block: var(--hv2-section-y);
+  background: var(--hv2-paper);
+  color: var(--hv2-ink);
+}
+
+.title {
+  max-width: 18ch;
+  margin-top: 2rem;
+  font-size: clamp(2.25rem, 4vw + 0.5rem, 4rem);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-block: clamp(1.5rem, 2.5vw, 2rem) 1.25rem;
+}
+
+.arrows {
+  display: flex;
+  gap: 0.75rem;
+  margin-left: auto;
+}
+
+.arrow {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1.5px solid var(--hv2-ink);
+  border-radius: 999px;
+  background: none;
+  color: var(--hv2-ink);
+  cursor: pointer;
+  transition:
+    background-color 0.3s var(--hv2-ease),
+    opacity 0.3s var(--hv2-ease);
+}
+
+.arrowPrev svg {
+  transform: rotate(180deg);
+}
+
+.arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .arrow:not(:disabled):hover {
+    background: var(--hv2-accent);
+    color: var(--hv2-on-accent);
+  }
+}
+
+.track {
+  display: flex;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0 var(--hv2-gutter) 1rem;
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--hv2-gutter);
+  scrollbar-width: none;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.card {
+  flex: 0 0 min(88vw, 80rem);
+  display: grid;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  border-radius: var(--hv2-radius-lg);
+  background: var(--hv2-white);
+  scroll-snap-align: start;
+}
+
+.media {
+  position: relative;
+  min-height: 16rem;
+  border-radius: var(--hv2-radius);
+  overflow: hidden;
+  background:
+    url('/designs/v2/soil-contours.svg') center / 70% no-repeat,
+    var(--hv2-paper-alt);
+}
+
+.mediaImg {
+  object-fit: cover;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.name {
+  margin-top: 0.5rem;
+}
+
+.location {
+  font-size: 0.8125rem;
+  color: var(--hv2-ink-soft);
+}
+
+.copy {
+  max-width: 40rem;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  width: 100%;
+  margin-top: auto;
+  padding-top: 1.5rem;
+}
+
+.result {
+  max-width: 34rem;
+  font-weight: 500;
+  font-size: 1.0625rem;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.round {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  background: var(--hv2-ink);
+  color: var(--hv2-accent-bright);
+  transition: transform 0.4s var(--hv2-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .round:hover {
+    transform: translateX(3px);
+  }
+}
+
+@media (min-width: 64rem) {
+  .card {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+    min-height: 36rem;
+  }
+  .media {
+    min-height: 0;
+  }
+  .body {
+    padding: 0.5rem 1rem 0.5rem 0.5rem;
+  }
+}

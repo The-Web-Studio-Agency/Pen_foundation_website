@@ -1,170 +1,97 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
-import { RevealText } from '@/components/motion';
-import { LinkedInIcon, XIcon, YouTubeIcon } from '@/components/shared/icons';
-import { Logo } from '@/components/shared/icons/Logo';
-import { NotchedBand } from '@/components/shared/shapes/NotchedBand';
-import {
-  footerBadge,
-  footerColumns,
-  footerContact,
-  footerCta,
-  footerSecondaryLink,
-} from '@/config/navigation';
-import { siteConfig } from '@/config/site';
-import { cn, FOOTER_NOTCH } from '@/lib/utils';
+import { assets } from '@/designs/v2/assets';
+import { closingV2 } from '@/designs/v2/content';
+import s from '@/designs/v2/styles/closing.module.css';
+import t from '@/designs/v2/styles/theme.module.css';
+import { LoopVideo } from '@/designs/v2/components/LoopVideo';
+import { NotchedTop } from '@/designs/v2/components/NotchedTop';
+import { ButtonLink, cx, stagger } from '@/designs/v2/components/primitives';
 
-const SOCIAL_ICONS = {
-  LinkedIn: LinkedInIcon,
-  X: XIcon,
-  YouTube: YouTubeIcon,
-} as const;
+type SocialId = (typeof closingV2.social)[number]['id'];
+
+/** Brand glyphs (simple-icons paths, 24×24), drawn in currentColor. */
+const SOCIAL_ICONS: Record<SocialId, string> = {
+  linkedin:
+    'M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.125 2.062 2.062 0 0 1 0 4.125zM7.119 20.452H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z',
+  instagram:
+    'M12 2.163c3.204 0 3.584.012 4.85.07 1.17.054 1.805.249 2.227.415.56.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.054 1.17-.249 1.805-.413 2.227-.217.562-.477.96-.896 1.382-.42.419-.819.679-1.382.896-.422.164-1.057.36-2.227.413-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.17-.054-1.805-.249-2.227-.413-.562-.217-.96-.477-1.382-.896-.419-.42-.679-.819-.896-1.382-.164-.422-.36-1.057-.413-2.227-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.054-1.17.249-1.805.413-2.227.217-.562.477-.96.896-1.381.42-.419.819-.679 1.382-.896.422-.166 1.057-.361 2.227-.415 1.266-.058 1.646-.07 4.85-.07M12 0C8.741 0 8.333.014 7.053.072 5.775.131 4.902.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.902.131 5.775.072 7.053.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.059 1.277.261 2.149.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.741 24 12 24s3.668-.012 4.948-.072c1.277-.059 2.149-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.689.072-4.948s-.012-3.667-.072-4.947c-.059-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z',
+  facebook:
+    'M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z',
+  youtube:
+    'M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z',
+  x: 'M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z',
+};
+
+/** Opens off-site in a new tab, without handing this page to the new one. */
+const EXTERNAL = { target: '_blank', rel: 'noopener noreferrer' } as const;
 
 /**
- * THE site footer. One footer, every route — rendered by the root layout, so
- * no page composes its own.
- *
- * Ported from the reference clone: a dark slab whose top edge carries the same
- * notch profile as the contact page's divider band, just wider and shallower,
- * opening on a full-width CTA whose heading reveals character by character.
- *
- * Copy comes from `@/config/navigation` and `@/config/site` rather than a data
- * blob of its own — `arch:check` keeps navigation to a single source, and the
- * footer this replaced already read from there.
- *
- * `font-sans` on the heading is now what every heading inherits anyway — the
- * site-wide serif rule it used to override has been removed — but it is left
- * stated because this slogan is the one piece of type repeated on every route,
- * and it should not change typeface if the cascade above it ever does.
+ * The site footer: closing CTA, the full-width wordmark and the link columns,
+ * all on one film-backed forest ground. Rendered on every route by SiteChrome.
+ * Links come from config/navigation.ts; styles from
+ * designs/v2/styles/closing.module.css.
  */
 export function SiteFooter() {
-  const decorativeLine = 'pointer-events-none absolute rounded-[50%] border border-white/[0.06]';
-  /* `py-1.5` with no gap on the list rather than `gap-3` with none: identical
-     spacing on screen, but each link is a ~41px touch target instead of the
-     29px text box it was. Footer links were the smallest tap targets on the
-     site. */
-  const linkClass =
-    'body-3 inline-block py-1.5 text-[var(--c-white)] no-underline transition-colors duration-200 fine:hover:text-[var(--c-accent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--c-accent)]';
-
   return (
-    <NotchedBand
-      dip={FOOTER_NOTCH.dip}
-      shoulder={FOOTER_NOTCH.shoulder}
-      run={FOOTER_NOTCH.run}
-      radius={FOOTER_NOTCH.radius}
-      edges={{ top: true }}
-    >
-      <footer
-        className={cn(
-          'relative w-full overflow-hidden bg-ink text-[var(--c-white)]',
-          'pt-20 pb-[2.09375rem] md:pt-[7.8125rem]',
-          'lg:pt-[14.375rem] lg:pb-5',
-        )}
-      >
-        {/* Direct children of the slab, not of the content column below: both
-            are positioned against the footer's own box and are clipped by its
-            `overflow-hidden`. */}
-        <span aria-hidden className={cn(decorativeLine, '-top-40 -left-60 size-[36rem]')} />
-        <span aria-hidden className={cn(decorativeLine, 'top-10 -right-80 size-[46rem]')} />
+    <NotchedTop className={s.notched}>
+      <footer className={s.closing}>
+        <LoopVideo src={closingV2.film.src} poster={closingV2.film.poster} className={s.film} />
+        <div className={s.shade} aria-hidden />
 
-        {/*
-         * The footer's content sits on the same column as the page above it.
-         *
-         * The grid used to be the `<footer>` element itself, carrying
-         * `px-5 lg:px-[4.375rem]`. That put every footer link 70px from the
-         * viewport edge at 1440 while the page's own content column started at
-         * 120px, so the footer stepped 50px outward from everything above it —
-         * the most visible misalignment on the site, because it happens at the
-         * same place on every route.
-         *
-         * Splitting them fixes it without touching the slab: the dark ground,
-         * its notched top edge and the two decorative arcs stay full-bleed on
-         * the `<footer>`, and only the content moves onto `.site-column` — the
-         * page's one content measure, the same one every section above uses.
-         * The 12-column grid is unchanged and still the direct parent of the
-         * five blocks that place themselves on it.
-         */}
-        <div
-          className={cn(
-            'site-column relative grid grid-cols-2',
-            'gap-x-[2.564vw]',
-            'lg:grid-cols-12 lg:gap-x-[min(1.042vw,26.6666px)]',
-          )}
-        >
-          <div className="col-span-full flex flex-col items-center justify-center lg:row-start-1">
-            <h2
-              className={cn(
-                'mx-auto mb-[2.625rem] text-center font-sans font-normal text-[var(--c-white)]',
-                'text-[7.692vw] leading-[0.95] tracking-[-0.077vw]',
-                'lg:mb-[min(4.688vw,120px)] lg:max-w-[min(57.292vw,1466.6666px)]',
-                'lg:text-[max(4.375rem,min(4.688vw,120px))] lg:tracking-[min(-0.141vw,-3.6px)]',
-              )}
-            >
-              <RevealText as="span" text={footerCta.title} onDark />
-            </h2>
-            {/* The support line under the headline. The headline is a slogan and
-              says nothing about what PEN is; this states the product and its
-              boundary ("suitable low-rise construction") for a reader who
-              arrived at the footer from a page that never told them. */}
-            <p className="body-3 mx-auto mb-10 max-w-[46ch] text-center text-white/70 lg:mb-14">
-              {footerCta.support}
-            </p>
-            <Link
-              href={footerCta.href}
-              className={cn(
-                /* `inline-flex` + `text-center`, and a smaller gutter until
-                   `sm`. As a plain block the button stretched to the full
-                   column while its label wrapped to two ragged lines pinned to
-                   the left padding — measured at 390px, a 342px-wide button
-                   with its text occupying 74–227px and the right half empty.
-                   Shrinking to content and centring the wrap makes the label
-                   sit in its own button at every width. */
-                'label-4 z-[1] inline-flex items-center justify-center rounded-lg bg-white/15 leading-normal',
-                'px-8 py-[1.5625rem] text-center uppercase sm:px-[3.125rem]',
-                'text-[var(--c-white)] no-underline backdrop-blur-[27px] transition-colors duration-300',
-                'fine:hover:bg-[var(--c-accent)] fine:hover:text-white',
-              )}
-            >
-              {footerCta.label}
-            </Link>
+        <div className={cx(s.cta, t.gutter)}>
+          <h2 className={cx(t.display, s.ctaTitle)}>
+            {closingV2.heading.map((line, i) => (
+              <span key={line} className={s.line} data-reveal style={stagger(i)}>
+                {line}
+              </span>
+            ))}
+          </h2>
+          <p className={cx(t.body, s.ctaIntro)} data-reveal style={stagger(2)}>
+            {closingV2.intro}
+          </p>
+          <div data-reveal style={stagger(3)}>
+            <ButtonLink href={closingV2.cta.href} tone="solid">
+              {closingV2.cta.label}
+            </ButtonLink>
+          </div>
+        </div>
+
+        <div className={cx(s.wordmarkWrap, t.gutter)} aria-hidden>
+          <p className={s.wordmark}>{closingV2.wordmark}</p>
+        </div>
+
+        <div className={cx(s.footer, t.gutter)}>
+          <div className={s.lead}>
+            <p className={s.slogan}>{closingV2.slogan}</p>
+            <ul className={s.social} aria-label="PEN Foundation on social media">
+              {closingV2.social.map((item) => (
+                <li key={item.id}>
+                  <a
+                    href={item.href}
+                    {...EXTERNAL}
+                    className={s.socialLink}
+                    aria-label={`${item.label} (opens in a new tab)`}
+                    title={item.label}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                      <path d={SOCIAL_ICONS[item.id]} />
+                    </svg>
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          {/*
-           * Mobile rhythm: 80 / 64 / 64, then 80 again before the copyright.
-           *
-           * These four stacked blocks were spaced 96, 48, 128 and 80px — no
-           * rhythm at all, and the 128px gap opened a hole above "Reach us"
-           * that read as a missing block rather than as separation. The three
-           * content blocks now share one interval and the legal line keeps a
-           * wider one, so the footer reads as three groups and a footer note.
-           * Every `lg:` value is unchanged: on the desktop row these sit
-           * side by side and the margins are not what separates them.
-           */}
-          <div className="col-span-full mt-20 flex flex-col gap-8 lg:col-span-4 lg:row-start-2 lg:mt-32">
-            {/* `self-start` matters: this is a stretch-aligned flex column, so
-              without it the image box fills the column and `object-contain`
-              centres the mark instead of leaving it flush left. */}
-            <Logo className="h-8 w-auto self-start" />
-            <div className="flex flex-col gap-2">
-              <p className="text-2xl font-semibold">{footerBadge.title}</p>
-              <p className="text-sm leading-relaxed text-white/70">
-                {footerBadge.lines.map((line) => (
-                  <span key={line} className="block">
-                    {line}
-                  </span>
-                ))}
-              </p>
-            </div>
-          </div>
-
-          <div className="col-span-full mt-16 grid grid-cols-2 gap-8 lg:col-start-6 lg:col-end-10 lg:row-start-2 lg:mt-32">
-            {footerColumns.map((column) => (
-              <div key={column.heading} className="flex flex-col gap-6">
-                <p className="label-4 m-0 text-white/70 uppercase">{column.heading}</p>
-                <ul className="flex flex-col">
-                  {column.links.map((link) => (
-                    <li key={link.label}>
-                      <Link href={link.href} className={linkClass}>
+          <nav className={s.columns} aria-label="Footer">
+            {closingV2.columns.map((col) => (
+              <div key={col.heading} className={s.col}>
+                <p className={cx(t.mono, s.colHead)}>{col.heading}</p>
+                <ul className={s.colList}>
+                  {col.links.map((link) => (
+                    <li key={link.href}>
+                      <Link href={link.href} className={cx(t.mono, s.colLink)}>
                         {link.label}
                       </Link>
                     </li>
@@ -172,59 +99,50 @@ export function SiteFooter() {
                 </ul>
               </div>
             ))}
-          </div>
-
-          <div className="col-span-full mt-16 flex flex-col gap-10 lg:col-start-10 lg:col-end-13 lg:row-start-2 lg:mt-32">
-            <div className="flex flex-col gap-3">
-              <p className="label-4 m-0 text-white/70 uppercase">{footerContact.heading}</p>
-              <Link href={footerContact.promptHref} className={linkClass}>
-                {footerContact.prompt}
-              </Link>
-              <a href={`tel:${footerContact.phone.replace(/[^\d+]/g, '')}`} className={linkClass}>
-                {footerContact.phone}
-              </a>
-              <p className="body-3 m-0 text-white/50">{footerContact.phoneNote}</p>
+            <div className={s.col}>
+              <p className={cx(t.mono, s.colHead)}>{closingV2.contact.heading}</p>
+              <ul className={s.colList}>
+                <li>
+                  <a
+                    href={`tel:${closingV2.contact.phone.replace(/\s/g, '')}`}
+                    className={cx(t.mono, s.colLink)}
+                  >
+                    {closingV2.contact.phone}
+                  </a>
+                </li>
+                <li>
+                  <Link href={closingV2.contact.contactHref} className={cx(t.mono, s.colLink)}>
+                    Contact
+                  </Link>
+                </li>
+              </ul>
             </div>
+          </nav>
+        </div>
 
-            {/* Only the accounts that actually have a URL. Every entry in
-              `siteConfig.social` still ships `href: '#'`, so all three icons
-              were live links that went nowhere — three dead controls in the
-              footer of every page. Filling in a real URL brings the icon back
-              with no change here. */}
-            <ul className="flex items-center gap-5">
-              {siteConfig.social.map((social) => {
-                const Icon = SOCIAL_ICONS[social.label as keyof typeof SOCIAL_ICONS];
-                if (!Icon || !social.href || social.href === '#') return null;
-                return (
-                  <li key={social.label}>
-                    <a
-                      href={social.href}
-                      aria-label={social.label}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="-m-3 inline-flex size-11 items-center justify-center text-[var(--c-white)] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--c-accent)] fine:hover:text-[var(--c-accent)]"
-                    >
-                      <Icon className="size-5" />
-                    </a>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-
-          <div className="col-span-full mt-20 flex flex-col gap-1 text-white/45 lg:row-start-3 lg:mt-16">
-            <p className="m-0 text-sm">
-              Copyright {siteConfig.name} © {new Date().getFullYear()} All Rights Reserved
-            </p>
-            <Link
-              href={footerSecondaryLink.href}
-              className="w-fit py-1.5 text-sm text-white/45 no-underline transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--c-accent)] fine:hover:text-[var(--c-accent)]"
-            >
-              {footerSecondaryLink.label}
-            </Link>
-          </div>
+        <div className={cx(s.bottom, t.gutter)}>
+          <p className={s.copyright}>
+            <Image
+              src={assets.logo.src}
+              alt=""
+              width={assets.logo.width}
+              height={assets.logo.height}
+              className={s.bottomLogo}
+            />
+            {closingV2.copyright}
+          </p>
+          <p className={s.credit}>
+            {closingV2.credit.prefix}{' '}
+            <a href={closingV2.credit.href} {...EXTERNAL} className={s.bottomLink}>
+              {closingV2.credit.label}
+              <span className={s.srOnly}> (opens in a new tab)</span>
+            </a>
+          </p>
+          <a href="#top" className={s.bottomLink}>
+            Back to top ↑
+          </a>
         </div>
       </footer>
-    </NotchedBand>
+    </NotchedTop>
   );
 }

@@ -1,0 +1,185 @@
+.section {
+  padding-block: clamp(4rem, 7vw, 6rem) var(--hv2-section-y);
+  background: var(--hv2-white);
+  color: var(--hv2-ink);
+}
+
+.head {
+  display: grid;
+  gap: 2rem;
+  margin-bottom: clamp(2rem, 3.5vw, 3rem);
+}
+
+.title {
+  max-width: 16ch;
+}
+
+.lead {
+  max-width: 40rem;
+  color: var(--hv2-ink-soft);
+}
+
+.grid {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The whole card is the link. Layers, back to front: photo, dark shade (for
+   legible white text), lime tint (hover), then the arrow and text. */
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+  min-height: clamp(26rem, 34vw, 34rem);
+  padding: clamp(1.25rem, 2vw, 1.75rem);
+  border-radius: var(--hv2-radius-lg);
+  overflow: hidden;
+  color: var(--hv2-white);
+  text-decoration: none;
+  isolation: isolate;
+  transition: color 0.45s var(--hv2-ease);
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--hv2-accent);
+  outline-offset: 3px;
+}
+
+.cardImage {
+  z-index: -3;
+  object-fit: cover;
+  transition:
+    transform 1.2s var(--hv2-ease),
+    filter 0.45s var(--hv2-ease);
+}
+
+.cardShade {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: linear-gradient(
+    180deg,
+    rgba(1, 18, 22, 0.15) 0%,
+    rgba(1, 18, 22, 0) 30%,
+    rgba(1, 18, 22, 0.82) 100%
+  );
+  transition: opacity 0.45s var(--hv2-ease);
+}
+
+.cardTint {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--hv2-accent);
+  opacity: 0;
+  transition: opacity 0.45s var(--hv2-ease);
+}
+
+.cardArrow {
+  position: absolute;
+  top: clamp(1.25rem, 2vw, 1.75rem);
+  right: clamp(1.25rem, 2vw, 1.75rem);
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(8px);
+  transition:
+    background-color 0.45s var(--hv2-ease),
+    color 0.45s var(--hv2-ease),
+    transform 0.45s var(--hv2-ease);
+}
+
+.cardText {
+  display: grid;
+  gap: 0.875rem;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: clamp(1.5rem, 1.2vw + 0.9rem, 2.125rem);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+}
+
+.cardBody {
+  margin: 0;
+  max-width: 34ch;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  opacity: 0.86;
+}
+
+/* Hover (and keyboard focus): the whole card washes lime, ink text on top,
+   the photo still faintly there underneath. */
+@media (hover: hover) and (pointer: fine) {
+  .card:hover .cardImage {
+    transform: scale(1.04);
+  }
+}
+
+.card:hover,
+.card:focus-visible {
+  color: var(--hv2-on-accent);
+}
+
+.card:hover .cardImage,
+.card:focus-visible .cardImage {
+  filter: grayscale(1);
+}
+
+.card:hover .cardShade,
+.card:focus-visible .cardShade {
+  opacity: 0;
+}
+
+.card:hover .cardTint,
+.card:focus-visible .cardTint {
+  opacity: 0.9;
+}
+
+.card:hover .cardArrow,
+.card:focus-visible .cardArrow {
+  background: var(--hv2-on-accent);
+  color: var(--hv2-accent);
+  transform: rotate(-45deg);
+}
+
+.note {
+  max-width: 60rem;
+  margin-top: 2.5rem;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  text-transform: none;
+  color: var(--hv2-ink-soft);
+}
+
+@media (min-width: 48rem) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 64rem) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .cardImage,
+  .cardShade,
+  .cardTint,
+  .cardArrow {
+    transition: none;
+  }
+}

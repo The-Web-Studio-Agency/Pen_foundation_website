@@ -14,4 +14,6 @@ export {
   faqIntro,
   faqTabs,
   testimonial,
+  certificate,
+  documents,
 } from './content';

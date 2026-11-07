@@ -4,9 +4,6 @@ import type { ReactNode } from 'react';
 import { fontVariables } from '@/config/fonts';
 import { rootMetadata } from '@/config/seo';
 import { AppProviders } from '@/providers/AppProviders';
-import { SiteHeader } from '@/components/layout/SiteHeader';
-import { SiteFooter } from '@/components/layout/SiteFooter';
-import { PENPreloader } from '@/components/preloader/PENPreloader';
 import './globals.css';
 
 export const metadata: Metadata = rootMetadata;
@@ -40,9 +37,11 @@ const ENTRY_FLAG_SCRIPT = `try{if(sessionStorage.getItem('pen-entered')==='1'){d
 const NO_SCRIPT_STYLES = `[data-preloader]{display:none!important}`;
 
 /**
- * Application shell. Deliberately thin: fonts come from config, cross-cutting
- * context from AppProviders, and chrome from the layout components. Nothing
- * page-specific belongs here.
+ * Application shell. Deliberately thin: fonts come from config and cross-cutting
+ * context from AppProviders. Nothing page-specific belongs here — and neither
+ * does site chrome any more: the header, footer and preloader are added by
+ * `app/(site)/layout.tsx` (via `SiteChrome`), so routes outside that group, such
+ * as the /home-v2 design concept, render with their own chrome instead.
  */
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
@@ -60,34 +59,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         </noscript>
       </head>
       <body>
-        <AppProviders>
-          <PENPreloader />
-          {/*
-           * Skip link. The header carries seven navigation items, a call
-           * control and a CTA, so reaching the page content by keyboard meant
-           * nine tab stops on every route — and the same nine again on the next
-           * one. It is the first thing in the tab order and invisible until it
-           * takes focus, which is the whole convention: `sr-only` until
-           * `focus-visible`, then a real button over the header.
-           *
-           * `z-[60]` clears the header's `z-50`, or it would land underneath the
-           * pill it is trying to skip.
-           */}
-          <a
-            href="#main"
-            className="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:top-4 focus-visible:left-4 focus-visible:z-[60] focus-visible:rounded-lg focus-visible:bg-ink focus-visible:px-5 focus-visible:py-3 focus-visible:text-sm focus-visible:font-medium focus-visible:text-white focus-visible:ring-2 focus-visible:ring-[var(--c-accent)]"
-          >
-            Skip to content
-          </a>
-          <SiteHeader />
-          {/* `tabIndex={-1}`: the skip link moves focus here, and without it the
-              jump would move the viewport but leave focus in the header, so the
-              next Tab would go straight back into the nav that was skipped. */}
-          <main id="main" tabIndex={-1}>
-            {children}
-          </main>
-          <SiteFooter />
-        </AppProviders>
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   );

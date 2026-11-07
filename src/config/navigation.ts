@@ -1,7 +1,12 @@
+import { applications } from '@/content/data/homepage';
+
 export interface NavMegaMenuItem {
   label: string;
   href: string;
-  description: string;
+  /** One line under the label in a dropdown. Optional: an item may be name-only. */
+  description?: string;
+  /** Thumbnail shown beside the label in a dropdown (path under /public). */
+  image?: string;
 }
 
 export interface NavItem {
@@ -26,57 +31,76 @@ export interface FooterLinkColumn {
  */
 
 /**
- * Primary navigation, in display order.
+ * Where each application's page lives, and the photo its menu entry and card
+ * show. Keyed by slug from `applications.items` in content/data/homepage.ts —
+ * the six applications are listed there once and every surface (menu, homepage
+ * cards, the /applications/[slug] pages) is built from that list.
+ */
+export const applicationHref = (slug: string) => `/applications/${slug}`;
+
+export const applicationImages: Record<string, { src: string; alt: string }> = {
+  residential: {
+    src: '/media/images/storysection3.png',
+    alt: 'A timber-framed house raised on PEN nodes, their nails splayed into the ground beneath it',
+  },
+  commercial: {
+    src: '/media/images/homepage/devagiri-library.png',
+    alt: 'A library at night, its cylindrical reading tower lit from within',
+  },
+  'eco-resorts-and-farmstays': {
+    src: '/media/images/homepage/pen-installed_image.png',
+    alt: 'A PEN node installed at ground level, its nails driven into leaf-covered soil',
+  },
+  'modular-and-prefab': {
+    src: '/media/images/homepage/startup-ecoashram.png',
+    alt: 'A curved-roof pavilion raised on a light frame among trees',
+  },
+  'low-span-industrial': {
+    src: '/media/images/brick-house.png',
+    alt: 'A steel and masonry structure standing on completed PEN foundations at a Kerala site',
+  },
+  'ground-mounted-solar': {
+    src: '/media/images/storysection2.png',
+    alt: 'Aerial view of a cleared plot set out with string lines, paddy fields either side',
+  },
+};
+
+/**
+ * Primary navigation, in display order. An item is a dropdown when it has
+ * `items`, and a plain link otherwise.
  *
- * One ordered list rather than separate "menus" and "links" arrays: the header
- * used to render every mega-menu first and every plain link after, so ordering
- * was a property of which array an item sat in. An item is a dropdown when it
- * has `items`, and a plain link otherwise.
- *
- * Every item is a plain link. The dropdown branch is deliberately kept in
- * `NavItem`, `SiteHeader` and `MobileNavPanel` — it is data-driven, so adding
- * `items` back to any entry restores it with no component change.
- *
- * SET BY HANDOFF, replacing the four-item flat nav: "Home / Engineering /
- * Applications / Projects / Research / About / Contact. Gallery may sit under
- * Resources. Use 'Projects' as the visible term instead of the vague label
- * 'Works'." Applications and Projects point at homepage sections rather than
- * routes — `/applications` is still an empty `noIndex` stub, and the homepage
- * section is the real content — so the header never lands on a blank page.
- *
- * `/resources` is NO LONGER in the header. It was linked here on request, but
- * the handoff's nav does not include it and its sections still carry the
- * Terminal Industries clone copy they were ported with (computer vision, gate
- * lanes — see `features/resources/content.ts`). Leaving it out of the header
- * while it is still `noIndex`'d is the consistent position. Give it PEN's own
- * words, then relink it, drop the `noIndex` in `app/resources/page.tsx` and the
- * `Disallow` in `app/robots.ts`, and hang Gallery under it as the handoff
- * suggests.
+ * Home · About · Technology · Applications ▾ · Projects · Resources ▾ · Contact.
+ * Applications lists the six applications, each to its own page; Resources
+ * holds Blogs, Docs, Certifications and Gallery.
  */
 export const primaryNav: NavItem[] = [
   { label: 'Home', href: '/' },
-  // Points at the homepage's system block, not `/engineering`. That route is
-  // not ready for visitors yet, so nothing in the chrome sends anyone to it —
-  // the same arrangement Applications has had. `WhatIsPen` renders with
-  // `id="technology"`: the mechanism, the parts with their specifications and
-  // the comparison against a conventional footing, which is the engineering
-  // story a visitor clicking this expects.
-  { label: 'Engineering', href: '/#technology' },
-  { label: 'Applications', href: '/#applications' },
-  // The homepage `Proof` section, not the `/projects` route — asked for: the
-  // header should move you down the page rather than navigate away from it.
-  // `SectionShell` renders that section with `id="projects"` and
-  // `scroll-mt-nav`, so the anchor lands it below the fixed pill.
-  //
-  // `/projects` is NOT dead: it is still routed, still in the sitemap, still
-  // linked from the footer and from this section's own "See all projects" CTA.
-  // Only the header stopped pointing at it.
-  { label: 'Projects', href: '/#projects' },
-  // Points at the homepage's validation block for the same reason. That is the
-  // NIT Calicut testing chapter — the evidence a visitor clicking "Research"
-  // is after — while `/research` and its articles stay unlinked.
-  { label: 'Research', href: '/#validation' },
   { label: 'About', href: '/about' },
+  { label: 'Technology', href: '/technology' },
+  {
+    label: 'Applications',
+    href: '/#applications',
+    items: applications.items.map((item) => ({
+      label: item.title,
+      href: applicationHref(item.slug),
+      image: applicationImages[item.slug]?.src,
+    })),
+  },
+  { label: 'Projects', href: '/projects' },
+  {
+    label: 'Resources',
+    href: '/blogs',
+    items: [
+      { label: 'Blogs', href: '/blogs', description: 'Notes from the engineering journal' },
+      { label: 'Docs', href: '/docs', description: 'Technical documentation and downloads' },
+      {
+        label: 'Certifications',
+        href: '/certifications',
+        description: 'Listed in the GRIHA Product Catalogue',
+      },
+      { label: 'Gallery', href: '/gallery', description: 'Projects, installs and testing on site' },
+    ],
+  },
   { label: 'Contact', href: '/contact' },
 ];
 
@@ -110,32 +134,25 @@ export const footerColumns: FooterLinkColumn[] = [
     links: [
       { label: 'Home', href: '/' },
       { label: 'About', href: '/about' },
-      // No Engineering row. The header keeps the label (pointed at the
-      // homepage's `#technology` block) because that is the handoff's
-      // information architecture, but the footer is a route index and
-      // `/engineering` is not ready for visitors — so it is simply absent here
-      // rather than listed as a link to somewhere else. Restore it when the
-      // route is relinked.
-      // Points at the homepage section, not `/applications`: that route renders
-      // an empty `<section aria-hidden />` placeholder, so the footer was
-      // sending visitors to a blank white page. The homepage section is the
-      // real content, and it is where the header's Applications item goes too.
-      { label: 'Applications', href: '/#applications' },
+      { label: 'Technology', href: '/technology' },
+      { label: 'Projects', href: '/projects' },
+      { label: 'Contact', href: '/contact' },
     ],
   },
   {
-    // Renamed from "Resources" on HANDOFF's grouping. These three routes are
-    // the evidence trail — deployments, testing and the visual record — and
-    // calling the group that says what it is for.
-    heading: 'Evidence',
+    heading: 'Applications',
+    links: applications.items.map((item) => ({
+      label: item.title,
+      href: applicationHref(item.slug),
+    })),
+  },
+  {
+    heading: 'Resources',
     links: [
-      { label: 'Projects', href: '/projects' },
-      // No Research row, for the same reason as Engineering above.
+      { label: 'Blogs', href: '/blogs' },
+      { label: 'Docs', href: '/docs' },
+      { label: 'Certifications', href: '/certifications' },
       { label: 'Gallery', href: '/gallery' },
-      // TODO(content): /resources stays out of the header AND the footer while
-      // it still carries clone copy and is noIndex'd. HANDOFF suggests hanging
-      // Gallery under it once it is real. Uncomment then.
-      // { label: 'Resources', href: '/resources' },
     ],
   },
 ];
@@ -177,5 +194,5 @@ export const footerBadge = {
 /** Secondary link under the copyright line. */
 export const footerSecondaryLink = {
   label: 'Research & Documentation',
-  href: '/research',
+  href: '/blogs',
 } as const;

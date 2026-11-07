@@ -1,0 +1,338 @@
+/*
+ * /contact — page-specific layout and the v2 enquiry form. Grounds, hero and
+ * section heads come from styles/page.module.css.
+ */
+
+/* ---- form section ------------------------------------------------------- */
+
+.formGrid {
+  display: grid;
+  grid-template-areas: 'head' 'form' 'details';
+  gap: clamp(2.5rem, 5vw, 4rem);
+  align-items: start;
+}
+
+.formGrid > .formHead {
+  grid-area: head;
+  margin-bottom: 0;
+}
+
+.formDetails {
+  grid-area: details;
+  display: grid;
+  gap: 2rem;
+  align-content: start;
+}
+
+.helps {
+  display: grid;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--hv2-line-light);
+}
+
+.helpsLabel {
+  margin: 0;
+  color: var(--hv2-ink-soft);
+}
+
+.helpList {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.helpItem {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  font-size: clamp(1.125rem, 0.6vw + 0.95rem, 1.375rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.helpMark {
+  flex: none;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 0.2rem;
+  background: var(--hv2-accent);
+  box-shadow: 0 0 0 1px rgba(3, 34, 42, 0.12);
+}
+
+.trust {
+  max-width: 30rem;
+  margin: 0;
+  color: var(--hv2-ink-soft);
+}
+
+.formCol {
+  grid-area: form;
+  min-width: 0;
+}
+
+@media (min-width: 64rem) {
+  .formGrid {
+    grid-template-areas: 'head form' 'details form';
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+    grid-template-rows: auto 1fr;
+    gap: 2rem clamp(3rem, 6vw, 6rem);
+  }
+}
+
+/* ---- form card ---------------------------------------------------------- */
+
+.formCard {
+  display: grid;
+  gap: 2.5rem;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border-radius: var(--hv2-radius-lg);
+  background: var(--hv2-ground);
+  color: var(--hv2-white);
+  box-shadow: 0 2.5rem 5rem rgba(1, 40, 47, 0.18);
+}
+
+.form {
+  display: grid;
+  gap: 2.5rem;
+}
+
+.fields {
+  display: grid;
+  gap: 2rem 2.5rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.label {
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.required {
+  color: var(--hv2-accent-bright);
+}
+
+.input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.6rem 0 0.5rem;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 0;
+  background: transparent;
+  color: var(--hv2-white);
+  font: inherit;
+  font-size: 1.0625rem;
+  letter-spacing: -0.01em;
+  appearance: none;
+  outline: none;
+  transition: border-color 0.3s var(--hv2-ease);
+}
+
+.input::placeholder {
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.input:focus,
+.input:focus-visible {
+  border-bottom-color: var(--hv2-accent-bright);
+  box-shadow: 0 1px 0 0 var(--hv2-accent-bright);
+}
+
+.input:user-invalid {
+  border-bottom-color: #f2a48a;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .input:hover:not(:focus) {
+    border-bottom-color: rgba(255, 255, 255, 0.6);
+  }
+}
+
+.select {
+  padding-right: 2rem;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 6 8 10.5 12.5 6' stroke='%23c8f09a' stroke-width='1.8'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.25rem center;
+  background-size: 1rem;
+}
+
+/* The disabled placeholder option reads as a placeholder until chosen. */
+.select:has(option[value='']:checked) {
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.select option {
+  background: var(--hv2-ground);
+  color: var(--hv2-white);
+}
+
+.submitRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+}
+
+.submit {
+  justify-content: space-between;
+  min-width: min(100%, 14rem);
+  cursor: pointer;
+}
+
+.submitNote {
+  margin: 0;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+@media (min-width: 40rem) {
+  .fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .fieldFull {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 39.99rem) {
+  .submit {
+    width: 100%;
+  }
+}
+
+/* ---- acknowledgement ---------------------------------------------------- */
+
+.ack {
+  display: grid;
+  gap: 1.25rem;
+  align-content: center;
+  min-height: 22rem;
+  animation: ack-in 0.8s var(--hv2-ease) both;
+}
+
+.ackTitle {
+  max-width: 18ch;
+  margin: 0;
+}
+
+.ackTitle:focus {
+  outline: none;
+}
+
+.ackBody {
+  max-width: 42ch;
+  margin: 0;
+  font-size: 1.0625rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.ackActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.resetBtn {
+  background: transparent;
+  cursor: pointer;
+}
+
+@keyframes ack-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1rem, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ack {
+    animation: none;
+  }
+}
+
+/* ---- direct lines ------------------------------------------------------- */
+
+.direct {
+  display: grid;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--hv2-line-light);
+}
+
+.lines {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.line {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0.75rem 0.75rem 1.25rem;
+  border-radius: var(--hv2-radius);
+  background: var(--hv2-white);
+  color: var(--hv2-ink);
+  text-decoration: none;
+  transition: background-color 0.45s var(--hv2-ease);
+}
+
+.lineLabel {
+  font-size: 0.75rem;
+  color: var(--hv2-ink-soft);
+}
+
+.lineValue {
+  font-size: clamp(1.25rem, 0.8vw + 1rem, 1.625rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+
+.line > :nth-child(3) {
+  transition:
+    transform 0.4s var(--hv2-ease),
+    background-color 0.4s var(--hv2-ease),
+    color 0.4s var(--hv2-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .line:hover {
+    background: var(--hv2-accent);
+  }
+  .line:hover .lineLabel {
+    color: var(--hv2-ink);
+  }
+  .line:hover > :nth-child(3) {
+    transform: translateX(3px);
+    background: var(--hv2-ink);
+    color: var(--hv2-accent-bright);
+  }
+}
+
+@media (max-width: 23.99rem) {
+  .line {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .lineLabel {
+    grid-column: 1 / -1;
+  }
+}

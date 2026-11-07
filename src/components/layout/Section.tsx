@@ -39,8 +39,7 @@ export function Section({ id, children, className, padded = true }: SectionProps
       id={id}
       className={cn(
         'relative w-full overflow-hidden bg-white text-ink',
-        padded &&
-          'px-6 py-[clamp(4.5rem,14vh,9rem)] md:px-16 md:py-[clamp(6rem,18vh,11rem)]',
+        padded && 'px-6 py-[clamp(4.5rem,14vh,9rem)] md:px-16 md:py-[clamp(6rem,18vh,11rem)]',
         className,
       )}
     >

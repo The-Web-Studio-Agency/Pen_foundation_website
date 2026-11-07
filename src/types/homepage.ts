@@ -151,6 +151,8 @@ export interface ProcessContent extends SectionHeaderContent {
 }
 
 export interface ApplicationItem {
+  /** URL segment of the application's own page: /applications/<slug>. */
+  slug: string;
   title: string;
   body: string;
 }
