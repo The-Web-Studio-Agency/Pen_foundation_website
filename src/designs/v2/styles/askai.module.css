@@ -1,0 +1,97 @@
+/* Ask AI: a dark rounded panel on the white ground after the FAQ — copy on
+   the left, the prompt as it will arrive and the two assistants on the right. */
+
+.section {
+  padding-block: 0 var(--hv2-section-y);
+  background: var(--hv2-white);
+  color: var(--hv2-ink);
+}
+
+.panel {
+  position: relative;
+  display: grid;
+  gap: 2.5rem;
+  padding: clamp(2rem, 5vw, 4rem);
+  overflow: hidden;
+  border-radius: var(--hv2-radius-lg);
+  background:
+    radial-gradient(40rem 24rem at 100% 0%, rgba(247, 220, 46, 0.14), transparent 60%),
+    var(--hv2-ground);
+  color: var(--hv2-white);
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.25rem;
+}
+
+.title {
+  max-width: 16ch;
+  margin: 0;
+}
+
+.lead {
+  max-width: 30rem;
+  margin: 0;
+  font-size: clamp(1rem, 0.3vw + 0.92rem, 1.1875rem);
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.ask {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+/* The question, set like a chat box. */
+.prompt {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 1.25rem 1.4rem;
+  border: 1px solid var(--hv2-line-dark);
+  border-radius: var(--hv2-radius);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.promptLabel {
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--hv2-accent-bright);
+}
+
+.promptText {
+  font-size: clamp(1.25rem, 1vw + 0.9rem, 1.75rem);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (min-width: 64rem) {
+  .panel {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 4rem;
+  }
+}

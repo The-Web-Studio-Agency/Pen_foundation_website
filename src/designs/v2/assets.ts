@@ -32,12 +32,6 @@ export const assets = {
     poster: '/media/images/homepage/capability-01-poster.webp',
   },
 
-  /** An installed node with its nails in the ground, on site. */
-  installFilm: {
-    src: '/media/videos/capability-02.mp4',
-    poster: '/media/images/homepage/capability-02-poster.webp',
-  },
-
   /** Studio render of the node, on white. */
   productRender: {
     src: '/media/images/pen.png',
@@ -47,8 +41,8 @@ export const assets = {
   },
 
   installedCloseUp: {
-    src: '/media/images/homepage/pen-installed_image.png',
-    alt: 'A PEN node installed at ground level, its nails driven into leaf-covered soil',
+    src: '/media/images/homepage/capability-02-poster.webp',
+    alt: 'A PEN precast node set on prepared ground, its nails splayed into the soil',
   },
 
   aerialSetOut: {

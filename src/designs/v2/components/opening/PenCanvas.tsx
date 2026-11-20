@@ -2,7 +2,15 @@
 
 import { Environment, Html, Lightformer, useGLTF } from '@react-three/drei';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  type CSSProperties,
+  type RefObject,
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   AdditiveBlending,
   Box3,
@@ -21,23 +29,85 @@ import {
 } from 'three';
 
 import s from '../../styles/opening3d.module.css';
+import { cx } from '../primitives';
 import { type ProgressSource, range, smooth } from '../scroll/useScrollProgress';
 
 export interface HudItem {
-  /** Which part of the model the callout points at. */
-  anchor: 'node' | 'bolts' | 'nail' | 'tip';
+  /**
+   * Which part of the model the callout points at. The first four are the
+   * hero's spots; `nodeFace`, `nailFront`, `nailRight` and `tipEnd` mark the
+   * node's front face, the front-left and front-right nail pipes and the
+   * front-right carbide tip as seen
+   * in the default 45° view, for a labelled diagram.
+   */
+  anchor: 'node' | 'bolts' | 'nail' | 'tip' | 'nodeFace' | 'nailFront' | 'nailRight' | 'tipEnd';
   chip: string;
   lines: readonly string[];
+  /** With `hudMode="all"`: which way the readout opens, and how high (rem). */
+  side?: 'left' | 'right';
+  rise?: number;
 }
+
+/**
+ * How big the model sits and where, in the visible frame. `width` and
+ * `height` are shares of the frame the model may take (the smaller wins);
+ * `x` / `y` move it, in fractions of the frame width / scene units.
+ */
+export interface PenFit {
+  width: number;
+  portraitWidth: number;
+  height: number;
+  x: number;
+  y: number;
+  portraitY: number;
+}
+
+/** The homepage hero: sized to sit between the two copy blocks. */
+const HERO_FIT: PenFit = {
+  width: 0.36,
+  portraitWidth: 0.71,
+  height: 0.77,
+  x: 0,
+  y: -0.42,
+  portraitY: 0.05,
+};
+
+/** For a model that is not scroll-driven: progress stays at 0. */
+const STILL: ProgressSource = {
+  subscribe: (listener) => {
+    listener(0);
+    return () => {};
+  },
+  current: () => 0,
+};
 
 interface PenCanvasProps {
   src: string;
-  progress: ProgressSource;
+  /** Scroll progress driving the grow and dive. Omit for a still stage. */
+  progress?: ProgressSource;
   /** Share of the overall progress that belongs to the 3D act. */
-  split: number;
+  split?: number;
+  /** Size and position of the model. Defaults to the homepage hero's. */
+  fit?: PenFit;
+  /** The two smaller copies drifting behind the model. On by default. */
+  satellites?: boolean;
+  /**
+   * `cycle` (default) shows one callout at a time; `all` pins every callout
+   * at once, each with a numbered dot, as a labelled diagram.
+   */
+  hudMode?: 'cycle' | 'all';
+  /** Ground the model sits on: the floor rings and readouts follow it. */
+  tone?: 'dark' | 'light';
+  /** Stop rendering, e.g. while the canvas is off screen. */
+  paused?: boolean;
   reduced: boolean;
   hud: readonly HudItem[];
   onReady: () => void;
+  /**
+   * Element that takes the drag-to-rotate gestures. The hero copy sits over
+   * the canvas, so the canvas itself never sees the pointer; the stage does.
+   */
+  dragTarget: RefObject<HTMLElement | null>;
 }
 
 const FOV = 28;
@@ -50,7 +120,10 @@ const CAMERA_Z = 16;
  *
  * Scroll (via `progress`) drives everything except the idle drift: the model
  * turns and grows as the headline leaves, then the camera dives into the node
- * while the film is revealed over the top (see Opening.tsx).
+ * while the film is revealed over the top (see Opening.tsx). Visitors can also
+ * turn the model by dragging: any direction with a mouse, sideways with a
+ * finger (an up-down swipe stays a page scroll). It keeps spinning briefly
+ * after release, and the tilt eases back to level.
  */
 export function PenCanvas(props: PenCanvasProps) {
   return (
@@ -86,6 +159,12 @@ const SATELLITES = [
   { x: -0.34, y: -0.24, z: -6, scale: 0.13, spin: [-0.03, 0.06, 0.04], phase: 2.1 },
   { x: 0.35, y: -0.22, z: -6, scale: 0.13, spin: [0.03, -0.05, -0.03], phase: 4.0 },
 ] as const;
+
+/** Drag-to-rotate tuning: radians per pixel, tilt limit, spin-down. */
+const DRAG_YAW = 0.009;
+const DRAG_PITCH = 0.006;
+const PITCH_LIMIT = 0.55;
+const SPIN_FRICTION = 0.93;
 
 /** Background colour at the centre of the stage — the fog fades to it. */
 const STAGE_GREEN = '#08363d';
@@ -186,11 +265,26 @@ function updateFloor(
   visible: number,
 ) {
   for (const m of set.ringMaterials) m.opacity = (m.userData.base as number) * visible;
-  set.floorGlowMaterial.uniforms.uOpacity.value = 0.55 * visible;
+  const scale = (set.floorGlowMaterial.userData.scale as number | undefined) ?? 1;
+  set.floorGlowMaterial.uniforms.uOpacity.value = 0.55 * scale * visible;
 }
 
-function Stage({ src, progress, split, reduced, hud, onReady }: PenCanvasProps) {
+function Stage({
+  src,
+  progress = STILL,
+  split = 1,
+  fit = HERO_FIT,
+  satellites: showSatellites = true,
+  paused,
+  hudMode = 'cycle',
+  tone = 'dark',
+  reduced,
+  hud,
+  onReady,
+  dragTarget,
+}: PenCanvasProps) {
   const { scene } = useGLTF(src, false, true);
+  const light = tone === 'light';
   const camera = useThree((st) => st.camera);
   const size = useThree((st) => st.size);
   const setFrameloop = useThree((st) => st.setFrameloop);
@@ -225,6 +319,16 @@ function Stage({ src, progress, split, reduced, hud, onReady }: PenCanvasProps) 
       // every callout rises up and right into the open space above the model.
       nail: anchorOf('Mesh18_n3d', (b) => alongNail(b, 0.2)),
       tip: anchorOf('Mesh26_n3d', (b) => alongNail(b, 0.32)),
+      // In the 45° view the camera looks along model (-x, +z): that corner of
+      // the node faces it, the -x nail is front left, the +z nail front right.
+      // three.js turns spaces in node names into underscores on load.
+      nodeFace: anchorOf(
+        'Centre_Node',
+        (b) => new Vector3(b.min.x * 0.35, b.max.y - (b.max.y - b.min.y) * 0.5, b.max.z * 0.35),
+      ),
+      nailFront: anchorOf('Mesh22_n3d', (b) => alongNail(b, 0.45)),
+      nailRight: anchorOf('Mesh18_n3d', (b) => alongNail(b, 0.5)),
+      tipEnd: anchorOf('Mesh19_n3d', (b) => b.getCenter(new Vector3())),
     };
 
     const glowMaterial = new ShaderMaterial({
@@ -275,7 +379,8 @@ function Stage({ src, progress, split, reduced, hud, onReady }: PenCanvasProps) 
       const geometry = new BufferGeometry();
       geometry.setAttribute('position', new Float32BufferAttribute(points, 3));
       const material = new LineBasicMaterial({
-        color: '#f7dc2e',
+        // On white, lime lines vanish: draw the rings in ink instead.
+        color: light ? '#03222a' : '#f7dc2e',
         transparent: true,
         opacity,
         depthWrite: false,
@@ -296,6 +401,8 @@ function Stage({ src, progress, split, reduced, hud, onReady }: PenCanvasProps) 
       depthWrite: false,
       blending: AdditiveBlending,
     });
+    // Additive light on a white ground reads as a brown smudge: keep it faint.
+    floorGlowMaterial.userData.scale = light ? 0.25 : 1;
     const floorGlow = new Mesh(new CircleGeometry(6, 64), floorGlowMaterial);
     floorGlow.rotation.x = -Math.PI / 2;
     floor.add(floorGlow);
@@ -315,7 +422,7 @@ function Stage({ src, progress, split, reduced, hud, onReady }: PenCanvasProps) 
       floorGlowMaterial,
       nodeGlowAt,
     };
-  }, [scene]);
+  }, [scene, light]);
 
   /* ---- interaction + lifecycle ----------------------------------------- */
 
@@ -327,6 +434,53 @@ function Stage({ src, progress, split, reduced, hud, onReady }: PenCanvasProps) 
   // frame, and refs are the React-sanctioned place for mutable values.
   const scratch = useRef({ toRoot: new Matrix4(), rootInverse: new Matrix4() });
   const [hudIndex, setHudIndex] = useState(0);
+  // The visitor's own turn of the model, added on top of the scripted pose.
+  const drag = useRef({ yaw: 0, pitch: 0, spin: 0, id: -1, lastX: 0, lastY: 0, mouse: false });
+
+  // Drag to rotate. Links and buttons keep their clicks.
+  useEffect(() => {
+    const el = dragTarget.current;
+    if (!el) return;
+    const d = drag.current;
+    const onDown = (e: PointerEvent) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      if ((e.target as Element).closest('a, button')) return;
+      d.id = e.pointerId;
+      d.lastX = e.clientX;
+      d.lastY = e.clientY;
+      d.spin = 0;
+      d.mouse = e.pointerType === 'mouse';
+      el.toggleAttribute('data-dragging', true);
+    };
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerId !== d.id) return;
+      const dx = e.clientX - d.lastX;
+      const dy = e.clientY - d.lastY;
+      d.lastX = e.clientX;
+      d.lastY = e.clientY;
+      d.yaw += dx * DRAG_YAW;
+      d.spin = dx * DRAG_YAW;
+      // Tilt only with a mouse: on touch, vertical movement is the page scroll.
+      if (d.mouse) {
+        d.pitch = Math.max(-PITCH_LIMIT, Math.min(PITCH_LIMIT, d.pitch + dy * DRAG_PITCH));
+      }
+    };
+    const onUp = (e: PointerEvent) => {
+      if (e.pointerId !== d.id) return;
+      d.id = -1;
+      el.toggleAttribute('data-dragging', false);
+    };
+    el.addEventListener('pointerdown', onDown);
+    window.addEventListener('pointermove', onMove, { passive: true });
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+    return () => {
+      el.removeEventListener('pointerdown', onDown);
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
+    };
+  }, [dragTarget]);
 
   useEffect(() => {
     onReady();
@@ -346,10 +500,10 @@ function Stage({ src, progress, split, reduced, hud, onReady }: PenCanvasProps) 
 
   // Cycle the callouts, like the reference's rotating readouts.
   useEffect(() => {
-    if (reduced) return;
+    if (reduced || hudMode === 'all') return;
     const id = window.setInterval(() => setHudIndex((i) => (i + 1) % hud.length), 3200);
     return () => window.clearInterval(id);
-  }, [hud.length, reduced]);
+  }, [hud.length, reduced, hudMode]);
 
   // Stop rendering entirely once the film has covered the canvas.
   useEffect(
@@ -359,6 +513,12 @@ function Stage({ src, progress, split, reduced, hud, onReady }: PenCanvasProps) 
       }),
     [progress, split, setFrameloop],
   );
+
+  // Off screen: no frames at all.
+  useEffect(() => {
+    if (paused === undefined) return;
+    setFrameloop(paused ? 'never' : 'always');
+  }, [paused, setFrameloop]);
 
   /* ---- per frame -------------------------------------------------------- */
 
@@ -378,8 +538,15 @@ function Stage({ src, progress, split, reduced, hud, onReady }: PenCanvasProps) 
     const visH = 2 * CAMERA_Z * Math.tan((FOV * Math.PI) / 360);
     const visW = visH * aspect;
     const portrait = aspect < 1;
-    // Narrower than before: the copy now sits either side of the model.
-    const base = Math.min(visW * (portrait ? 0.72 : 0.36), visH * 0.78);
+    const base = Math.min(visW * (portrait ? fit.portraitWidth : fit.width), visH * fit.height);
+
+    // After a drag: spin on and slow down; the tilt eases back to level.
+    const d = drag.current;
+    if (d.id === -1) {
+      d.yaw += d.spin;
+      d.spin *= SPIN_FRICTION;
+      d.pitch += (0 - d.pitch) * 0.04;
+    }
 
     const ptr = pointer.current;
     ptr.x += (ptr.tx - ptr.x) * 0.05;
@@ -389,11 +556,15 @@ function Stage({ src, progress, split, reduced, hud, onReady }: PenCanvasProps) 
     // model's x/z axes, so 45° turns them toward the camera in pairs), a
     // slight look down onto the node, and a slow sway rather than a spin.
     main.rotation.set(
-      0.22 + grow * 0.38 + dive * 0.95 + ptr.y * 0.08,
-      Math.PI / 4 + Math.sin(t * 0.3) * 0.12 + grow * 1.1 + ptr.x * 0.14,
+      0.22 + grow * 0.38 + dive * 0.95 + ptr.y * 0.08 + d.pitch * (1 - dive),
+      Math.PI / 4 + Math.sin(t * 0.3) * 0.12 + grow * 1.1 + ptr.x * 0.14 + d.yaw,
       0,
     );
-    main.position.set(0, (portrait ? 0.05 : -0.42) + Math.sin(t * 0.8) * 0.06 * (1 - grow), 0);
+    main.position.set(
+      portrait ? 0 : fit.x * visW,
+      (portrait ? fit.portraitY : fit.y) + Math.sin(t * 0.8) * 0.06 * (1 - grow),
+      0,
+    );
     main.scale.setScalar(base * (1 + 0.75 * grow));
 
     camera.position.set(
@@ -432,7 +603,7 @@ function Stage({ src, progress, split, reduced, hud, onReady }: PenCanvasProps) 
     <>
       {/* Haze toward the stage colour: the far satellites recede into it, as
           the reference's out-of-focus copies do. */}
-      <fog attach="fog" args={[STAGE_GREEN, 16.5, 26]} />
+      {showSatellites ? <fog attach="fog" args={[STAGE_GREEN, 16.5, 26]} /> : null}
       <ambientLight intensity={0.3} />
       {/* Raking key from upper left: pulls the washed-concrete grain and the
           normal map out of the node's faces. */}
@@ -481,15 +652,20 @@ function Stage({ src, progress, split, reduced, hud, onReady }: PenCanvasProps) 
               distance={0}
               decay={2}
             />
-            {active ? (
+            {(hudMode === 'all' ? hud : active ? [active] : []).map((item, i) => (
               <Html
-                key={`${hudIndex}-${active.anchor}`}
-                position={anchors[active.anchor].toArray()}
+                key={hudMode === 'all' ? item.anchor : `${hudIndex}-${item.anchor}`}
+                position={anchors[item.anchor].toArray()}
                 zIndexRange={[5, 0]}
-                className={s.hudWrap}
+                className={cx(s.hudWrap, hudMode === 'all' && s.hudPinned, light && s.hudLight)}
               >
-                <div className={s.hud}>
-                  <span className={s.hudDot} aria-hidden />
+                <div
+                  className={cx(s.hud, item.side === 'left' && s.hudLeft)}
+                  style={item.rise ? ({ '--rise': `${item.rise}rem` } as CSSProperties) : undefined}
+                >
+                  <span className={s.hudDot} aria-hidden>
+                    {hudMode === 'all' ? i + 1 : null}
+                  </span>
                   <svg
                     className={s.hudLeader}
                     viewBox="0 0 88 132"
@@ -499,8 +675,8 @@ function Stage({ src, progress, split, reduced, hud, onReady }: PenCanvasProps) 
                     <polyline points="0,132 34,132 34,0 88,0" />
                   </svg>
                   <div className={s.hudReadout}>
-                    <span className={s.hudChip}>{active.chip}</span>
-                    {active.lines.map((line) => (
+                    <span className={s.hudChip}>{item.chip}</span>
+                    {item.lines.map((line) => (
                       <span key={line} className={s.hudLine}>
                         {line}
                       </span>
@@ -508,12 +684,12 @@ function Stage({ src, progress, split, reduced, hud, onReady }: PenCanvasProps) 
                   </div>
                 </div>
               </Html>
-            ) : null}
+            ))}
           </primitive>
         </group>
       </group>
 
-      {satellites.map((sat, i) => (
+      {(showSatellites ? satellites : []).map((sat, i) => (
         <group key={i} ref={(el) => void (satRefs.current[i] = el)}>
           <group scale={unit}>
             <primitive object={sat as Object3D} position={[-center.x, -center.y, -center.z]} />

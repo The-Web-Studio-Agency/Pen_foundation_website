@@ -43,7 +43,6 @@ import { assets } from './assets';
 
 /** In-page anchors. The nav and the CTAs both point at these. */
 export const anchors = {
-  system: 'system',
   applications: 'applications',
   process: 'process',
   projects: 'projects',
@@ -63,7 +62,7 @@ function splitFirstSentence(text: string): { first: string; rest: string } {
   return { first: text.slice(0, at + 1), rest: text.slice(at + 2) };
 }
 
-/* ---- 1 · opening: 3D hero, then the scroll-driven film ------------------- */
+/* ---- 1 · opening: 3D hero, then the scroll-driven film ------------------- --- */
 
 export const openingV2 = {
   /** The film's first beat is the page headline, so it is set here once. */
@@ -74,6 +73,7 @@ export const openingV2 = {
   /** Bottom-left support: the organisation's own one-sentence description. */
   support: [siteConfig.description],
   scrollLabel: 'Scroll to discover',
+  dragLabel: 'Drag to rotate',
   model: assets.penModel.src,
   /** Centred statement that rises over the model as it grows. */
   statement: {
@@ -104,18 +104,33 @@ export const openingV2 = {
     },
   ] as const,
   /**
-   * The six-beat script written against hero.mp4's six shots. Shot one carries
-   * no caption: its words are the page headline, already on screen above.
+   * The six-beat script is written against hero.mp4's six equal shots. Shot
+   * one's words are the page headline, already on screen above, so the film
+   * starts `skipSeconds` in and opens straight on beat two: the rest of shot
+   * one plays under beat two's caption, and every later caption keeps its shot.
    */
   film: {
     src: assets.heroFilm.src,
-    poster: assets.heroFilm.poster,
+    // A still of the film at `skipSeconds`, so the picture shown before the
+    // video loads (and with reduced motion) is the frame the film opens on.
+    // Re-capture it if `skipSeconds` changes.
+    poster: '/media/images/homepage/hero-film-start.webp',
     label: 'From the factory to the ground',
-    beats: hero.sequence.map((beat, i) => ({ lines: i === 0 ? [] : beat.lines })),
+    /** Equal shots the source film is cut into. */
+    sourceShots: hero.sequence.length,
+    /** The opening seconds of the film that are never shown. */
+    skipSeconds: 9,
+    /**
+     * Caption order over the five shots, as indexes into `hero.sequence`.
+     * Reordered from the script's 1-2-3-4-5: "Zero excavation" now comes
+     * fourth, after "30 days of construction" and "Hours, not weeks". The
+     * footage keeps its own order; only the captions move.
+     */
+    beats: [1, 3, 4, 2, 5].map((i) => ({ lines: hero.sequence[i].lines })),
   },
 };
 
-/* ---- 2 · full-bleed statement over the site film ------------------------- */
+/* ---- 2 · full-bleed statement over the site film ------------------------- --- */
 
 export const statementV2 = {
   /** The tagline, on one line beside the lime bar. */
@@ -125,33 +140,33 @@ export const statementV2 = {
   text: `${statement.before}${statement.emphasis}${statement.after}`,
   film: assets.siteFilm,
   /**
-   * The three cards and their dots, spread across the top of the frame
-   * (percentages of the screen: dot centre). The centre one sits a little
-   * higher, as in the layout reference. Titles and bodies are the product
-   * highlights, unchanged.
+   * The five product highlights, each a card above a dot, spread across the
+   * frame (percentages of the screen: dot centre). Alternate dots sit a little
+   * higher so the row reads as markers on the site rather than a table.
+   * Titles and bodies are the product highlights, unchanged.
    */
-  hotspots: [
-    { x: 19, y: 52, label: product.highlights[0].title, body: product.highlights[0].body },
-    { x: 50, y: 46, label: product.highlights[1].title, body: product.highlights[1].body },
-    { x: 81, y: 52, label: product.highlights[3].title, body: product.highlights[3].body },
-  ],
-};
-
-/* ---- 3 · glass card + numbered list over the install film --------------- */
-
-export const highlightsV2 = {
-  heading: product.heading,
-  film: assets.installFilm,
-  items: product.highlights,
-  card: {
+  hotspots: product.highlights.map((item, i) => ({
+    x: 12 + i * 19,
+    y: i % 2 ? 44 : 52,
+    label: item.title,
+    body: item.body,
+  })),
+  /**
+   * The measured figure, bottom right beside the statement, drawn as a range
+   * on a 1× to 3× scale. Moved here from the former install-film section.
+   */
+  stat: {
     title: 'Enhancement Factor',
     caption: 'Field plate load tests · NIT Calicut',
     value: '2.0–2.6×',
     unit: 'SBC',
+    from: 2.0,
+    to: 2.6,
+    scale: [1, 3] as const,
   },
 };
 
-/* ---- 4 · applications ---------------------------------------------------- */
+/* ---- 3 · applications ---------------------------------------------------- --- */
 
 export const applicationsV2 = {
   chip: 'Applications',
@@ -166,60 +181,17 @@ export const applicationsV2 = {
   note: applications.note,
 };
 
-/* ---- 5 · the system (black chapter) ------------------------------------- */
-
-export const systemV2 = {
-  chip: 'The system',
-  heading: product.heading
-    .split('. ')
-    .map((line, i, all) => (i < all.length - 1 ? `${line}.` : line)),
-  lead: product.lead,
-};
-
-export const anatomyV2 = {
-  chip: 'Pre-engineered',
-  heading: splitFirstSentence(product.body[2].text).first,
-  body: splitFirstSentence(product.body[2].text).rest,
-  cta: { label: 'Full specification', href: '/technology' },
-  render: assets.productRender,
-  /**
-   * Callouts on the render. Wording is lifted from the FAQ's "What is it made
-   * of?" answer; positions are percentages of pen.png.
-   */
-  tags: [
-    { x: 51, y: 20, label: 'M12 galvanised bolts' },
-    { x: 50, y: 40, label: 'M50 precast node' },
-    { x: 79, y: 56, label: 'GI nail pipes' },
-    { x: 17, y: 82, label: 'Tungsten carbide tips' },
-  ],
-};
-
-export const evidenceV2 = {
-  chip: 'Soil-structure interaction',
-  heading: splitFirstSentence(product.body[1].text).first,
-  body: splitFirstSentence(product.body[1].text).rest,
-  cta: { label: 'Estimate your project', href: '/#calculator' },
-  stats: [
-    { label: 'Enhancement Factor', value: '2.0–2.6×', note: 'of soil bearing capacity' },
-    { label: 'Design code', value: 'IS 2911', note: 'Part 4 — Factor of Safety 2.0–2.5' },
-    { label: 'Indicative rate', value: '16–20', note: calculator.basis[0] },
-  ],
-  confirmation: calculator.basis[4],
-};
-
-export const manifestoV2 = {
-  /** "Zero excavation." / "No curing cycle." from the hero script, sans stops. */
-  chips: hero.sequence[2].lines.slice(0, 2).map((line) => line.replace(/\.$/, '')),
-  lines: hero.sequence[4].lines,
-  film: assets.heroFilm,
-};
-
-/* ---- 6 · the problem (light collage) ------------------------------------ */
+/* ---- 4 · the problem (light collage) ------------------------------------ --- */
 
 export const problemV2 = {
   chip: 'The problem',
-  heading: whyPen.heading,
-  sub: product.body[0].text,
+  /**
+   * The handoff headline, trimmed to its claim (same figure, same subject):
+   * "Three weeks of your programme are spent waiting for concrete to cure".
+   */
+  heading: 'Three weeks spent waiting for concrete to cure.',
+  /** The handoff's problem paragraph, its first two sentences verbatim. */
+  sub: whyPen.intro.split('. ').slice(0, 2).join('. ') + '.',
   tiles: {
     excavation: assets.excavation,
     aerial: assets.aerialSetOut,
@@ -233,15 +205,16 @@ export const problemV2 = {
   conventionalLabel: 'The conventional way',
 };
 
-/* ---- 7 · process --------------------------------------------------------- */
+/* ---- 5 · process --------------------------------------------------------- --- */
 
 export const processV2 = {
+  chip: 'Our process',
   heading: howItWorks.heading,
   lead: howItWorks.lead,
   steps: howItWorks.steps,
 };
 
-/* ---- 8 · projects -------------------------------------------------------- */
+/* ---- 6 · projects -------------------------------------------------------- --- */
 
 export const projectsV2 = {
   chip: 'Projects',
@@ -250,11 +223,13 @@ export const projectsV2 = {
   cta: proof.cta,
 };
 
-/* ---- 9 · validation ------------------------------------------------------ */
+/* ---- 7 · validation ------------------------------------------------------ --- */
 
 export const validationV2 = {
   chip: 'Validation',
   heading: builtBy.heading,
+  /** The handoff's credibility-strip supporting line, verbatim. */
+  lead: logoWall.note,
   logos: validationLogos,
   supportersLabel: 'Supported by',
   supporters: partners.flatMap((p) =>
@@ -262,7 +237,7 @@ export const validationV2 = {
   ),
 };
 
-/* ---- 10 · FAQ ------------------------------------------------------------ */
+/* ---- 8 · FAQ ------------------------------------------------------------ --- */
 
 export const faqV2 = {
   chip: 'FAQ',
@@ -272,7 +247,27 @@ export const faqV2 = {
   cta: { label: faq.cta.label, href: ASSESSMENT_HREF },
 };
 
-/* ---- 11 · closing CTA + footer ------------------------------------------ */
+/* ---- 8b · ask an AI assistant ------------------------------------------ --- */
+
+const ASK_PROMPT = 'How is PEN Foundation useful for me?';
+
+/**
+ * Opens Claude or ChatGPT with the question already typed. Both accept the
+ * prompt as a `q` parameter on their web address; on phones with the app
+ * installed, the system may open that link in the app instead.
+ */
+export const askAiV2 = {
+  chip: 'Ask AI',
+  heading: 'Ask your AI assistant about PEN',
+  lead: 'Open Claude or ChatGPT with this question ready to send.',
+  prompt: ASK_PROMPT,
+  assistants: [
+    { label: 'Ask Claude', href: `https://claude.ai/new?q=${encodeURIComponent(ASK_PROMPT)}` },
+    { label: 'Ask ChatGPT', href: `https://chatgpt.com/?q=${encodeURIComponent(ASK_PROMPT)}` },
+  ],
+};
+
+/* ---- 9 · closing CTA + footer ------------------------------------------ --- */
 
 export const closingV2 = {
   heading: homeForm.titleLines,

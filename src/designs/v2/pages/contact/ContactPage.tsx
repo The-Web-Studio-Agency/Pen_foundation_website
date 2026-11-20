@@ -42,6 +42,11 @@ export function ContactPage() {
           { label: 'Send an enquiry', href: '#contact-form' },
           { label: 'Call us', href: telHref, tone: 'ghost' },
         ]}
+        // STAND-IN photo from PEN's existing imagery; replace with this page's own.
+        image={{
+          src: '/media/projects/black-langur/inst_3.jpg',
+          alt: 'An installation crew working together on site',
+        }}
       />
 
       <section

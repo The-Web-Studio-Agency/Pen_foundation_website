@@ -27,6 +27,11 @@ export function BlogsPage() {
           { label: 'Articles', value: String(ARTICLES.length) },
           { label: 'Subjects', value: String(subjects) },
         ]}
+        // STAND-IN photo from PEN's existing imagery; replace with this page's own.
+        image={{
+          src: '/media/projects/devagiri/readers.jpg',
+          alt: 'Readers with books in a library built on PEN foundations',
+        }}
       />
 
       <section className={cx(p.section, p.light)} aria-labelledby="blogs-index-title">

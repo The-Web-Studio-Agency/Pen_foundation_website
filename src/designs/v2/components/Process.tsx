@@ -1,14 +1,17 @@
 import { anchors, processV2 } from '../content';
 import s from '../styles/process.module.css';
 import t from '../styles/theme.module.css';
-import { cx, stagger } from './primitives';
+import { Chip, cx, stagger } from './primitives';
 
-/** Centred heading over a 2×2 grid of rounded step cards with lime numerals. */
+/** Centred label and heading over a 2×2 grid of rounded step cards with lime numerals. */
 export function Process() {
   return (
     <section id={anchors.process} className={s.section} aria-labelledby="hv2-process-title">
       <div className={t.gutter}>
         <header className={s.head}>
+          <div data-reveal>
+            <Chip>{processV2.chip}</Chip>
+          </div>
           <h2 id="hv2-process-title" className={cx(t.h2, s.title)} data-reveal>
             {processV2.heading}
           </h2>

@@ -1,3 +1,8 @@
+/*
+ * Validation (home): the About page's research and industry ecosystem
+ * design — split head over a grid of white 16:9 logo tiles.
+ */
+
 .section {
   padding-block: var(--hv2-section-y);
   background: var(--hv2-paper);
@@ -5,110 +10,68 @@
   border-top: 1px solid var(--hv2-line-light);
 }
 
-.title {
-  max-width: 22ch;
-  margin-top: 2rem;
+.head.head {
+  margin-bottom: clamp(2.5rem, 5vw, 4.5rem);
+}
+
+.head h2 {
+  max-width: 20ch;
 }
 
 .logos {
   display: grid;
-  gap: 1.25rem;
-  margin: clamp(2rem, 3vw, 2.5rem) 0 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.logoCard {
+.logo {
   display: grid;
   place-items: center;
   aspect-ratio: 16 / 9;
-  padding: 2rem;
-  border-radius: var(--hv2-radius-lg);
+  padding: clamp(1rem, 2vw, 1.75rem);
+  border-radius: var(--hv2-radius);
   background: var(--hv2-white);
+}
+
+/* The supplied asset is artwork on a dark ground (see Partner.onDark). */
+.logoDark {
+  background: var(--hv2-ink);
 }
 
 .logoImg {
   width: auto;
-  max-width: 70%;
+  max-width: 82%;
   height: auto;
-  max-height: 7rem;
+  max-height: 5.5rem;
   object-fit: contain;
 }
 
-@media (min-width: 48rem) {
-  .logos {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-/* ---- supporter marquee ----------------------------------------------- */
-
-.marqueeBlock {
-  margin-top: clamp(4rem, 8vw, 6rem);
-}
-
-.marqueeLabel {
-  margin-bottom: 1.25rem;
+/* "Supported by", between the validators and the supporters. */
+.groupLabel {
+  margin: clamp(2.5rem, 4vw, 3.5rem) 0 1rem;
   font-size: 0.8125rem;
   color: var(--hv2-ink-soft);
 }
 
-.marquee {
-  display: flex;
-  overflow: hidden;
-  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-}
-
-.reel {
-  display: flex;
-  flex: none;
-  gap: 1rem;
-  margin: 0;
-  padding: 0 0.5rem;
-  list-style: none;
-  animation: hv2-marquee 60s linear infinite;
-}
-
-.reelItem {
-  display: grid;
-  place-items: center;
-  width: 10rem;
-  height: 5.5rem;
-  padding: 1rem;
-  border-radius: 0.75rem;
-  background: var(--hv2-white);
-}
-
-.reelItemDark {
-  background: var(--hv2-ink);
-}
-
-.reelImg {
-  width: auto;
-  max-width: 100%;
-  height: auto;
-  max-height: 100%;
-  object-fit: contain;
-}
-
-@keyframes hv2-marquee {
-  to {
-    transform: translateX(-100%);
+/* Phones: two tiles a row leave little height; keep every tile 16:9. */
+@media (max-width: 39.99rem) {
+  .logoImg {
+    max-height: 3.25rem;
   }
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .marquee:hover .reel {
-    animation-play-state: paused;
+@media (min-width: 40rem) {
+  .logos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .reel {
-    animation: none;
-  }
-  .marquee {
-    overflow-x: auto;
+@media (min-width: 64rem) {
+  .logos {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
   }
 }

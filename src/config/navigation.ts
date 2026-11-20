@@ -48,20 +48,21 @@ export const applicationImages: Record<string, { src: string; alt: string }> = {
     alt: 'A library at night, its cylindrical reading tower lit from within',
   },
   'eco-resorts-and-farmstays': {
-    src: '/media/images/homepage/pen-installed_image.png',
-    alt: 'A PEN node installed at ground level, its nails driven into leaf-covered soil',
-  },
-  'modular-and-prefab': {
     src: '/media/images/homepage/startup-ecoashram.png',
     alt: 'A curved-roof pavilion raised on a light frame among trees',
+  },
+  'modular-and-prefab': {
+    // The file name has spaces; the path is URL-encoded to match it.
+    src: '/media/images/Tropical%20Prefab%20Lift%20in%20Progress.png',
+    alt: 'A timber-clad prefabricated cabin lifted by crane onto its base, workers guiding it into place among palm trees',
   },
   'low-span-industrial': {
     src: '/media/images/brick-house.png',
     alt: 'A steel and masonry structure standing on completed PEN foundations at a Kerala site',
   },
   'ground-mounted-solar': {
-    src: '/media/images/storysection2.png',
-    alt: 'Aerial view of a cleared plot set out with string lines, paddy fields either side',
+    src: '/media/images/ground-mounted-solar.jpeg',
+    alt: 'A row of ground-mounted solar panels on a gravel bed in a landscaped garden',
   },
 };
 

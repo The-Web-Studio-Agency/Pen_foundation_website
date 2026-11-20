@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import { applicationAudiences } from '@/content/data/application-audiences';
 
+import { FaqSection } from '../../components/FaqSection';
 import { PageHero } from '../../components/page/PageHero';
 import { SectionHead } from '../../components/page/SectionHead';
 import { ArrowRight, ButtonLink, Chip, cx, stagger } from '../../components/primitives';
@@ -23,14 +24,19 @@ import s from './applications.module.css';
  *
  * Residential and Modular and prefab also carry the matching audience page
  * from the client's V3 handoff (content/data/application-audiences.ts): its
- * opening sections after the hero, its FAQ after the process.
+ * opening sections after the hero, its FAQ after the process. Every page
+ * without an audience FAQ gets one in the same place (content.ts,
+ * APPLICATION_FAQ), in the homepage FAQ design.
  */
 export function ApplicationPage({ item }: { item: ApplicationItem }) {
   const c = applicationPage(item);
   const audience = applicationAudiences[item.slug];
-  const faqs = audience
-    ? [...audience.before, ...audience.after].flatMap((b) => (b.kind === 'faq' ? b.items : []))
-    : [];
+  const faqs = [
+    ...(audience
+      ? [...audience.before, ...audience.after].flatMap((b) => (b.kind === 'faq' ? b.items : []))
+      : []),
+    ...(c.faq ? c.faq.entries.map((e) => ({ q: e.question, a: e.answer })) : []),
+  ];
   const jsonLd =
     faqs.length > 0
       ? {
@@ -111,6 +117,17 @@ export function ApplicationPage({ item }: { item: ApplicationItem }) {
       </section>
 
       {audience && <AudienceSections blocks={audience.after} offset={audience.before.length} />}
+
+      {c.faq && (
+        <FaqSection
+          id="faq"
+          titleId="app-faq-title"
+          chip={c.faq.chip}
+          heading={c.faq.heading}
+          cta={c.faq.cta}
+          tabs={[{ id: 'faq', label: c.faq.chip, entries: c.faq.entries }]}
+        />
+      )}
 
       {c.related.items.length > 0 && (
         <section className={cx(p.section, p.paper)} aria-labelledby="app-related">

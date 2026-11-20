@@ -17,10 +17,14 @@ const SPREAD = {
   START_AT: 0.3,
   /** Scale while gathered; grows to 1 as the tiles reach their places. */
   START_SCALE: 0.82,
-  /** Share of the pinned scroll over which the tiles spread (rest = hold). */
-  SPREAD_UNTIL: 0.7,
-  /** Share of the pinned scroll over which the statement fades in. */
-  TEXT_IN: [0.4, 0.8] as const,
+  /**
+   * Share of the whole pass (from the section's top entering the bottom of
+   * the screen to the end of the pin) by which the tiles have spread. They
+   * start moving the moment the section comes into view.
+   */
+  SPREAD_UNTIL: 0.62,
+  /** Share of the whole pass over which the statement fades in. */
+  TEXT_IN: [0.4, 0.66] as const,
 };
 
 const DESKTOP = '(min-width: 64rem)';
@@ -30,9 +34,10 @@ const DESKTOP = '(min-width: 64rem)';
  * arrives, and spreads them out to their scattered positions while it is
  * pinned, fading the statement in as they clear it.
  *
- * Progress is the pinned range of the section's sizer: 0 when the stage
- * pins, 1 when it releases. Before the pin the tiles hold their gathered
- * cluster, so they arrive on screen gathered. Each tile
+ * Progress runs over the section's whole pass: 0 as its top enters the
+ * bottom of the screen, 1 when the pin releases. The tiles arrive gathered
+ * and begin to spread as soon as the section is in view, with no wait for
+ * the pin. Each tile
  * gets its own --dx/--dy (the vector from its resting place to the centre of
  * the collage, measured once per layout) and the section gets --f, the share
  * of the way out; styles/problem.module.css turns those into a transform.
@@ -76,8 +81,9 @@ export function CollageSpread({ sectionId }: { sectionId: string }) {
       }
       const sizer = section.querySelector<HTMLElement>('[data-collage-sizer]');
       const r = (sizer ?? section).getBoundingClientRect();
-      const pinned = Math.max(1, r.height - window.innerHeight);
-      const p = range(-r.top / pinned, 0, 1);
+      // From "top enters the bottom of the screen" to "pin releases".
+      const pass = Math.max(1, r.height);
+      const p = range((window.innerHeight - r.top) / pass, 0, 1);
       const e = smooth(range(p, 0, SPREAD.SPREAD_UNTIL));
       const f = SPREAD.START_AT + (1 - SPREAD.START_AT) * e;
       const scale = SPREAD.START_SCALE + (1 - SPREAD.START_SCALE) * e;

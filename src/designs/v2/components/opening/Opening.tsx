@@ -64,15 +64,23 @@ const SPLIT = ACT_SVH / PINNED_SVH;
 const toFilm = (p: number) => range(p, SPLIT, 1);
 
 /**
- * Overall progress → 0..1 across the footage, with holds. hero.mp4 is six
- * equal shots (its script is timed that way), so shot `i` spans [i, i+1]/6 of
- * the film. Within each shot's scroll the footage runs over the first
- * PLAY_SVH, then stays on the shot's last frame for HOLD_SVH.
+ * Overall progress → seconds into hero.mp4, with holds. The film is cut into
+ * `sourceShots` equal shots and its script is timed that way. The first shot
+ * carries the page headline, so it is not a beat here: the film starts
+ * `skipSeconds` in, and that leftover footage plays as part of the first
+ * beat's shot. Every later beat spans its own source shot exactly. Within each
+ * beat's scroll the footage runs over the first PLAY_SVH, then stays on the
+ * shot's last frame for HOLD_SVH.
  */
-const toFootage = (p: number) => {
+const SKIPPED_SHOTS = film.sourceShots - SHOTS;
+const toFootageTime = (p: number, duration: number) => {
   const pos = toFilm(p) * SHOTS;
   const shot = Math.min(SHOTS - 1, Math.floor(pos));
-  return (shot + Math.min((pos - shot) / PLAY_SHARE, 1)) / SHOTS;
+  const played = Math.min((pos - shot) / PLAY_SHARE, 1);
+  const shotLength = duration / film.sourceShots;
+  const start = shot === 0 ? film.skipSeconds : (shot + SKIPPED_SHOTS) * shotLength;
+  const end = (shot + SKIPPED_SHOTS + 1) * shotLength;
+  return start + played * (end - start);
 };
 
 /** If WebGL is unavailable or the model fails, keep the poster and the copy. */
@@ -124,7 +132,7 @@ export function Opening() {
   }, []);
   const filmSrc = !reduced && (ready || graceOver) ? film.src : undefined;
 
-  useFilmScrub(videoRef, progress, toFootage, Boolean(filmSrc) && !reduced);
+  useFilmScrub(videoRef, progress, toFootageTime, Boolean(filmSrc) && !reduced);
 
   // Publish progress to CSS, and drive the beat captions.
   useEffect(() => {
@@ -183,6 +191,7 @@ export function Opening() {
                 reduced={reduced}
                 hud={openingV2.hud}
                 onReady={onReady}
+                dragTarget={stageRef}
               />
             </CanvasBoundary>
           </div>
@@ -215,6 +224,22 @@ export function Opening() {
           </div>
 
           <p className={s.scrollCue} aria-hidden>
+            <span className={s.dragHint}>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M3 12a9 4 0 0 0 18 0" />
+                <path d="M18 9.5l3 2.5-3 2" />
+              </svg>
+              {openingV2.dragLabel}
+            </span>
             <svg width="12" height="16" viewBox="0 0 12 16" fill="none">
               <rect x="0.75" y="0.75" width="10.5" height="14.5" rx="5.25" stroke="currentColor" />
               <path

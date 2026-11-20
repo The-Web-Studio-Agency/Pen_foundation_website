@@ -1,13 +1,12 @@
 import { Applications } from './components/Applications';
+import { AskAi } from './components/AskAi';
 import { FaqTabs } from './components/FaqTabs';
-import { Highlights } from './components/Highlights';
 import { MediaStatement } from './components/MediaStatement';
 import { Opening } from './components/opening/Opening';
 import { ProblemCollage } from './components/ProblemCollage';
 import { Process } from './components/Process';
 import { ProjectEstimator } from './components/ProjectEstimator';
 import { ProjectsCarousel } from './components/ProjectsCarousel';
-import { SystemChapter } from './components/SystemChapter';
 import { Testimonials } from './components/Testimonials';
 import { Validation } from './components/Validation';
 
@@ -16,22 +15,20 @@ import { Validation } from './components/Validation';
  * from the shared SiteChrome.
  *
  *   dark    opening (3D model → scroll-driven film, one pinned stage)
- *           → statement over the site film → highlights over the install film
+ *           → why PEN: statement, five highlights and the measured figure
+ *             over the site film
  *   white   applications
- *   black   the system → anatomy → evidence → "hours, not weeks"
  *   paper   the problem collage → process → projects → validation
  *   white   project calculator
  *   dark    testimonials (hidden while the list is empty)
- *   white   FAQ
+ *   white   FAQ → ask AI (open Claude or ChatGPT with a question about PEN)
  */
 export function HomePage() {
   return (
     <>
       <Opening />
       <MediaStatement />
-      <Highlights />
       <Applications />
-      <SystemChapter />
       <ProblemCollage />
       <Process />
       <ProjectsCarousel />
@@ -39,6 +36,7 @@ export function HomePage() {
       <ProjectEstimator />
       <Testimonials />
       <FaqTabs />
+      <AskAi />
     </>
   );
 }

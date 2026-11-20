@@ -10,8 +10,18 @@
  *     - `project`    the project they're speaking about, linked if it has a page
  *     - `source`     where the words were published, if not given to PEN directly
  *
- * The section hides itself while the list is empty, and the arrows and the
- * person list only appear once there are two or more entries.
+ * HOW TO REPLACE THE SAMPLES
+ *   Every entry marked `placeholder: true` is invented sample text, there
+ *   only to show the design with a full wall. Each one carries a "Sample"
+ *   tag on the page. Overwrite its quote, name and role with an approved
+ *   testimonial and delete the `placeholder: true` line; delete any you do
+ *   not need. Do not publish the site with placeholders left in.
+ *
+ * LAYOUT
+ *   The first entry without `placeholder` is the featured quote, set large
+ *   at the top (falling back to the first entry). Every other entry is a card
+ *   on the two drifting rows below it, alternating between the rows. The
+ *   section hides itself while the list is empty.
  *
  * SOURCES
  *   Karan J Fraanc — the Devagiri Library case study supplied by the client
@@ -28,6 +38,8 @@ export interface Testimonial {
   photo?: string;
   project?: { label: string; href?: string };
   source?: string;
+  /** Invented sample text: shown with a "Sample" tag until replaced. */
+  placeholder?: boolean;
 }
 
 export const testimonialsSection = {
@@ -47,5 +59,48 @@ export const testimonials: Testimonial[] = [
       href: '/projects/devagiri-library-book-tower',
     },
     source: 'Quoted in SSMB',
+  },
+
+  /* ---- SAMPLES: invented for layout only. Replace or delete. ------------ */
+  {
+    quote:
+      'We wanted to keep the trees and the slope as they were. The foundation went in without digging up the site.',
+    name: 'Anjali Menon',
+    role: 'Project Architect',
+    placeholder: true,
+  },
+  {
+    quote:
+      'The installation crew was quick and tidy. There was no concrete to wait for, so the rest of the programme stayed on track.',
+    name: 'Rahul Nair',
+    role: 'Site Engineer',
+    placeholder: true,
+  },
+  {
+    quote:
+      'The engineering team reviewed our loads and soil data before anything reached site. That gave us confidence from the start.',
+    name: 'Meera Iyer',
+    role: 'Structural Consultant',
+    placeholder: true,
+  },
+  {
+    quote:
+      'For a remote plot with limited labour, a factory made foundation was the practical choice.',
+    name: 'Suresh Pillai',
+    role: 'Homeowner',
+    placeholder: true,
+  },
+  {
+    quote:
+      'Our steel frames bolt straight onto the nodes, which keeps our modular schedule simple.',
+    name: 'Vikram Rao',
+    role: 'Modular Builder',
+    placeholder: true,
+  },
+  {
+    quote: 'Less wet work meant less mess on a site our neighbours could see every day.',
+    name: 'Farah Khan',
+    role: 'Developer',
+    placeholder: true,
   },
 ];

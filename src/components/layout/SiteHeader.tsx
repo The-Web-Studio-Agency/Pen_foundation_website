@@ -12,6 +12,11 @@ import s from '@/designs/v2/styles/nav.module.css';
 
 /** Scroll distance after which the bar becomes the floating pill. */
 const PILL_AFTER_PX = 24;
+/**
+ * Pages that open on a white ground. The transparent top state is white
+ * type, so on these the bar is the pill from the first pixel.
+ */
+const SOLID_FROM_TOP = new Set(['/technology']);
 /** Grace period before a hover-opened dropdown closes, so the pointer can cross the gap. */
 const CLOSE_DELAY_MS = 160;
 
@@ -136,7 +141,7 @@ export function SiteHeader() {
   return (
     <header
       className={s.bar}
-      data-pill={pill || undefined}
+      data-pill={pill || SOLID_FROM_TOP.has(pathname) || undefined}
       data-open={open || undefined}
       data-menu={menu ? '' : undefined}
     >

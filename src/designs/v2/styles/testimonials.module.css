@@ -1,199 +1,138 @@
-/* Homepage testimonials — heading and the people quoted on the dark ground,
-   one large white quote card beside them. */
+/* Homepage testimonials — a centred head, one featured quote set large on
+   the dark ground, then two rows of white quote cards drifting in opposite
+   directions. */
 
 .section {
   position: relative;
   padding-block: var(--hv2-section-y);
   background:
-    radial-gradient(60rem 30rem at 85% 0%, rgba(247, 220, 46, 0.07), transparent 60%),
+    radial-gradient(70rem 32rem at 50% 0%, rgba(247, 220, 46, 0.08), transparent 62%),
     var(--hv2-ground);
   color: var(--hv2-white);
   overflow: hidden;
 }
 
-.layout {
-  display: grid;
-  gap: clamp(2.5rem, 5vw, 4rem);
-}
+/* ---- head ---------------------------------------------------------------- */
 
-@media (min-width: 64rem) {
-  .layout {
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-    align-items: stretch;
-    gap: clamp(3rem, 6vw, 6rem);
-  }
-}
-
-/* ---- left: heading, people, controls ------------------------------------ */
-
-.side {
+.head {
   display: flex;
   flex-direction: column;
-  min-width: 0;
+  align-items: center;
+  gap: 1.5rem;
+  text-align: center;
 }
 
 .title {
-  max-width: 14ch;
-  margin: 1.25rem 0 0;
+  max-width: 20ch;
+  text-wrap: balance;
 }
 
-.people {
+/* ---- featured quote ------------------------------------------------------ */
+
+.featured {
   display: flex;
-  gap: 0.5rem;
-  margin-top: clamp(2rem, 4vw, 3rem);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.people::-webkit-scrollbar {
-  display: none;
-}
-
-@media (min-width: 64rem) {
-  .people {
-    flex-direction: column;
-    gap: 0;
-    overflow: visible;
-    border-top: 1px solid var(--hv2-line-dark);
-  }
-}
-
-.person {
-  position: relative;
-  display: flex;
-  flex: none;
+  flex-direction: column;
   align-items: center;
-  gap: 0.85rem;
-  padding: 0.6rem 1rem 0.6rem 0.6rem;
+  gap: 1.5rem;
+  max-width: 62rem;
+  margin: clamp(3rem, 6vw, 4.5rem) auto 0;
+  text-align: center;
+}
+
+/* The short phrase, in the accent, as the line people remember. */
+.highlight {
+  margin: 0;
+  font-size: clamp(2rem, 3.6vw + 0.5rem, 4rem);
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  color: var(--hv2-accent-bright);
+  text-wrap: balance;
+}
+
+.quote {
+  margin: 0;
+  max-width: 44rem;
+  font-size: clamp(1.0625rem, 0.5vw + 0.95rem, 1.375rem);
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.82);
+  text-wrap: balance;
+}
+
+.quote p {
+  margin: 0;
+}
+
+.quoteLarge {
+  font-size: clamp(1.5rem, 1.6vw + 1rem, 2.25rem);
+  line-height: 1.25;
+  color: var(--hv2-white);
+}
+
+.cite {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.citeText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  text-align: left;
+}
+
+.citeText b {
+  font-weight: 500;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.citeText span {
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.68;
+}
+
+.source {
+  opacity: 0.5 !important;
+}
+
+.project {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.9rem;
   border: 1px solid var(--hv2-line-dark);
   border-radius: 999px;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-  opacity: 0.6;
+  color: var(--hv2-white);
+  font-size: 0.875rem;
+  text-decoration: none;
   transition:
-    opacity 0.3s var(--hv2-ease),
-    background-color 0.3s var(--hv2-ease),
-    border-color 0.3s var(--hv2-ease);
+    border-color 0.3s var(--hv2-ease),
+    background-color 0.3s var(--hv2-ease);
 }
 
-.person[aria-selected='true'] {
-  opacity: 1;
-  border-color: var(--hv2-accent);
-  background: rgba(247, 220, 46, 0.08);
-}
-
-@media (min-width: 64rem) {
-  .person {
-    padding: 1.1rem 0 1.1rem 1.25rem;
-    border: 0;
-    border-bottom: 1px solid var(--hv2-line-dark);
-    border-radius: 0;
-  }
-
-  /* The active row is marked by a yellow bar instead of a pill outline. */
-  .person::before {
-    content: '';
-    position: absolute;
-    top: 0.9rem;
-    bottom: 0.9rem;
-    left: 0;
-    width: 3px;
-    border-radius: 3px;
-    background: var(--hv2-accent);
-    transform: scaleY(0);
-    transition: transform 0.35s var(--hv2-ease);
-  }
-
-  .person[aria-selected='true'] {
-    border-color: var(--hv2-line-dark);
-    background: transparent;
-  }
-
-  .person[aria-selected='true']::before {
-    transform: scaleY(1);
-  }
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .person:hover {
-    opacity: 1;
-  }
-}
-
-.personText {
-  display: grid;
-  gap: 0.2rem;
-  white-space: nowrap;
-}
-
-.personText b {
-  font-weight: 500;
-  font-size: 0.9375rem;
-}
-
-.personText span {
-  font-size: 0.625rem;
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.controls {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 1.5rem;
-}
-
-@media (min-width: 64rem) {
-  .controls {
-    margin-top: auto;
-    padding-top: 2rem;
-  }
-}
-
-.counter {
-  font-size: 0.8125rem;
-  color: rgba(255, 255, 255, 0.55);
-}
-
-.counter b {
-  font-weight: 400;
+.project > span {
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--hv2-accent-bright);
 }
 
-.arrows {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.arrow {
-  display: grid;
-  place-items: center;
-  width: 3rem;
-  height: 3rem;
-  border: 1px solid var(--hv2-line-dark);
-  border-radius: 50%;
-  background: transparent;
-  color: var(--hv2-white);
-  cursor: pointer;
-  transition:
-    background-color 0.3s var(--hv2-ease),
-    border-color 0.3s var(--hv2-ease),
-    color 0.3s var(--hv2-ease);
-}
-
 @media (hover: hover) and (pointer: fine) {
-  .arrow:hover {
-    border-color: var(--hv2-accent);
-    background: var(--hv2-accent);
-    color: var(--hv2-on-accent);
+  a.project:hover {
+    border-color: var(--hv2-accent-bright);
+    background: rgba(247, 220, 46, 0.08);
   }
 }
 
-/* ---- avatar ---------------------------------------------------------------- */
+/* ---- avatars ------------------------------------------------------------- */
 
 .avatar {
   position: relative;
@@ -201,11 +140,11 @@
   flex: none;
   place-items: center;
   overflow: hidden;
-  border-radius: 50%;
+  border-radius: 999px;
   background: var(--hv2-accent);
   color: var(--hv2-on-accent);
   font-family: var(--hv2-mono);
-  letter-spacing: 0.02em;
+  font-weight: 600;
 }
 
 .avatarSm {
@@ -224,149 +163,127 @@
   object-fit: cover;
 }
 
-/* ---- right: the quote card ------------------------------------------------- */
+/* Marks invented sample text until it is replaced. */
+.sample {
+  padding: 0.2rem 0.45rem;
+  border: 1px dashed currentColor;
+  border-radius: 0.25rem;
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+/* ---- the drifting wall --------------------------------------------------- */
+
+.wall {
+  display: grid;
+  gap: 1rem;
+  margin-top: clamp(3.5rem, 7vw, 5.5rem);
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+
+.row {
+  display: flex;
+  width: max-content;
+}
+
+.reel {
+  display: flex;
+  flex: none;
+  gap: 1rem;
+  margin: 0;
+  padding: 0 1rem 0 0;
+  list-style: none;
+  animation: hv2-testimonial-drift 60s linear infinite;
+}
+
+.rowReverse .reel {
+  animation-direction: reverse;
+  animation-duration: 70s;
+}
+
+/* Hold still while someone is reading or tabbing through. */
+.row:hover .reel,
+.row:focus-within .reel {
+  animation-play-state: paused;
+}
+
+@keyframes hv2-testimonial-drift {
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.reelItem {
+  display: flex;
+}
 
 .card {
   position: relative;
-  display: grid;
-  align-content: space-between;
-  min-height: clamp(22rem, 34vw, 30rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: clamp(17rem, 26vw, 23rem);
   margin: 0;
-  padding: clamp(1.75rem, 4vw, 3.5rem);
-  border-radius: var(--hv2-radius-lg);
+  padding: 1.5rem 1.5rem 1.25rem;
+  border-radius: var(--hv2-radius);
   background: var(--hv2-white);
   color: var(--hv2-ink);
-  box-shadow: 0 30px 80px rgba(0, 12, 15, 0.35);
-  overflow: hidden;
 }
 
-/* A thin yellow edge along the top. */
-.card::before {
-  content: '';
-  position: absolute;
-  inset: 0 0 auto;
-  height: 4px;
-  background: var(--hv2-accent);
-}
-
-.mark {
-  width: clamp(2.5rem, 4vw, 3.5rem);
+.cardMark {
+  width: 1.75rem;
   height: auto;
-  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
   fill: var(--hv2-accent);
 }
 
-.body {
-  display: grid;
-  gap: clamp(1.25rem, 2.5vw, 2rem);
-  animation: quote-in 0.6s var(--hv2-ease) both;
-}
-
-@keyframes quote-in {
-  from {
-    opacity: 0;
-    transform: translateY(0.75rem);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-.highlight {
-  max-width: 20ch;
+.cardQuote {
+  flex: 1;
   margin: 0;
-  font-size: clamp(1.75rem, 2.6vw + 0.75rem, 3rem);
-  font-weight: 500;
-  line-height: 1.02;
-  letter-spacing: -0.04em;
-  text-wrap: balance;
+  font-size: 1rem;
+  line-height: 1.45;
 }
 
-.quote {
+.cardQuote p {
   margin: 0;
 }
 
-.quote p {
-  max-width: 52ch;
-  margin: 0;
-  font-size: clamp(1.0625rem, 0.5vw + 0.95rem, 1.25rem);
-  line-height: 1.5;
-  color: var(--hv2-ink-soft);
-}
-
-/* Without a highlight, the quote itself is set large. */
-.quoteLarge p {
-  max-width: 26ch;
-  font-size: clamp(1.5rem, 1.8vw + 0.9rem, 2.375rem);
-  font-weight: 500;
-  line-height: 1.15;
-  letter-spacing: -0.03em;
-  color: var(--hv2-ink);
-}
-
-.cite {
+.cardCite {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 1rem 1.25rem;
-  padding-top: clamp(1.25rem, 2.5vw, 1.75rem);
+  gap: 0.75rem;
+  padding-top: 1rem;
   border-top: 1px solid var(--hv2-line-light);
 }
 
-.citeText {
-  display: grid;
-  gap: 0.3rem;
-  margin-right: auto;
+.cardCite .citeText {
+  flex: 1;
+  min-width: 0;
 }
 
-.citeText b {
-  font-weight: 500;
-  font-size: 1.125rem;
-}
-
-.citeText span {
-  font-size: 0.6875rem;
-  color: var(--hv2-ink-soft);
-}
-
-.source {
-  opacity: 0.75;
-}
-
-.project {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.65rem 0.9rem;
-  border-radius: var(--hv2-radius-sm);
-  background: var(--hv2-paper);
+.cardCite .sample {
   color: var(--hv2-ink);
-  font-size: 0.875rem;
-  text-decoration: none;
-  transition: background-color 0.3s var(--hv2-ease);
 }
 
-.project > span:first-child {
-  font-size: 0.625rem;
-  color: var(--hv2-ink-soft);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  a.project:hover {
-    background: var(--hv2-accent);
-  }
-}
-
+/* Reduced motion: still rows the visitor scrolls sideways. */
 @media (prefers-reduced-motion: reduce) {
-  .body {
+  .wall {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+  .row {
+    width: auto;
+    overflow-x: auto;
+    padding-inline: var(--hv2-gutter);
+    scrollbar-width: none;
+  }
+  .reel {
     animation: none;
   }
-
-  .person,
-  .person::before,
-  .arrow,
-  .project {
-    transition: none;
+  .reel[aria-hidden],
+  .reelItem[aria-hidden] {
+    display: none;
   }
 }

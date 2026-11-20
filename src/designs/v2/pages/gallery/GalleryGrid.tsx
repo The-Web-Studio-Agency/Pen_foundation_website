@@ -63,7 +63,6 @@ export function GalleryGrid({ tiles }: { tiles: GalleryTile[] }) {
           value={category}
           onChange={setCategory}
           counts={counts}
-          tone="dark"
         />
         <p className={cx(t.mono, s.count)} aria-live="polite">
           {visible.length} {visible.length === 1 ? 'entry' : 'entries'}

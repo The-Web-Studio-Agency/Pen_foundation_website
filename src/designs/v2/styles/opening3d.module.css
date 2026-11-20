@@ -99,17 +99,24 @@
   opacity: calc(1 - var(--copy-out) * 0.85);
 }
 
+/* --glow-y: behind the node; --pool-y: the floor under the nail tips. */
 .backdropGlow {
+  --glow-y: 44%;
+  --pool-y: 80%;
   position: absolute;
   inset: 0;
   background:
     radial-gradient(
-      circle at 50% 44%,
+      circle at 50% var(--glow-y),
       rgba(70, 170, 172, 0.26) 0%,
       rgba(70, 170, 172, 0.08) 18%,
       transparent 34%
     ),
-    radial-gradient(ellipse 34% 9% at 50% 80%, rgba(120, 205, 205, 0.16) 0%, transparent 100%);
+    radial-gradient(
+      ellipse 34% 9% at 50% var(--pool-y),
+      rgba(120, 205, 205, 0.16) 0%,
+      transparent 100%
+    );
 }
 
 /* A dot grid laid flat and tilted away, fading toward the horizon. */
@@ -210,6 +217,27 @@
   opacity: calc(0.85 * (1 - var(--copy-out)));
 }
 
+/* Drag to rotate (PenCanvas): a grab cursor while the model is on stage; a
+   sideways finger drag turns it, an up-down one still scrolls the page. */
+.stage:not([data-copy-gone]) {
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.stage[data-dragging] {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.dragHint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-right: 0.9rem;
+  padding-right: 0.9rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.25);
+}
+
 /* Desktop: the two copy blocks sit either side of the model, vertically
    centred a little above the middle, as in the reference. */
 @media (min-width: 64rem) {
@@ -217,14 +245,14 @@
     top: 50%;
     right: auto;
     max-width: 40vw;
-    transform: translateY(-62%);
+    transform: translateY(-79%);
   }
   .copyRight {
     top: 50%;
     bottom: auto;
     left: auto;
     width: min(21rem, 23vw);
-    transform: translateY(-48%);
+    transform: translateY(-70%);
   }
 }
 
@@ -315,7 +343,7 @@
   left: 0;
   bottom: 0;
   width: 3.5rem;
-  height: 8.25rem;
+  height: var(--rise, 8.25rem);
   overflow: visible;
   fill: none;
   stroke: rgba(255, 255, 255, 0.55);
@@ -329,7 +357,7 @@
 .hudReadout {
   position: absolute;
   left: 4rem;
-  top: calc(-8.25rem - 0.8rem);
+  top: calc(-1 * var(--rise, 8.25rem) - 0.8rem);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -359,11 +387,88 @@
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
 }
 
-/* Phones: no side labels — there is no room beside the model for them. */
+/* Mirrored callout: left from the part, up, then left to the readout. */
+.hudLeft .hudLeader {
+  left: auto;
+  right: 0;
+  transform: scaleX(-1);
+}
+
+.hudLeft .hudReadout {
+  left: auto;
+  right: 4rem;
+  align-items: flex-end;
+  text-align: right;
+}
+
+/* Pinned callouts (a labelled diagram): a numbered marker on each part. */
+.hudPinned .hudDot {
+  left: -0.7rem;
+  top: -0.7rem;
+  display: grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  color: var(--hv2-ink);
+  font-family: var(--hv2-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1;
+  box-shadow:
+    0 0 0 3px rgba(1, 40, 47, 0.7),
+    0 0 14px 3px rgba(247, 220, 46, 0.55);
+}
+
+.hudPinned .hudLeader,
+.hudPinned .hudReadout {
+  z-index: -1;
+}
+
+/* On a white ground: ink leaders and type, an ink chip. */
+.hudLight .hudLeader {
+  stroke: rgba(3, 34, 42, 0.45);
+}
+
+.hudLight .hudChip {
+  background: var(--hv2-ink);
+  color: var(--hv2-white);
+}
+
+.hudLight .hudLine {
+  color: rgba(3, 34, 42, 0.78);
+  text-shadow: none;
+}
+
+.hudLight.hudPinned .hudDot {
+  box-shadow:
+    0 0 0 3px var(--hv2-white),
+    0 0 0 4px rgba(3, 34, 42, 0.25),
+    0 4px 14px rgba(3, 34, 42, 0.2);
+}
+
+/* Phones: no side labels — there is no room beside the model for them.
+   Pinned diagrams keep their numbered markers; the page lists the parts. */
 @media (max-width: 40rem) {
-  .hudWrap {
+  .hudWrap:not(.hudPinned) {
     display: none;
   }
+}
+
+@media (max-width: 63.99rem) {
+  .hudPinned .hudLeader,
+  .hudPinned .hudReadout {
+    display: none;
+  }
+}
+
+/* Pinned readouts wrap rather than run off the stage. */
+.hudPinned .hudReadout {
+  width: 14rem;
+  white-space: normal;
+}
+
+.hudPinned .hudLine {
+  line-height: 1.35;
 }
 
 @keyframes hv2-hud-draw {
@@ -392,6 +497,10 @@
   position: absolute;
   inset: 0;
   z-index: 3;
+  /* The film is never interactive, and it sits over the hero copy while it is
+     still invisible (opacity 0 before the reveal): let clicks through to the
+     "Request Assessment" button and the drag-to-rotate stage underneath. */
+  pointer-events: none;
   background: var(--hv2-ground);
   opacity: calc(var(--reveal) * 12);
   -webkit-mask-image: radial-gradient(

@@ -14,20 +14,21 @@ const SEEK_EPSILON = 1 / 15;
 const TAIL_GUARD = 0.05;
 
 /**
- * Maps a 0→1 value onto `video.currentTime`. The video never plays; scroll is
- * the clock, so reversing the scroll runs the film backwards.
+ * Maps scroll progress onto `video.currentTime`. The video never plays; scroll
+ * is the clock, so reversing the scroll runs the film backwards.
  *
  * Seeks are coalesced: while one is in flight, newer positions overwrite the
  * pending target and a single follow-up seek is issued on `seeked`, so a fast
  * flick lands on the frame matching where scrolling stopped rather than
  * working through a queue of stale ones.
  *
- * `toFilm` converts the shared opening progress into film progress.
+ * `toTime` converts the shared opening progress into a time in seconds,
+ * given the film's duration (known only once its metadata loads).
  */
 export function useFilmScrub(
   videoRef: RefObject<HTMLVideoElement | null>,
   progress: ProgressSource,
-  toFilm: (p: number) => number,
+  toTime: (p: number, duration: number) => number,
   enabled: boolean,
 ) {
   useEffect(() => {
@@ -38,7 +39,8 @@ export function useFilmScrub(
     let duration = 0;
     let wanted = 0;
 
-    const timeFor = (p: number) => Math.min(Math.max(p, 0), 1) * Math.max(0, duration - TAIL_GUARD);
+    const timeFor = (p: number) =>
+      Math.min(Math.max(toTime(p, duration), 0), Math.max(0, duration - TAIL_GUARD));
 
     const flush = () => {
       if (!duration || video.seeking) return;
@@ -50,7 +52,7 @@ export function useFilmScrub(
     const onMetadata = () => {
       duration = Number.isFinite(video.duration) ? video.duration : 0;
       if (duration <= 0) return;
-      wanted = timeFor(toFilm(progress.current()));
+      wanted = timeFor(progress.current());
       flush();
     };
 
@@ -60,7 +62,7 @@ export function useFilmScrub(
 
     const unsubscribe = progress.subscribe((p) => {
       if (!duration) return;
-      wanted = timeFor(toFilm(p));
+      wanted = timeFor(p);
       flush();
     });
 
@@ -84,5 +86,5 @@ export function useFilmScrub(
       video.removeEventListener('seeked', onSeeked);
       video.removeEventListener('loadedmetadata', onMetadata);
     };
-  }, [videoRef, progress, toFilm, enabled]);
+  }, [videoRef, progress, toTime, enabled]);
 }

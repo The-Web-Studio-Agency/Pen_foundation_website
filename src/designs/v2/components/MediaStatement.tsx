@@ -18,17 +18,19 @@ const TIMING = {
   PIN_SVH: 140,
   /** Share of that scroll over which the pill grows to fill the screen. */
   EXPAND: [0, 0.6] as const,
-  /** Share over which the paragraph and the three cards fade in. */
+  /** Share over which the statement, the five cards and the figure fade in. */
   CONTENT: [0.5, 0.75] as const,
 };
 
 /**
- * The site film behind the problem statement, with three highlight cards.
+ * Why PEN: the site film behind the problem statement, the five product
+ * highlights and the measured Enhancement Factor.
  *
  * Arrives as a pill of video on the light page: as the visitor scrolls, the
  * pill grows to the edges until the film fills the screen, then the statement
- * (bottom-left) and the three cards (spread across the top) fade in. The stage
- * is pinned while this happens, so the section holds still until it is full.
+ * (bottom left), the figure (bottom right) and the five highlight cards
+ * (spread across the frame) fade in. The stage is pinned while this happens,
+ * so the section holds still until it is full.
  *
  * Progress is written to the stage as two CSS variables — --g (expansion,
  * eased) and --c (content) — and styles/statement.module.css does the rest.
@@ -39,6 +41,11 @@ export function MediaStatement() {
   const stageRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
   const progress = useScrollProgress(sizerRef, { enabled: !reduced, fallback: 1 });
+  const { stat } = statementV2;
+  // The range as a share of the scale's track.
+  const span = stat.scale[1] - stat.scale[0];
+  const from = ((stat.from - stat.scale[0]) / span) * 100;
+  const to = ((stat.to - stat.scale[0]) / span) * 100;
 
   useEffect(
     () =>
@@ -112,13 +119,39 @@ export function MediaStatement() {
             </ul>
 
             <div className={cx(s.copy, t.gutter)}>
-              <p className={s.kicker}>
-                <span className={s.kickerRule} aria-hidden />
-                <span>{statementV2.kicker}</span>
-              </p>
-              <p id="hv2-statement-text" className={s.text}>
-                {statementV2.text}
-              </p>
+              <div className={s.copyMain}>
+                <p className={s.kicker}>
+                  <span className={s.kickerRule} aria-hidden />
+                  <span>{statementV2.kicker}</span>
+                </p>
+                <p id="hv2-statement-text" className={s.text}>
+                  {statementV2.text}
+                </p>
+              </div>
+
+              <div className={s.stat}>
+                <p className={s.statTitle}>{stat.title}</p>
+                <p className={cx(t.mono, s.statCaption)}>{stat.caption}</p>
+                <p className={s.statValue}>
+                  {stat.value}
+                  <span className={s.statUnit}>{stat.unit}</span>
+                </p>
+                <div className={s.range} aria-hidden>
+                  <div className={s.rangeTrack}>
+                    <span
+                      className={s.rangeFill}
+                      style={{ left: `${from}%`, width: `${to - from}%` }}
+                    />
+                  </div>
+                  <div className={cx(t.mono, s.rangeScale)}>
+                    {[stat.scale[0], (stat.scale[0] + stat.scale[1]) / 2, stat.scale[1]].map(
+                      (n) => (
+                        <span key={n}>{n}×</span>
+                      ),
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

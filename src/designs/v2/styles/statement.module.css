@@ -141,7 +141,7 @@
   opacity: calc(0.25 + var(--c) * 0.75);
 }
 
-/* ---- three cards with their dots, spread across the top --------------- */
+/* ---- five cards with their dots, spread across the frame --------------- */
 
 .spots {
   position: absolute;
@@ -201,8 +201,8 @@
   position: absolute;
   left: 0;
   bottom: 2.6rem;
-  width: min(19rem, 26vw);
-  padding: 1.15rem 1.4rem 1.25rem;
+  width: min(16rem, 16.5vw);
+  padding: 1rem 1.15rem 1.1rem;
   border-radius: 0.75rem;
   background: rgba(8, 32, 37, 0.74);
   -webkit-backdrop-filter: blur(14px);
@@ -212,18 +212,19 @@
 }
 
 .cardTitle {
-  font-size: 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25;
   letter-spacing: 0.05em;
 }
 
 .cardBody {
-  margin-top: 0.65rem;
-  font-size: 1rem;
+  margin-top: 0.55rem;
+  font-size: 0.9375rem;
   line-height: 1.4;
   color: rgba(255, 255, 255, 0.88);
 }
 
-/* Below desktop there is no room for three cards side by side: each opens
+/* Below desktop there is no room for five cards side by side: each opens
    from its dot on hover, focus or tap, kept inside the screen edges. */
 @media (max-width: 63.99rem) {
   .card {
@@ -235,11 +236,17 @@
       opacity 0.35s var(--hv2-ease),
       transform 0.45s var(--hv2-ease);
   }
-  .spot:first-child .card {
+  /* Dots sit higher, clear of the statement and the figure below. */
+  .spot {
+    top: calc(var(--y) - 14%);
+  }
+  /* The two left cards open rightward from their dot, the two right cards
+     leftward, so none runs off the screen; the centre one stays centred. */
+  .spot:nth-child(-n + 2) .card {
     left: -1.5rem;
     transform: translate(0, 0.5rem);
   }
-  .spot:last-child .card {
+  .spot:nth-last-child(-n + 2) .card {
     left: auto;
     right: -1.5rem;
     transform: translate(0, 0.5rem);
@@ -249,10 +256,10 @@
     opacity: 1;
     transform: translate(-50%, 0);
   }
-  .spot:first-child:hover .card,
-  .spot:first-child:focus-within .card,
-  .spot:last-child:hover .card,
-  .spot:last-child:focus-within .card {
+  .spot:nth-child(-n + 2):hover .card,
+  .spot:nth-child(-n + 2):focus-within .card,
+  .spot:nth-last-child(-n + 2):hover .card,
+  .spot:nth-last-child(-n + 2):focus-within .card {
     transform: none;
   }
 }
@@ -264,8 +271,118 @@
   left: 0;
   right: 0;
   bottom: clamp(2.5rem, 9vh, 6rem);
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 1.5rem;
   opacity: var(--c);
   transform: translateY(calc((1 - var(--c)) * 1.5rem));
+}
+
+.copyMain {
+  min-width: 0;
+}
+
+/* Desktop: statement left, the figure right, sharing a baseline. */
+@media (min-width: 64rem) {
+  .copy {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: clamp(2rem, 5vw, 5rem);
+  }
+}
+
+/* ---- the measured figure, bottom right -------------------------------- */
+
+.stat {
+  flex: none;
+  width: min(19rem, 100%);
+  padding: 1.25rem 1.4rem;
+  border-radius: var(--hv2-radius-lg);
+  background: var(--hv2-glass);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+  backdrop-filter: blur(18px) saturate(120%);
+  color: var(--hv2-white);
+}
+
+.statTitle {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.statCaption {
+  margin: 0.4rem 0 0;
+  font-size: 0.6875rem;
+  opacity: 0.7;
+}
+
+.statValue {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin: 1.25rem 0 0;
+  font-size: 3rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.statUnit {
+  font-family: var(--hv2-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0;
+  opacity: 0.7;
+}
+
+.range {
+  margin-top: 1.25rem;
+}
+
+.rangeTrack {
+  position: relative;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.rangeFill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+  background: var(--hv2-accent-bright);
+}
+
+.rangeScale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  font-size: 0.6875rem;
+  opacity: 0.65;
+}
+
+/* Phones and tablets: the figure as one compact line above the statement. */
+@media (max-width: 63.99rem) {
+  .stat {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.75rem;
+    width: auto;
+    align-self: flex-start;
+    padding: 0.7rem 1rem;
+    border-radius: var(--hv2-radius-sm);
+  }
+  .statCaption,
+  .range {
+    display: none;
+  }
+  .statValue {
+    margin: 0;
+    font-size: 1.5rem;
+  }
 }
 
 .kicker {
@@ -290,9 +407,8 @@
 }
 
 .text {
-  /* Wide enough for the statement to sit on two lines on desktop; balanced
-     so the two lines come out roughly even. */
-  max-width: 66ch;
+  /* Balanced so the lines come out roughly even beside the figure. */
+  max-width: 44ch;
   margin: 0;
   font-size: clamp(1.625rem, 2.3vw + 0.25rem, 3rem);
   font-weight: 500;

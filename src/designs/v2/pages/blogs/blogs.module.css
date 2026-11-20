@@ -25,6 +25,25 @@
   );
 }
 
+.coverPhoto {
+  z-index: -2;
+  object-fit: cover;
+  transition: transform 1.2s var(--hv2-ease);
+}
+
+/* Forest shade over a stand-in photo, so the caption still reads. */
+.coverShade {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    180deg,
+    rgba(1, 31, 37, 0.35) 0%,
+    rgba(1, 31, 37, 0.15) 40%,
+    rgba(1, 31, 37, 0.75) 100%
+  );
+}
+
 .coverFloor {
   position: absolute;
   inset: 0;

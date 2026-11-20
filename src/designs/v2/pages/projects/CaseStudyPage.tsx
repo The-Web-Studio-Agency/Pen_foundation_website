@@ -63,6 +63,7 @@ export function CaseStudyPage({ project }: { project: Project }) {
         ]}
         actions={[ASSESSMENT]}
         facts={facts}
+        image={project.image}
       />
 
       <section className={cx(p.section, p.light)} aria-labelledby="study-challenge">

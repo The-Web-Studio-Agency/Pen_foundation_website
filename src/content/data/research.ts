@@ -10,6 +10,8 @@ export interface Article {
   date: string;
   readTime: string;
   cover: string;
+  /** STAND-IN cover photo from PEN's imagery until the article's own artwork exists. */
+  coverImage?: { src: string; alt: string };
   body: { heading: string; text: string; note?: string }[];
   pullQuote?: string;
 }
@@ -24,6 +26,10 @@ export const ARTICLES: Article[] = [
     date: '[Date]',
     readTime: '6 min',
     cover: 'LOAD PATH · HERO DIAGRAM',
+    coverImage: {
+      src: '/media/images/homepage/capability-02-poster.webp',
+      alt: 'A PEN precast node set on prepared ground, its nails splayed into the soil',
+    },
     pullQuote: 'A footing resists load by being heavy. A nail resists load by being anchored.',
     body: [
       {
@@ -50,6 +56,10 @@ export const ARTICLES: Article[] = [
     date: '[Date]',
     readTime: '4 min',
     cover: 'SOIL SECTION · ANNOTATED',
+    coverImage: {
+      src: '/media/images/homepage/excavation-image.png',
+      alt: 'An excavated foundation pit showing the soil layers in its walls',
+    },
     body: [
       {
         heading: 'Start with the strata, not the summary',
@@ -70,6 +80,10 @@ export const ARTICLES: Article[] = [
     date: '[Date]',
     readTime: '5 min',
     cover: 'CONCRETE VOLUME · COMPARISON',
+    coverImage: {
+      src: '/media/images/storysection1.png',
+      alt: 'Concrete columns and beams rising from a cast slab',
+    },
     body: [
       {
         heading: "Nobody audits what they can't see",

@@ -30,6 +30,7 @@ export interface ArticleCardData {
   category: Article['category'];
   readTime: string;
   cover: string;
+  coverImage?: { src: string; alt: string };
 }
 
 export function toCard(a: Article): ArticleCardData {
@@ -40,5 +41,6 @@ export function toCard(a: Article): ArticleCardData {
     category: a.category,
     readTime: a.readTime,
     cover: a.cover,
+    coverImage: a.coverImage,
   };
 }

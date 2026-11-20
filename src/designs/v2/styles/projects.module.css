@@ -166,3 +166,18 @@
     padding: 0.5rem 1rem 0.5rem 0.5rem;
   }
 }
+
+/* ---- pinned (desktop): the page's scroll moves the track sideways ------
+   Behaviour only; the section looks exactly as it does unpinned. The script
+   sets the stage's sticky top so it holds with the whole card on screen. */
+
+.section[data-pinned] .stage {
+  position: sticky;
+}
+
+/* The script sets scrollLeft; no snapping, and no manual sideways scroll
+   that would fall out of step with the page. */
+.section[data-pinned] .track {
+  overflow-x: hidden;
+  scroll-snap-type: none;
+}

@@ -39,7 +39,7 @@ const DUMMY_COVERS = [
   '/media/images/storysection2.png',
   '/media/images/storysection3.png',
   '/media/images/brick-house.png',
-  '/media/images/homepage/pen-installed_image.png',
+  '/media/images/homepage/capability-02-poster.webp',
   '/media/images/storysection1.png',
   '/media/images/homepage/excavation-image.png',
   '/media/images/homepage/startup-ecoashram.png',

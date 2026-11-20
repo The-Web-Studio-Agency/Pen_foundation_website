@@ -52,7 +52,7 @@ export function SiteFooter() {
             {closingV2.intro}
           </p>
           <div data-reveal style={stagger(3)}>
-            <ButtonLink href={closingV2.cta.href} tone="solid">
+            <ButtonLink href={closingV2.cta.href} tone="solid" className={s.ctaButton}>
               {closingV2.cta.label}
             </ButtonLink>
           </div>
@@ -134,7 +134,8 @@ export function SiteFooter() {
           <p className={s.credit}>
             {closingV2.credit.prefix}{' '}
             <a href={closingV2.credit.href} {...EXTERNAL} className={s.bottomLink}>
-              {closingV2.credit.label}
+              <b className={s.creditName}>{closingV2.credit.label}</b>
+              {closingV2.credit.suffix}
               <span className={s.srOnly}> (opens in a new tab)</span>
             </a>
           </p>

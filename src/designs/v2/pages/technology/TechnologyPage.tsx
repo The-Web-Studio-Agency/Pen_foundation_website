@@ -2,12 +2,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { CSSProperties } from 'react';
 
-import { PageHero } from '../../components/page/PageHero';
 import { SectionHead } from '../../components/page/SectionHead';
-import { ArrowRight, Chip, cx, stagger } from '../../components/primitives';
+import { ArrowRight, cx, stagger } from '../../components/primitives';
 import p from '../../styles/page.module.css';
 import sys from '../../styles/system.module.css';
 import t from '../../styles/theme.module.css';
+import { AnatomyModel } from './AnatomyModel';
 import { Calculator } from './Calculator';
 import {
   anatomyT,
@@ -20,13 +20,15 @@ import {
   specificationT,
   validationT,
 } from './content';
+import { SoilInteraction } from './SoilInteraction';
 import s from './technology.module.css';
 
 /**
  * /technology, top to bottom:
  *
- *   dark    hero over the installed node, four key figures
- *   black   anatomy (render + callouts) → specification table
+ *   white   hero: headline, the anatomy paragraph, the 3D model with its
+ *           numbered parts, four key figures
+ *   black   specification table → soil-structure interaction (diagram)
  *   forest  load transfer: film, the two mechanism paragraphs, soil
  *   paper   installation — the four project steps
  *   white   PEN vs. conventional
@@ -37,18 +39,10 @@ import s from './technology.module.css';
 export function TechnologyPage() {
   return (
     <>
-      <PageHero
-        kicker={heroT.kicker}
-        title={heroT.title}
-        lead={heroT.lead}
-        actions={heroT.actions}
-        image={heroT.image}
-        crumbs={[{ label: 'Home', href: '/' }, { label: heroT.kicker }]}
-        facts={heroT.facts}
-      />
-      <div className={p.black}>
-        <Anatomy />
+      <Hero />
+      <div className={cx(p.black, s.afterHero)}>
         <Specification />
+        <SoilInteraction />
       </div>
       <LoadTransfer />
       <Installation />
@@ -74,44 +68,61 @@ export function TechnologyPage() {
   );
 }
 
-function Anatomy() {
+function Hero() {
   const { render } = anatomyT;
   return (
-    <section className={cx(s.anatomy, t.gutter)} aria-labelledby="tech-anatomy-title">
-      <div className={s.anatomyText}>
-        <div data-reveal>
-          <Chip>{anatomyT.chip}</Chip>
+    <section className={s.hero} aria-labelledby="tech-hero-title">
+      <AnatomyModel
+        src={anatomyT.model}
+        hud={anatomyT.hud}
+        dragLabel={anatomyT.dragLabel}
+        fallback={
+          <figure className={sys.renderPanel} data-reveal style={stagger(1)}>
+            <Image
+              src={render.src}
+              alt={render.alt}
+              width={render.width}
+              height={render.height}
+              sizes="(min-width: 64rem) 55vw, 100vw"
+              className={sys.render}
+            />
+            <ul className={sys.tags}>
+              {anatomyT.tags.map((tag, i) => (
+                <li
+                  key={tag.label}
+                  className={cx(sys.tag, tag.x > 50 && s.tagFlip)}
+                  style={{ '--x': `${tag.x}%`, '--y': `${tag.y}%`, '--i': i + 2 } as CSSProperties}
+                >
+                  <span className={sys.tagDot} aria-hidden />
+                  <span className={cx(t.mono, sys.tagLabel)}>{tag.label}</span>
+                </li>
+              ))}
+            </ul>
+          </figure>
+        }
+      >
+        <div className={cx(s.heroCopy, t.gutter)}>
+          <h1 id="tech-hero-title" className={cx(t.display, s.heroTitle)} data-reveal>
+            {heroT.title}
+          </h1>
+          <p className={s.heroSub} data-reveal style={stagger(1)}>
+            {heroT.subheading.map((line) => (
+              <span key={line} className={s.heroSubLine}>
+                {line}
+              </span>
+            ))}
+          </p>
         </div>
-        <h2 id="tech-anatomy-title" className={t.h2} data-reveal style={stagger(1)}>
-          {anatomyT.heading}
-        </h2>
-        <p className={cx(t.body, s.anatomyBody)} data-reveal style={stagger(2)}>
-          {anatomyT.body}
-        </p>
-      </div>
+      </AnatomyModel>
 
-      <figure className={sys.renderPanel} data-reveal style={stagger(1)}>
-        <Image
-          src={render.src}
-          alt={render.alt}
-          width={render.width}
-          height={render.height}
-          sizes="(min-width: 64rem) 55vw, 100vw"
-          className={sys.render}
-        />
-        <ul className={sys.tags}>
-          {anatomyT.tags.map((tag, i) => (
-            <li
-              key={tag.label}
-              className={cx(sys.tag, tag.x > 50 && s.tagFlip)}
-              style={{ '--x': `${tag.x}%`, '--y': `${tag.y}%`, '--i': i + 2 } as CSSProperties}
-            >
-              <span className={sys.tagDot} aria-hidden />
-              <span className={cx(t.mono, sys.tagLabel)}>{tag.label}</span>
-            </li>
-          ))}
-        </ul>
-      </figure>
+      <dl className={cx(s.heroFacts, t.gutter)}>
+        {heroT.facts.map((fact, i) => (
+          <div key={fact.label} className={s.heroFact} data-reveal style={stagger(i)}>
+            <dt className={t.mono}>{fact.label}</dt>
+            <dd>{fact.value}</dd>
+          </div>
+        ))}
+      </dl>
     </section>
   );
 }

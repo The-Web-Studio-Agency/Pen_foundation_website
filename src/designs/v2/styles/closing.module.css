@@ -245,6 +245,17 @@
   margin: 0;
 }
 
+.creditName {
+  font-weight: 700;
+}
+
+/* The footer's legibility shadow is for type on the film, not for the
+   solid yellow button. */
+.ctaButton,
+.ctaButton * {
+  text-shadow: none;
+}
+
 .srOnly {
   position: absolute;
   width: 1px;

@@ -43,6 +43,7 @@ export function ArticlePage({ article }: { article: Article }) {
         title={article.title}
         lead={article.dek}
         facts={facts}
+        image={article.coverImage}
       />
 
       <section className={cx(p.section, p.light)}>
@@ -65,6 +66,7 @@ export function ArticlePage({ article }: { article: Article }) {
             <ArticleCover
               label={article.cover}
               category={article.category}
+              image={article.coverImage}
               className={s.bodyCover}
             />
 

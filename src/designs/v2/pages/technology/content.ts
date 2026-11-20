@@ -46,15 +46,15 @@ function spec(term: string) {
 
 /* ---- hero ----------------------------------------------------------------- */
 
+/**
+ * A white opening built around the 3D model. The heading is the client's;
+ * the subheading joins two lines of the product copy, verbatim: the anatomy
+ * paragraph's opening sentence and the product heading.
+ */
 export const heroT = {
-  kicker: 'Technology',
-  title: product.heading,
-  lead: splitFirstSentence(product.lead).rest,
-  image: assets.installedCloseUp,
-  actions: [
-    { label: 'Request Assessment', href: ASSESSMENT_HREF },
-    { label: 'Estimate your project', href: '#calculator' },
-  ],
+  title: 'Our Patented Technology',
+  /** Two lines: the anatomy sentence, then the product heading. */
+  subheading: [splitFirstSentence(product.body[2].text).first, product.heading],
   facts: [
     { label: 'Enhancement Factor', value: '2.0–2.6× SBC' },
     { label: 'Design code', value: 'IS 2911 Part 4' },
@@ -63,14 +63,39 @@ export const heroT = {
   ],
 };
 
+/** A specification row's value, split at its dash into two lines. */
+function specLines(term: string): string[] {
+  const part = specification.parts.find((row) => row.term === term);
+  if (!part) throw new Error(`Specification row not found: ${term}`);
+  return part.spec.split(' — ');
+}
+
 /* ---- 01 · anatomy --------------------------------------------------------- */
 
 export const anatomyT = {
-  chip: 'Anatomy',
-  heading: splitFirstSentence(product.body[2].text).first,
-  body: splitFirstSentence(product.body[2].text).rest,
   render: assets.productRender,
-  /** Same callouts and positions as the homepage's anatomy panel. */
+  model: assets.penModel.src,
+  dragLabel: 'Drag to rotate',
+  /**
+   * Callouts pinned on the 3D model, one per part, numbered in this order. Each chip is the part's
+   * tag below; its two lines are that part's specification row, split at its
+   * dash, word for word.
+   */
+  hud: (
+    [
+      ['bolts', 'M12 galvanised bolts', 'Bolts', 'right', 5],
+      ['nodeFace', 'M50 precast node', 'Node', 'right', 3],
+      ['nailFront', 'GI nail pipes', 'Nail pipes', 'left', 6.5],
+      ['tipEnd', 'Tungsten carbide tips', 'Nail tip', 'right', 2.5],
+    ] as const
+  ).map(([anchor, chip, term, side, rise]) => ({
+    anchor,
+    chip,
+    lines: specLines(term),
+    side,
+    rise,
+  })),
+  /** Fallback when WebGL is unavailable: the render with its callouts. */
   tags: [
     { x: 51, y: 20, label: 'M12 galvanised bolts' },
     { x: 50, y: 40, label: 'M50 precast node' },
@@ -97,9 +122,17 @@ export const loadT = {
   lead: product.body[0].text,
   image: assets.frameOnNodes,
   imageLabel: 'Soil-structure interaction',
-  /** Where the measured gain comes from, verbatim. */
-  paragraphs: [product.body[1].text],
+  /** The mechanism paragraph now lives in `soilT`, just above this section. */
+  paragraphs: [] as string[],
   soil: faqEntry('What soil conditions is it suitable for?'),
+};
+
+/** Soil-structure interaction, moved from the homepage system section. */
+export const soilT = {
+  chip: 'Soil-structure interaction',
+  heading: splitFirstSentence(product.body[1].text).first,
+  body: splitFirstSentence(product.body[1].text).rest,
+  cta: { label: 'Estimate your project', href: '#calculator' },
 };
 
 /* ---- 04 · installation ---------------------------------------------------- */

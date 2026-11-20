@@ -96,6 +96,11 @@ export const PROJECTS: Project[] = [
       'Laterite over weathered rock, ~12° slope, no vehicle access to the rear of the plot.',
     approach: 'Four PEN nodes set by hand-portable driver, no excavator mobilised to site.',
     lessons: '[What the team would change or what surprised them on this install.]',
+    // STAND-IN image (a render, not this project). Replace with a site photo.
+    image: {
+      src: '/media/images/storysection3.png',
+      alt: 'A timber-framed house raised on PEN nodes on a sloping plot',
+    },
   },
   {
     slug: 'backwater-eco-resort',
@@ -115,6 +120,11 @@ export const PROJECTS: Project[] = [
     approach:
       'PEN nodes set without dewatering; root zones left undisturbed within 1.5 m of each node.',
     lessons: '[What the team would change or what surprised them on this install.]',
+    // STAND-IN image (illustrative, not this project). Replace with a site photo.
+    image: {
+      src: '/media/images/Tropical%20Prefab%20Lift%20in%20Progress.png',
+      alt: 'A prefabricated cabin lifted into place beside a backwater, among palm trees',
+    },
   },
   {
     slug: 'utility-solar-array-14',
@@ -133,5 +143,10 @@ export const PROJECTS: Project[] = [
       'Loose sand mix over compacted subgrade, minimal load-bearing without deep footings.',
     approach: 'Single crew, sequential driving pace matched to panel-mounting crews behind them.',
     lessons: '[What the team would change or what surprised them on this install.]',
+    // STAND-IN image (illustrative, not this project). Replace with a site photo.
+    image: {
+      src: '/media/images/ground-mounted-solar.jpeg',
+      alt: 'A row of ground-mounted solar panels on a gravel bed',
+    },
   },
 ];

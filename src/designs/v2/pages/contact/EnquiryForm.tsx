@@ -30,7 +30,15 @@ const autoComplete: Record<string, string> = {
   role: 'organization-title',
 };
 
-export function EnquiryForm() {
+export function EnquiryForm({
+  topics,
+  subject,
+}: {
+  /** Replaces the "How can we help?" options, e.g. for partner enquiries. */
+  topics?: readonly string[];
+  /** Names the enquiry in the message: "New partner enquiry from …". */
+  subject?: string;
+} = {}) {
   const [enquiryUrl, setEnquiryUrl] = useState<string | null>(null);
   const [openedInNewTab, setOpenedInNewTab] = useState(false);
   const ackRef = useRef<HTMLHeadingElement>(null);
@@ -50,7 +58,7 @@ export function EnquiryForm() {
       if (typeof value === 'string') values[key] = value;
     }
 
-    const url = buildWhatsAppUrl(values);
+    const url = buildWhatsAppUrl(values, subject);
     // Opened straight from the submit gesture, which keeps popup blockers out
     // of the way on the common path. No `noopener` feature string: with it,
     // `window.open` always returns null, which would report every successful
@@ -125,7 +133,7 @@ export function EnquiryForm() {
                     <option value="" disabled>
                       {field.placeholder}
                     </option>
-                    {field.options?.map((option) => (
+                    {(field.name === 'topic' && topics ? topics : field.options)?.map((option) => (
                       <option key={option} value={option}>
                         {option}
                       </option>

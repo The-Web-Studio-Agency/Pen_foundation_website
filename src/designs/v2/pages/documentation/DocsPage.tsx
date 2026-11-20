@@ -41,6 +41,11 @@ export function DocsPage() {
           { label: 'Available now', value: String(published.length) },
           { label: 'In preparation', value: String(pending) },
         ]}
+        // STAND-IN photo from PEN's existing imagery; replace with this page's own.
+        image={{
+          src: '/media/projects/black-langur/pl_truss.jpg',
+          alt: 'A steel roof truss on a cleared site among trees',
+        }}
       />
 
       <section

@@ -24,7 +24,7 @@ export type EnquiryValues = Record<string, string>;
  * Labelled lines for every field the visitor actually filled in. Blank
  * optional fields are dropped rather than sent as empty headings.
  */
-export function buildEnquiryMessage(values: EnquiryValues): string {
+export function buildEnquiryMessage(values: EnquiryValues, subject = 'enquiry'): string {
   const lines = formFields
     .map((field) => {
       const value = values[field.name]?.trim();
@@ -35,13 +35,13 @@ export function buildEnquiryMessage(values: EnquiryValues): string {
     })
     .filter((line): line is string => line !== null);
 
-  return [`New enquiry from the ${siteConfig.name} website`, '', ...lines].join('\n');
+  return [`New ${subject} from the ${siteConfig.name} website`, '', ...lines].join('\n');
 }
 
 /**
  * `wa.me` opens the native app on mobile and WhatsApp Web on desktop, so one
  * URL covers both without sniffing the platform.
  */
-export function buildWhatsAppUrl(values: EnquiryValues): string {
-  return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(buildEnquiryMessage(values))}`;
+export function buildWhatsAppUrl(values: EnquiryValues, subject?: string): string {
+  return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(buildEnquiryMessage(values, subject))}`;
 }

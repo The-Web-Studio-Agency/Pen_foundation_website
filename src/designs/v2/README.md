@@ -48,10 +48,8 @@ components/
     useFilmScrub      maps scroll onto hero.mp4's currentTime
   scroll/
     useScrollProgress damped 0→1 progress for a pinned sizer, by subscription
-  MediaStatement      full-bleed film + statement + hotspots
-  Highlights          glass stat card + numbered <details> list
+  MediaStatement      why PEN: film + statement + five highlights + figure
   Applications        six image cards, lime on hover, each to its page
-  SystemChapter       black chapter: intro, anatomy, evidence, manifesto
   ProblemCollage      centred statement in a parallax photo collage
   Process             2×2 step cards
   ProjectsCarousel    wide snap-scroll project cards

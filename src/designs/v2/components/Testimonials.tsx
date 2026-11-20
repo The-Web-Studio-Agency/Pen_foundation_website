@@ -1,10 +1,11 @@
-'use client';
-
 import Image from 'next/image';
 import Link from 'next/link';
-import { useId, useState } from 'react';
 
-import { testimonials, testimonialsSection as c } from '@/content/data/testimonials';
+import {
+  type Testimonial,
+  testimonials,
+  testimonialsSection as c,
+} from '@/content/data/testimonials';
 
 import s from '../styles/testimonials.module.css';
 import t from '../styles/theme.module.css';
@@ -30,165 +31,134 @@ function Avatar({ name, photo, size }: { name: string; photo?: string; size: 'sm
   );
 }
 
-function Arrow({ dir }: { dir: 'prev' | 'next' }) {
+function SampleTag() {
+  return <span className={cx(t.mono, s.sample)}>Sample</span>;
+}
+
+/** Cards per reel, at least: wider than a 2560px screen at the card width. */
+const MIN_PER_REEL = 8;
+
+/** One compact quote card on a drifting row. */
+function Card({ item }: { item: Testimonial }) {
   return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-      style={dir === 'prev' ? { transform: 'scaleX(-1)' } : undefined}
-    >
-      <path d="M5 12h14M13 6l6 6-6 6" />
-    </svg>
+    <figure className={s.card}>
+      <svg className={s.cardMark} viewBox="0 0 48 36" aria-hidden>
+        <path d="M0 36V21.6C0 9.9 6.3 2.7 18.9 0l2.3 4.5C14.7 6.6 11.4 10.5 11.3 16.2H20V36H0Zm28 0V21.6C28 9.9 34.3 2.7 46.9 0l2.3 4.5c-6.5 2.1-9.8 6-9.9 11.7H48V36H28Z" />
+      </svg>
+      <blockquote className={s.cardQuote}>
+        <p>{item.quote}</p>
+      </blockquote>
+      <figcaption className={s.cardCite}>
+        <Avatar name={item.name} photo={item.photo} size="sm" />
+        <span className={s.citeText}>
+          <b>{item.name}</b>
+          <span className={t.mono}>{item.role}</span>
+        </span>
+        {item.placeholder && <SampleTag />}
+      </figcaption>
+    </figure>
   );
 }
 
 /**
- * Written testimonials: heading and the people quoted on the left, one large
- * quote card on the right. Pick a person, or step with the arrows; the card
- * cross-fades. With a single entry the controls drop away and it reads as a
- * featured quote. Content in content/data/testimonials.ts; the section hides
- * itself while that list is empty.
+ * A drifting row of cards. The list is rendered twice so the loop is
+ * seamless; the copy is hidden from screen readers so each quote is heard
+ * once. It pauses on hover and focus; with reduced motion it stands still
+ * and scrolls sideways instead.
+ */
+function Row({ items, reverse }: { items: Testimonial[]; reverse?: boolean }) {
+  // Each reel must be wider than the widest screen, or the loop shows a gap:
+  // repeat short lists (the repeats are hidden from screen readers).
+  const reel: { item: Testimonial; repeat: boolean }[] = [];
+  while (reel.length < MIN_PER_REEL) {
+    items.forEach((item) => reel.push({ item, repeat: reel.length >= items.length }));
+  }
+  return (
+    <div className={cx(s.row, reverse && s.rowReverse)}>
+      {[0, 1].map((copy) => (
+        <ul key={copy} className={s.reel} aria-hidden={copy === 1 || undefined}>
+          {reel.map(({ item, repeat }, i) => (
+            <li
+              key={i}
+              className={s.reelItem}
+              aria-hidden={copy === 0 && repeat ? true : undefined}
+            >
+              <Card item={item} />
+            </li>
+          ))}
+        </ul>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * Testimonials: a centred head, one featured quote set large, then the rest
+ * as cards on two rows drifting in opposite directions. Content lives in
+ * content/data/testimonials.ts (the header there explains how to replace the
+ * samples); the section hides itself while that list is empty.
  */
 export function Testimonials() {
-  const base = useId();
-  const [index, setIndex] = useState(0);
-  const count = testimonials.length;
-  if (count === 0) return null;
+  if (testimonials.length === 0) return null;
 
-  const many = count > 1;
-  const item = testimonials[index];
-  const go = (step: number) => {
-    const next = (index + step + count) % count;
-    setIndex(next);
-    // On phones the people row scrolls sideways; keep the chosen one in view.
-    document
-      .getElementById(`${base}-tab-${next}`)
-      ?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
-  };
-  const pad = (n: number) => String(n).padStart(2, '0');
+  const featured = testimonials.find((item) => !item.placeholder) ?? testimonials[0];
+  const rest = testimonials.filter((item) => item !== featured);
+  const rows = [rest.filter((_, i) => i % 2 === 0), rest.filter((_, i) => i % 2 === 1)].filter(
+    (row) => row.length > 0,
+  );
 
   return (
-    <section
-      id="testimonials"
-      className={s.section}
-      aria-labelledby="hv2-testimonials-title"
-      aria-roledescription={many ? 'carousel' : undefined}
-    >
-      <div className={cx(t.gutter, s.layout)}>
-        <div className={s.side}>
-          <div data-reveal>
-            <Chip>{c.chip}</Chip>
-          </div>
-          <h2
-            id="hv2-testimonials-title"
-            className={cx(t.h2, s.title)}
-            data-reveal
-            style={stagger(1)}
-          >
-            {c.heading}
-          </h2>
-
-          {many && (
-            <>
-              <div className={s.people} role="tablist" aria-label="Testimonials" data-reveal>
-                {testimonials.map((person, i) => (
-                  <button
-                    key={person.name}
-                    type="button"
-                    role="tab"
-                    id={`${base}-tab-${i}`}
-                    aria-selected={i === index}
-                    aria-controls={`${base}-panel`}
-                    className={s.person}
-                    onClick={() => setIndex(i)}
-                  >
-                    <Avatar name={person.name} photo={person.photo} size="sm" />
-                    <span className={s.personText}>
-                      <b>{person.name}</b>
-                      <span className={t.mono}>{person.role}</span>
-                    </span>
-                  </button>
-                ))}
-              </div>
-
-              <div className={s.controls} data-reveal>
-                <span className={cx(t.mono, s.counter)} aria-hidden>
-                  <b>{pad(index + 1)}</b> / {pad(count)}
-                </span>
-                <div className={s.arrows}>
-                  <button
-                    type="button"
-                    className={s.arrow}
-                    onClick={() => go(-1)}
-                    aria-label="Previous testimonial"
-                  >
-                    <Arrow dir="prev" />
-                  </button>
-                  <button
-                    type="button"
-                    className={s.arrow}
-                    onClick={() => go(1)}
-                    aria-label="Next testimonial"
-                  >
-                    <Arrow dir="next" />
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
+    <section id="testimonials" className={s.section} aria-labelledby="hv2-testimonials-title">
+      <div className={cx(t.gutter, s.head)}>
+        <div data-reveal>
+          <Chip>{c.chip}</Chip>
         </div>
-
-        <figure
-          id={`${base}-panel`}
-          role={many ? 'tabpanel' : undefined}
-          aria-labelledby={many ? `${base}-tab-${index}` : undefined}
-          aria-live={many ? 'polite' : undefined}
-          className={s.card}
+        <h2
+          id="hv2-testimonials-title"
+          className={cx(t.h2, s.title)}
           data-reveal
-          style={stagger(2)}
+          style={stagger(1)}
         >
-          <svg className={s.mark} viewBox="0 0 48 36" aria-hidden>
-            <path d="M0 36V21.6C0 9.9 6.3 2.7 18.9 0l2.3 4.5C14.7 6.6 11.4 10.5 11.3 16.2H20V36H0Zm28 0V21.6C28 9.9 34.3 2.7 46.9 0l2.3 4.5c-6.5 2.1-9.8 6-9.9 11.7H48V36H28Z" />
-          </svg>
-
-          {/* Keyed so each quote fades in on its own. */}
-          <div key={index} className={s.body}>
-            {item.highlight && <p className={s.highlight}>{item.highlight}</p>}
-            <blockquote className={cx(s.quote, !item.highlight && s.quoteLarge)}>
-              <p>“{item.quote}”</p>
-            </blockquote>
-
-            <figcaption className={s.cite}>
-              <Avatar name={item.name} photo={item.photo} size="lg" />
-              <span className={s.citeText}>
-                <b>{item.name}</b>
-                <span className={t.mono}>{item.role}</span>
-                {item.source && <span className={cx(t.mono, s.source)}>{item.source}</span>}
-              </span>
-              {item.project &&
-                (item.project.href ? (
-                  <Link href={item.project.href} className={s.project}>
-                    <span className={t.mono}>Project</span>
-                    {item.project.label}
-                    <ArrowRight size={14} />
-                  </Link>
-                ) : (
-                  <span className={s.project}>
-                    <span className={t.mono}>Project</span>
-                    {item.project.label}
-                  </span>
-                ))}
-            </figcaption>
-          </div>
-        </figure>
+          {c.heading}
+        </h2>
       </div>
+
+      <figure className={cx(t.gutter, s.featured)} data-reveal style={stagger(2)}>
+        {featured.highlight && <p className={s.highlight}>{featured.highlight}</p>}
+        <blockquote className={cx(s.quote, !featured.highlight && s.quoteLarge)}>
+          <p>“{featured.quote}”</p>
+        </blockquote>
+        <figcaption className={s.cite}>
+          <Avatar name={featured.name} photo={featured.photo} size="lg" />
+          <span className={s.citeText}>
+            <b>{featured.name}</b>
+            <span className={t.mono}>{featured.role}</span>
+            {featured.source && <span className={cx(t.mono, s.source)}>{featured.source}</span>}
+          </span>
+          {featured.project &&
+            (featured.project.href ? (
+              <Link href={featured.project.href} className={s.project}>
+                <span className={t.mono}>Project</span>
+                {featured.project.label}
+                <ArrowRight size={14} />
+              </Link>
+            ) : (
+              <span className={s.project}>
+                <span className={t.mono}>Project</span>
+                {featured.project.label}
+              </span>
+            ))}
+          {featured.placeholder && <SampleTag />}
+        </figcaption>
+      </figure>
+
+      {rows.length > 0 && (
+        <div className={s.wall} aria-label="More testimonials" role="group">
+          {rows.map((row, i) => (
+            <Row key={i} items={row} reverse={i === 1} />
+          ))}
+        </div>
+      )}
     </section>
   );
 }

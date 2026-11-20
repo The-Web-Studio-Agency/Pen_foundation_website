@@ -34,6 +34,11 @@ export function CertificationsPage() {
           { label: 'All documents', href: '/docs' },
         ]}
         facts={[issuer, ...rest]}
+        // STAND-IN photo from PEN's existing imagery; replace with this page's own.
+        image={{
+          src: '/media/images/homepage/capability-02-poster.webp',
+          alt: 'A PEN precast node set on prepared ground, its nails splayed into the soil',
+        }}
       />
 
       <section

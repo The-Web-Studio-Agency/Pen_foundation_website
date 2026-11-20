@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { ArrowRight, cx } from '../../components/primitives';
@@ -6,21 +7,36 @@ import { blogHref, type ArticleCardData } from './article';
 import s from './blogs.module.css';
 
 /**
- * The article's cover. No article has artwork yet — each record names the
- * picture it will get ("LOAD PATH · HERO DIAGRAM") — so the cover is a
- * labelled forest tile in the hero's language, with that caption on it.
+ * The article's cover. No article has its own artwork yet — each record names
+ * the picture it will get ("LOAD PATH · HERO DIAGRAM"). Where a stand-in photo
+ * is set (`coverImage`) it sits under a forest shade with that caption on it;
+ * otherwise the cover is a labelled forest tile in the hero's language.
  */
 export function ArticleCover({
   label,
   category,
+  image,
   className,
 }: {
   label: string;
   category: string;
+  image?: { src: string; alt: string };
   className?: string;
 }) {
   return (
     <div className={cx(s.cover, className)}>
+      {image && (
+        <>
+          <Image
+            src={image.src}
+            alt={image.alt}
+            fill
+            sizes="(min-width: 64rem) 50vw, 100vw"
+            className={s.coverPhoto}
+          />
+          <span className={s.coverShade} aria-hidden />
+        </>
+      )}
       <span className={s.coverFloor} aria-hidden />
       <span className={s.coverTint} aria-hidden />
       <span className={cx(t.mono, s.coverCategory)}>{category}</span>
@@ -47,7 +63,12 @@ export function ArticleCard({
   const Heading = headingLevel;
   return (
     <Link href={blogHref(article.slug)} className={cx(s.card, feature && s.cardFeature)}>
-      <ArticleCover label={article.cover} category={article.category} className={s.cardCover} />
+      <ArticleCover
+        label={article.cover}
+        category={article.category}
+        image={article.coverImage}
+        className={s.cardCover}
+      />
       <div className={s.cardText}>
         <p className={cx(t.mono, s.cardMeta)}>
           <span>{article.category}</span>

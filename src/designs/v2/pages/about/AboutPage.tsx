@@ -11,12 +11,14 @@ import {
   storyValues,
 } from '@/features/about';
 
+import { FaqSection } from '../../components/FaqSection';
 import { PageHero } from '../../components/page/PageHero';
 import { SectionHead } from '../../components/page/SectionHead';
 import { cx, stagger } from '../../components/primitives';
 import p from '../../styles/page.module.css';
 import t from '../../styles/theme.module.css';
 import s from './about.module.css';
+import { aboutFaq } from './faq';
 
 /**
  * /about, top to bottom:
@@ -28,6 +30,7 @@ import s from './about.module.css';
  *   paper   our value — three cards with their sourced proof figures
  *   white   the people behind PEN — founding team
  *   paper   research & industry ecosystem — supporter logos
+ *   white   FAQ — the homepage FAQ design, answered from this page's copy
  *
  * Every word comes from features/about/content.ts and content/data/*; this
  * file adds only section labels.
@@ -70,6 +73,14 @@ export function AboutPage() {
       <OurValue />
       <Team />
       <Supporters />
+      <FaqSection
+        id="faq"
+        titleId="about-faq-title"
+        chip={aboutFaq.chip}
+        heading={aboutFaq.heading}
+        cta={aboutFaq.cta}
+        tabs={aboutFaq.tabs}
+      />
     </>
   );
 }
