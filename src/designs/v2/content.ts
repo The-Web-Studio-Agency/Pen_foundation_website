@@ -40,6 +40,7 @@ import {
 import { partners } from '@/content/data/partners';
 
 import { assets } from './assets';
+import { cms } from '@/lib/cms/store';
 
 /** In-page anchors. The nav and the CTAs both point at these. */
 export const anchors = {
@@ -64,7 +65,7 @@ function splitFirstSentence(text: string): { first: string; rest: string } {
 
 /* ---- 1 · opening: 3D hero, then the scroll-driven film ------------------- --- */
 
-export const openingV2 = {
+const _openingV2Default = {
   /** The film's first beat is the page headline, so it is set here once. */
   /** Small label above the headline, after a short lime rule. */
   kicker: siteConfig.name,
@@ -129,10 +130,12 @@ export const openingV2 = {
     beats: [1, 3, 4, 2, 5].map((i) => ({ lines: hero.sequence[i].lines })),
   },
 };
+/** Editable in the admin (/web-admin). */
+export const openingV2 = cms('home.opening', _openingV2Default);
 
 /* ---- 2 · full-bleed statement over the site film ------------------------- --- */
 
-export const statementV2 = {
+const _statementV2Default = {
   /** The tagline, on one line beside the lime bar. */
   kicker: siteConfig.tagline,
   /** Looping band of large grey type behind the pill as it arrives. */
@@ -165,10 +168,12 @@ export const statementV2 = {
     scale: [1, 3] as const,
   },
 };
+/** Editable in the admin (/web-admin). */
+export const statementV2 = cms('home.why', _statementV2Default);
 
 /* ---- 3 · applications ---------------------------------------------------- --- */
 
-export const applicationsV2 = {
+const _applicationsV2Default = {
   chip: 'Applications',
   heading: applications.heading,
   lead: applications.lead,
@@ -180,10 +185,12 @@ export const applicationsV2 = {
   })),
   note: applications.note,
 };
+/** Editable in the admin (/web-admin). */
+export const applicationsV2 = cms('home.applications', _applicationsV2Default);
 
 /* ---- 4 · the problem (light collage) ------------------------------------ --- */
 
-export const problemV2 = {
+const _problemV2Default = {
   chip: 'The problem',
   /**
    * The handoff headline, trimmed to its claim (same figure, same subject):
@@ -204,28 +211,34 @@ export const problemV2 = {
   facts: [product.comparison.rows[2].feature, product.comparison.rows[3].feature],
   conventionalLabel: 'The conventional way',
 };
+/** Editable in the admin (/web-admin). */
+export const problemV2 = cms('home.problem', _problemV2Default);
 
 /* ---- 5 · process --------------------------------------------------------- --- */
 
-export const processV2 = {
+const _processV2Default = {
   chip: 'Our process',
   heading: howItWorks.heading,
   lead: howItWorks.lead,
   steps: howItWorks.steps,
 };
+/** Editable in the admin (/web-admin). */
+export const processV2 = cms('home.process', _processV2Default);
 
 /* ---- 6 · projects -------------------------------------------------------- --- */
 
-export const projectsV2 = {
+const _projectsV2Default = {
   chip: 'Projects',
   heading: proof.heading,
   projects: proof.projects,
   cta: proof.cta,
 };
+/** Editable in the admin (/web-admin). */
+export const projectsV2 = cms('home.projects', _projectsV2Default);
 
 /* ---- 7 · validation ------------------------------------------------------ --- */
 
-export const validationV2 = {
+const _validationV2Default = {
   chip: 'Validation',
   heading: builtBy.heading,
   /** The handoff's credibility-strip supporting line, verbatim. */
@@ -236,16 +249,20 @@ export const validationV2 = {
     p.logo ? [{ src: p.logo, alt: p.fullName ?? p.name, onDark: Boolean(p.onDark) }] : [],
   ),
 };
+/** Editable in the admin (/web-admin). */
+export const validationV2 = cms('home.validation', _validationV2Default);
 
 /* ---- 8 · FAQ ------------------------------------------------------------ --- */
 
-export const faqV2 = {
+const _faqV2Default = {
   chip: 'FAQ',
   heading: 'Questions engineers ask first',
   body: faq.body,
   tabs: faq.tabs,
   cta: { label: faq.cta.label, href: ASSESSMENT_HREF },
 };
+/** Editable in the admin (/web-admin). */
+export const faqV2 = cms('home.faq', _faqV2Default);
 
 /* ---- 8b · ask an AI assistant ------------------------------------------ --- */
 
@@ -256,7 +273,7 @@ const ASK_PROMPT = 'How is PEN Foundation useful for me?';
  * prompt as a `q` parameter on their web address; on phones with the app
  * installed, the system may open that link in the app instead.
  */
-export const askAiV2 = {
+const _askAiV2Default = {
   chip: 'Ask AI',
   heading: 'Ask your AI assistant about PEN',
   lead: 'Open Claude or ChatGPT with this question ready to send.',
@@ -266,10 +283,12 @@ export const askAiV2 = {
     { label: 'Ask ChatGPT', href: `https://chatgpt.com/?q=${encodeURIComponent(ASK_PROMPT)}` },
   ],
 };
+/** Editable in the admin (/web-admin). */
+export const askAiV2 = cms('home.askAi', _askAiV2Default);
 
 /* ---- 9 · closing CTA + footer ------------------------------------------ --- */
 
-export const closingV2 = {
+const _closingV2Default = {
   heading: homeForm.titleLines,
   intro: homeForm.intro,
   cta: { label: homeForm.submitLabel, href: ASSESSMENT_HREF },
@@ -287,3 +306,5 @@ export const closingV2 = {
   credit: siteConfig.credit,
   copyright: `© ${new Date().getFullYear()} ${siteConfig.name}. All rights reserved.`,
 };
+/** Editable in the admin (/web-admin). */
+export const closingV2 = cms('global.footer', _closingV2Default);

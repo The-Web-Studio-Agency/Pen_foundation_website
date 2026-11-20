@@ -41,16 +41,22 @@ function sentences(text: string): string[] {
   return text.match(/[^.!?]+[.!?]+/g)?.map((x) => x.trim()) ?? [text];
 }
 
-const intro = sentences(hero.body);
-/** "For decades… / Yet the foundation…" opens the page in the hero. */
-const heroLead = intro.slice(0, 2).join(' ');
-/** "PEN Foundation began with a simple belief…" heads the story chapter. */
-const beliefHeading = intro[2];
-const beliefLead = intro.slice(3).join(' ');
+/** The hero intro, split as the page uses it (read at render, so edits show). */
+function introParts() {
+  const intro = sentences(hero.body);
+  return {
+    /** "For decades… / Yet the foundation…" opens the page in the hero. */
+    heroLead: intro.slice(0, 2).join(' '),
+    /** "PEN Foundation began with a simple belief…" heads the story chapter. */
+    beliefHeading: intro[2],
+    beliefLead: intro.slice(3).join(' '),
+  };
+}
 
 const anchors = { story: 'story', team: 'team' } as const;
 
 export function AboutPage() {
+  const { heroLead } = introParts();
   return (
     <>
       <PageHero
@@ -88,6 +94,7 @@ export function AboutPage() {
 /* ---- where it began ----------------------------------------------------- */
 
 function Beginnings() {
+  const { beliefHeading, beliefLead } = introParts();
   return (
     <section
       id={anchors.story}

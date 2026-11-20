@@ -21,6 +21,8 @@
  * contractions.
  */
 
+import { cms } from '@/lib/cms/store';
+
 export interface AudienceCard {
   title: string;
   body?: string;
@@ -312,7 +314,9 @@ const modularOems: ApplicationAudience = {
 };
 
 /** Keyed by application slug (applications.items in content/data/homepage.ts). */
-export const applicationAudiences: Record<string, ApplicationAudience> = {
+const _applicationAudiencesDefault: Record<string, ApplicationAudience> = {
   residential: projectOwners,
   'modular-and-prefab': modularOems,
 };
+/** Editable in the admin (/web-admin). */
+export const applicationAudiences = cms('applications.audiences', _applicationAudiencesDefault);

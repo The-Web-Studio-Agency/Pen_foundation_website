@@ -20,6 +20,7 @@ import {
 } from '@/content/data/homepage';
 
 import { assets } from '../../assets';
+import { cms } from '@/lib/cms/store';
 
 const ASSESSMENT_HREF = '/contact#contact-form';
 
@@ -51,7 +52,7 @@ function spec(term: string) {
  * the subheading joins two lines of the product copy, verbatim: the anatomy
  * paragraph's opening sentence and the product heading.
  */
-export const heroT = {
+const _heroTDefault = {
   title: 'Our Patented Technology',
   /** Two lines: the anatomy sentence, then the product heading. */
   subheading: [splitFirstSentence(product.body[2].text).first, product.heading],
@@ -62,6 +63,8 @@ export const heroT = {
     { label: 'Peak load observed', value: spec('Peak load observed').split(' — ')[0] },
   ],
 };
+/** Editable in the admin (/web-admin). */
+export const heroT = cms('technology.hero', _heroTDefault);
 
 /** A specification row's value, split at its dash into two lines. */
 function specLines(term: string): string[] {
@@ -72,7 +75,7 @@ function specLines(term: string): string[] {
 
 /* ---- 01 · anatomy --------------------------------------------------------- */
 
-export const anatomyT = {
+const _anatomyTDefault = {
   render: assets.productRender,
   model: assets.penModel.src,
   dragLabel: 'Drag to rotate',
@@ -103,19 +106,23 @@ export const anatomyT = {
     { x: 17, y: 82, label: 'Tungsten carbide tips' },
   ],
 };
+/** Editable in the admin (/web-admin). */
+export const anatomyT = cms('technology.anatomy', _anatomyTDefault);
 
 /* ---- 02 · specification --------------------------------------------------- */
 
-export const specificationT = {
+const _specificationTDefault = {
   chip: 'Specification',
   heading: specification.title,
   parts: specification.parts,
   note: specification.note,
 };
+/** Editable in the admin (/web-admin). */
+export const specificationT = cms('technology.specification', _specificationTDefault);
 
 /* ---- 03 · load transfer --------------------------------------------------- */
 
-export const loadT = {
+const _loadTDefault = {
   chip: 'Load transfer',
   heading: faqEntry('Where does the capacity gain come from?').question,
   /** The paragraph that contrasts PEN with a pad footing, verbatim. */
@@ -126,37 +133,45 @@ export const loadT = {
   paragraphs: [] as string[],
   soil: faqEntry('What soil conditions is it suitable for?'),
 };
+/** Editable in the admin (/web-admin). */
+export const loadT = cms('technology.loadTransfer', _loadTDefault);
 
 /** Soil-structure interaction, moved from the homepage system section. */
-export const soilT = {
+const _soilTDefault = {
   chip: 'Soil-structure interaction',
   heading: splitFirstSentence(product.body[1].text).first,
   body: splitFirstSentence(product.body[1].text).rest,
   cta: { label: 'Estimate your project', href: '#calculator' },
 };
+/** Editable in the admin (/web-admin). */
+export const soilT = cms('technology.soil', _soilTDefault);
 
 /* ---- 04 · installation ---------------------------------------------------- */
 
-export const installT = {
+const _installTDefault = {
   chip: 'Installation',
   heading: howItWorks.heading,
   lead: howItWorks.lead,
   steps: howItWorks.steps,
 };
+/** Editable in the admin (/web-admin). */
+export const installT = cms('technology.installation', _installTDefault);
 
 /* ---- 05 · comparison ------------------------------------------------------ */
 
-export const comparisonT = {
+const _comparisonTDefault = {
   chip: 'PEN vs. conventional',
   heading: product.comparison.title,
   columns: product.comparison.columns,
   rows: product.comparison.rows,
   note: product.comparison.note,
 };
+/** Editable in the admin (/web-admin). */
+export const comparisonT = cms('technology.comparison', _comparisonTDefault);
 
 /* ---- 06 · validation ------------------------------------------------------ */
 
-export const validationT = {
+const _validationTDefault = {
   chip: 'Validation',
   heading: builtBy.heading,
   entries: [
@@ -166,10 +181,12 @@ export const validationT = {
   ],
   logos: validationLogos,
 };
+/** Editable in the admin (/web-admin). */
+export const validationT = cms('technology.validation', _validationTDefault);
 
 /* ---- 07 · calculator ------------------------------------------------------ */
 
-export const calculatorT = {
+const _calculatorTDefault = {
   chip: 'Project calculator',
   heading: 'What could your project save?',
   basis:
@@ -178,10 +195,12 @@ export const calculatorT = {
   tag: '0 m³ soil displaced',
   cta: { label: 'Get an exact site assessment', href: ASSESSMENT_HREF },
 };
+/** Editable in the admin (/web-admin). */
+export const calculatorT = cms('technology.calculator', _calculatorTDefault);
 
 /* ---- 08 · documents ------------------------------------------------------- */
 
-export const documentsT = {
+const _documentsTDefault = {
   chip: 'Documents',
   heading: 'Spec sheet, CAD block and test report',
   lead: 'Available on request.',
@@ -190,3 +209,5 @@ export const documentsT = {
   href: ASSESSMENT_HREF,
   actionLabel: 'Request',
 };
+/** Editable in the admin (/web-admin). */
+export const documentsT = cms('technology.documents', _documentsTDefault);

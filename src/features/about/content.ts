@@ -1,3 +1,4 @@
+import { cms } from '@/lib/cms/store';
 export interface NumberedFeature {
   number: string;
   title: string;
@@ -18,7 +19,7 @@ export interface PartnerLogo {
 // the cloned layout. Anything not covered by that document is marked
 // TODO(content) rather than invented.
 
-export const hero = {
+const _heroDefault = {
   eyebrow: 'About PEN Foundation',
   heading: 'We questioned the one thing construction never did.',
   /**
@@ -29,8 +30,10 @@ export const hero = {
   titleLines: ['We questioned the one thing', 'construction never did.'],
   body: 'For decades, buildings have become taller, smarter, and more efficient. Yet the foundation beneath them has largely remained unchanged. PEN Foundation began with a simple belief: if every part of construction continues to evolve, the foundation should too. That belief became years of research, engineering, testing, and real-world validation.',
 };
+/** Editable in the admin (/web-admin). */
+export const hero = cms('about.hero', _heroDefault);
 
-export const numberedFeatures: NumberedFeature[] = [
+const _numberedFeaturesDefault: NumberedFeature[] = [
   {
     number: '01',
     title: 'Every revolution begins with a question.',
@@ -56,28 +59,36 @@ export const numberedFeatures: NumberedFeature[] = [
     imageAlt: 'PEN Foundation system installed and validated on site',
   },
 ];
+/** Editable in the admin (/web-admin). */
+export const numberedFeatures = cms('about.beginnings', _numberedFeaturesDefault);
 
-export const storyValues = {
+const _storyValuesDefault = {
   heading: 'The story behind PEN Foundation',
   story:
     'Traditional foundations force the ground to accept the structure. PEN Foundation works with the natural behaviour of the soil to create a stable load-transfer system inspired by biological root networks. What began as a question about excavation became years of research, prototyping, patenting, and field validation.',
   values:
     'We do not believe innovation ends with a better product. We believe innovation begins by questioning assumptions that have been accepted for generations. PEN Foundation represents a different way of thinking about construction \u2014 one that values engineering, sustainability, and continuous improvement equally.',
 };
+/** Editable in the admin (/web-admin). */
+export const storyValues = cms('about.story', _storyValuesDefault);
 
-export const leadersIntro = {
+const _leadersIntroDefault = {
   eyebrow: 'The People Behind PEN',
   heading: 'Engineering innovation through multidisciplinary expertise',
   intro:
     'PEN Foundation is the result of collaboration between professionals with experience in structural engineering, construction, research, and product development. Together they share a common vision: redefining foundation engineering for the next generation of infrastructure.',
 };
+/** Editable in the admin (/web-admin). */
+export const leadersIntro = cms('about.teamIntro', _leadersIntroDefault);
 
-export const investorsIntro = {
+const _investorsIntroDefault = {
   eyebrow: 'Research & Industry Ecosystem',
   heading: 'Supported by research, strengthened through collaboration',
   intro:
     'The development of PEN Foundation has been shaped through collaboration with academic institutions, research initiatives, industry experts, and innovation ecosystems. These partnerships have helped transform an engineering concept into a validated construction solution.',
 };
+/** Editable in the admin (/web-admin). */
+export const investorsIntro = cms('about.ecosystemIntro', _investorsIntroDefault);
 
 export const partnersIntro = {
   eyebrow: 'Our Network',

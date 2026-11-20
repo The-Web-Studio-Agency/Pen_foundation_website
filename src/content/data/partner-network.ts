@@ -16,6 +16,8 @@
  * homepage.ts), so this does too.
  */
 
+import { cms } from '@/lib/cms/store';
+
 export interface NetworkPartner {
   role: string;
   name: string;
@@ -24,7 +26,7 @@ export interface NetworkPartner {
 
 const CONTACT = '/contact#contact-form';
 
-export const partnerNetwork = {
+const _partnerNetworkDefault = {
   hero: {
     kicker: 'PEN Foundation Partner Network',
     title: 'Buy PEN from people we trust',
@@ -118,3 +120,5 @@ export const partnerNetwork = {
     cta: { label: 'Become a partner', href: CONTACT },
   },
 };
+/** Editable in the admin (/web-admin). */
+export const partnerNetwork = cms('partners.network', _partnerNetworkDefault);

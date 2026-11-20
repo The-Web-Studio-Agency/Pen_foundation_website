@@ -1,5 +1,6 @@
 import { siteConfig } from '@/config/site';
 import type { ContactWay, FormFieldDef, HeroContent, PromoBanner } from '@/types/contact';
+import { cms } from '@/lib/cms/store';
 
 /**
  * Content for the /contact route.
@@ -13,7 +14,7 @@ import type { ContactWay, FormFieldDef, HeroContent, PromoBanner } from '@/types
  * as the single navigation source.
  */
 
-export const hero: HeroContent = {
+const _heroDefault: HeroContent = {
   titleLines: ['Demo, phone call, webinar, social', 'connection, you decide how to connect'],
 
   infoHeading: 'Connect directly with the PEN Foundation engineering team',
@@ -38,6 +39,8 @@ export const hero: HeroContent = {
   // /contact and the homepage dialled nowhere.
   phoneNumber: siteConfig.phone,
 };
+/** Editable in the admin (/web-admin). */
+export const hero = cms('contact.hero', _heroDefault);
 /**
  * Name and phone are the only required fields — everything else is optional,
  * so a visitor can send an enquiry with just a way to call them back. The
@@ -46,7 +49,7 @@ export const hero: HeroContent = {
  * Shared by /contact and the homepage's closing form; both show the same
  * fields and the same requiredness.
  */
-export const formFields: FormFieldDef[] = [
+const _formFieldsDefault: FormFieldDef[] = [
   {
     name: 'name',
     label: 'Full Name',
@@ -100,6 +103,8 @@ export const formFields: FormFieldDef[] = [
     ],
   },
 ];
+/** Editable in the admin (/web-admin). */
+export const formFields = cms('contact.form', _formFieldsDefault);
 
 /** Placeholder customer wordmarks shown under the hero copy. */
 // export const trustedLogos = ['Northwind', 'Globex', 'Initech', 'Umbrella', 'Vandelay', 'Soylent'];

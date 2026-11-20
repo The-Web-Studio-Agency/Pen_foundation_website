@@ -30,6 +30,8 @@
  *   added here once their wording and names are confirmed.
  */
 
+import { cms } from '@/lib/cms/store';
+
 export interface Testimonial {
   quote: string;
   name: string;
@@ -42,12 +44,14 @@ export interface Testimonial {
   placeholder?: boolean;
 }
 
-export const testimonialsSection = {
+const _testimonialsSectionDefault = {
   chip: 'Testimonials',
   heading: 'From the people who build on PEN',
 };
+/** Editable in the admin (/web-admin). */
+export const testimonialsSection = cms('home.testimonialsHeading', _testimonialsSectionDefault);
 
-export const testimonials: Testimonial[] = [
+const _testimonialsDefault: Testimonial[] = [
   {
     highlight: 'Swift completion in under a year.',
     quote:
@@ -104,3 +108,5 @@ export const testimonials: Testimonial[] = [
     placeholder: true,
   },
 ];
+/** Editable in the admin (/web-admin). */
+export const testimonials = cms('home.testimonials', _testimonialsDefault);

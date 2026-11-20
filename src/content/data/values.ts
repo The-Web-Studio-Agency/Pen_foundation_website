@@ -1,4 +1,5 @@
 import type { ValuesContent } from '@/types/values';
+import { cms } from '@/lib/cms/store';
 
 /**
  * "Our Value" — the commercial case for PEN, stated in three figures-first
@@ -20,7 +21,7 @@ import type { ValuesContent } from '@/types/values';
  * The eyebrow matches the one `proof` already uses, because it is the same
  * argument told twice at different lengths.
  */
-export const values: ValuesContent = {
+const _valuesDefault: ValuesContent = {
   eyebrow: 'Our Value',
   heading: 'The foundation stops being the thing your programme waits for.',
   intro:
@@ -58,3 +59,5 @@ export const values: ValuesContent = {
     },
   ],
 };
+/** Editable in the admin (/web-admin). */
+export const values = cms('about.values', _valuesDefault);

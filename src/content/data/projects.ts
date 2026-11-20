@@ -1,3 +1,4 @@
+import { cms } from '@/lib/cms/store';
 export interface Project {
   slug: string;
   name: string;
@@ -19,7 +20,7 @@ export interface Project {
   cardFigures?: { label: string; value: string }[];
 }
 
-export const PROJECTS: Project[] = [
+const _PROJECTSDefault: Project[] = [
   // Full story in content/data/case-studies.ts (client case study, Nov 2026).
   {
     slug: 'black-langur-retreat',
@@ -150,3 +151,5 @@ export const PROJECTS: Project[] = [
     },
   },
 ];
+/** Editable in the admin (/web-admin). */
+export const PROJECTS = cms('projects.list', _PROJECTSDefault);

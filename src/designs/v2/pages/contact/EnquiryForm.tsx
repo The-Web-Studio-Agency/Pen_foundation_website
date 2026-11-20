@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 
 import { formFields } from '@/content/data/contact';
+import { submitLead } from '@/lib/contact/submitLead';
 import { buildWhatsAppUrl, type EnquiryValues } from '@/lib/contact/whatsapp';
 
 import { ChevronRight, cx } from '../../components/primitives';
@@ -57,6 +58,14 @@ export function EnquiryForm({
     for (const [key, value] of entries.entries()) {
       if (typeof value === 'string') values[key] = value;
     }
+
+    // Into the admin's leads datasheet, keyed by the labels the visitor saw.
+    const labelled: Record<string, string> = {};
+    for (const field of formFields) {
+      const value = values[field.name]?.trim();
+      if (value) labelled[field.label] = value;
+    }
+    submitLead(subject === 'partner enquiry' ? 'partners' : 'contact', labelled);
 
     const url = buildWhatsAppUrl(values, subject);
     // Opened straight from the submit gesture, which keeps popup blockers out

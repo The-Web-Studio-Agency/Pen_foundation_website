@@ -1,3 +1,4 @@
+import { cms } from '@/lib/cms/store';
 export interface Partner {
   /** Short name — the text treatment and the image alt both use this. */
   name: string;
@@ -23,7 +24,7 @@ export interface Partner {
  * supplied logos to a third list would have repeated the mistake, so the logo
  * is a field on the one list instead.
  */
-export const partners: Partner[] = [
+const _partnersDefault: Partner[] = [
   {
     name: 'IKEA Foundation',
     logo: '/media/logos/supported-by/ikea-foundation.webp',
@@ -98,3 +99,5 @@ export const partners: Partner[] = [
     logo: '/media/logos/supported-by/realty-nxt.webp',
   },
 ];
+/** Editable in the admin (/web-admin). */
+export const partners = cms('global.supporters', _partnersDefault);

@@ -8,6 +8,7 @@ import p from '../../styles/page.module.css';
 import t from '../../styles/theme.module.css';
 import { RelatedLinks } from '../documentation/RelatedLinks';
 import s from './certifications.module.css';
+import { certificationsPageCopy } from '../pageCopy';
 
 /**
  * /certifications — the GRIHA Product Catalogue listing.
@@ -26,19 +27,15 @@ export function CertificationsPage() {
   return (
     <>
       <PageHero
-        kicker="Certifications"
+        kicker={certificationsPageCopy.hero.kicker}
         title={certificate.heading}
         lead={certificate.body}
         actions={[
-          { label: 'View the certificate', href: '#griha' },
-          { label: 'All documents', href: '/docs' },
+          { label: certificationsPageCopy.hero.viewLabel, href: '#griha' },
+          { label: certificationsPageCopy.hero.allDocumentsLabel, href: '/docs' },
         ]}
         facts={[issuer, ...rest]}
-        // STAND-IN photo from PEN's existing imagery; replace with this page's own.
-        image={{
-          src: '/media/images/homepage/capability-02-poster.webp',
-          alt: 'A PEN precast node set on prepared ground, its nails splayed into the soil',
-        }}
+        image={certificationsPageCopy.hero.image}
       />
 
       <section
@@ -100,8 +97,8 @@ export function CertificationsPage() {
       <RelatedLinks
         id="certifications-related-title"
         items={[
-          { label: 'Docs', href: '/docs', body: 'Technical documentation and downloads' },
-          { label: 'Blogs', href: '/blogs', body: 'Notes from the engineering journal' },
+          { label: 'Docs', href: '/docs', body: certificationsPageCopy.related.docsBody },
+          { label: 'Blogs', href: '/blogs', body: certificationsPageCopy.related.blogsBody },
         ]}
       />
     </>

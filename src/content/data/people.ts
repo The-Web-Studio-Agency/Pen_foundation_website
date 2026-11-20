@@ -1,3 +1,4 @@
+import { cms } from '@/lib/cms/store';
 export interface PersonCard {
   name: string;
   title: string;
@@ -24,7 +25,7 @@ export interface PersonCard {
  * Corrected against the archived PEN-branded About page and
  * docs/brand/source/homepage.odt.
  */
-export const leadershipTeam: PersonCard[] = [
+const _leadershipTeamDefault: PersonCard[] = [
   {
     name: 'Jeesh Venmarath',
     title: 'Founder & CEO',
@@ -54,6 +55,8 @@ export const leadershipTeam: PersonCard[] = [
     // TODO(content): no documented background available — supply a bio.
   },
 ];
+/** Editable in the admin (/web-admin). */
+export const leadershipTeam = cms('about.team', _leadershipTeamDefault);
 
 /**
  * Advisors and board members.

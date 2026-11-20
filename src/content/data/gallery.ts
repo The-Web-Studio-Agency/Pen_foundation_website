@@ -1,3 +1,4 @@
+import { cms } from '@/lib/cms/store';
 export type GalleryCategory =
   | 'Projects'
   | 'Construction'
@@ -25,7 +26,7 @@ export const CATEGORIES: GalleryCategory[] = [
   'Videos',
 ];
 
-export const GALLERY_ITEMS: GalleryItem[] = [
+const _GALLERY_ITEMSDefault: GalleryItem[] = [
   { id: 'g01', label: 'Hillside residence · exterior', category: 'Projects' },
   { id: 'g02', label: 'Node cast, day 1', category: 'Construction' },
   { id: 'g03', label: 'Nail driver, 26° set', category: 'Installation' },
@@ -39,3 +40,5 @@ export const GALLERY_ITEMS: GalleryItem[] = [
   { id: 'g11', label: 'Solar array, point 140', category: 'Installation' },
   { id: 'g12', label: 'Array overview, aerial', category: 'Drone' },
 ];
+/** Editable in the admin (/web-admin). */
+export const GALLERY_ITEMS = cms('gallery.items', _GALLERY_ITEMSDefault);

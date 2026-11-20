@@ -1,6 +1,7 @@
 import { GALLERY_ITEMS } from '@/content/data/gallery';
 import { ARTICLES } from '@/content/data/research';
 import type { CarouselSection, FaqTab, FeaturedGrid, Testimonial } from '@/types/contact';
+import { cms } from '@/lib/cms/store';
 
 /**
  * Content for the /resources route.
@@ -353,7 +354,7 @@ export const testimonial: Testimonial = {
  * Certification block. Real PEN content, unlike the clone copy above — the
  * figures are transcribed from the certificate itself.
  */
-export const certificate = {
+const _certificateDefault = {
   eyebrow: 'Certification',
   heading: 'Listed in the GRIHA Product Catalogue',
   body: 'The pre-engineered nail foundation is certified by the GRIHA Council for use in GRIHA-registered projects, assessed under the innovation typology.',
@@ -369,6 +370,8 @@ export const certificate = {
   file: '/media/documents/griha-certificate.pdf',
   downloadLabel: 'Download certificate (PDF)',
 };
+/** Editable in the admin (/web-admin). */
+export const certificate = cms('certifications.certificate', _certificateDefault);
 
 /**
  * Downloadable documents.
@@ -376,7 +379,7 @@ export const certificate = {
  * `pending: true` renders a disabled row instead of a dead link. Add the file
  * under /public/media/documents and drop the flag to publish one.
  */
-export const documents = {
+const _documentsDefault = {
   eyebrow: 'Documents',
   heading: 'Technical documentation and downloads',
   items: [
@@ -391,6 +394,8 @@ export const documents = {
     { title: 'Structural test report', meta: 'PDF', file: '', pending: true },
   ] as { title: string; meta: string; file: string; pending?: boolean }[],
 };
+/** Editable in the admin (/web-admin). */
+export const documents = cms('docs.documents', _documentsDefault);
 
 /**
  * Blogs and Gallery, derived from the records /research and /gallery already

@@ -12,10 +12,14 @@
  * client before the ads go live.
  */
 
-/** The number in the source, as dialled and as displayed. */
-export const LANDING_PHONE = { display: '+91 73561 77577', tel: '+917356177577' };
+import { cms } from '@/lib/cms/store';
 
-export const landing = {
+/** The number in the source, as dialled and as displayed. */
+const _LANDING_PHONEDefault = { display: '+91 73561 77577', tel: '+917356177577' };
+/** Editable in the admin (/web-admin). */
+export const LANDING_PHONE = cms('landing.phone', _LANDING_PHONEDefault);
+
+const _landingDefault = {
   hero: {
     kicker: 'PEN Foundation',
     title: 'A Faster, Smarter & More Sustainable Alternative to Conventional Foundations',
@@ -387,5 +391,7 @@ export const landing = {
     types: ['Residential', 'Commercial', 'Resort', 'Industrial', 'Other'],
   },
 };
+/** Editable in the admin (/web-admin). */
+export const landing = cms('landing.page', _landingDefault);
 
 export type LandingEnquiry = typeof landing.enquiryTop;

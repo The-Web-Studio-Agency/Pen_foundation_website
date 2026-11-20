@@ -12,6 +12,8 @@ import { applicationHref, applicationImages } from '@/config/navigation';
 import { applicationAudiences } from '@/content/data/application-audiences';
 import { applications, faq, howItWorks, product } from '@/content/data/homepage';
 
+import { cms } from '@/lib/cms/store';
+
 import { assets } from '../../assets';
 import { ASSESSMENT, projectsForApplication } from '../projects/content';
 
@@ -38,58 +40,61 @@ function homeFaq(question: string) {
  * homepage FAQ entries chosen for the application, verbatim. ("How do I get
  * a price?" is left out: its answer points to a form these pages do not have.)
  */
-const APPLICATION_FAQ: Record<string, { heading: string; opener: string; picks: string[] }> = {
-  commercial: {
-    heading: 'Questions about commercial projects',
-    opener: 'Why use PEN on a commercial project?',
-    picks: [
-      'How long does installation take?',
-      'Is it suitable for permanent structures?',
-      'What code governs the design?',
-      'Does it count towards green building credit?',
-    ],
+const APPLICATION_FAQ: Record<string, { heading: string; opener: string; picks: string[] }> = cms(
+  'applications.faq',
+  {
+    commercial: {
+      heading: 'Questions about commercial projects',
+      opener: 'Why use PEN on a commercial project?',
+      picks: [
+        'How long does installation take?',
+        'Is it suitable for permanent structures?',
+        'What code governs the design?',
+        'Does it count towards green building credit?',
+      ],
+    },
+    'eco-resorts-and-farmstays': {
+      heading: 'Questions about eco-resorts and farmstays',
+      opener: 'Why use PEN for an eco-resort or farmstay?',
+      picks: [
+        'Is excavation required?',
+        'Does the site need water or heavy plant?',
+        'What soil conditions is it suitable for?',
+        'Does it count towards green building credit?',
+      ],
+    },
+    'modular-and-prefab': {
+      heading: 'Questions about modular and prefab',
+      opener: 'Why use PEN under modular and prefab buildings?',
+      picks: [
+        'Why is it called “pre-engineered”?',
+        'Is it suitable for permanent structures?',
+        'How long does installation take?',
+        'How many units will my project need?',
+      ],
+    },
+    'low-span-industrial': {
+      heading: 'Questions about industrial sheds',
+      opener: 'Why use PEN for sheds and light industrial buildings?',
+      picks: [
+        'What loads can it carry, and how is that verified?',
+        'What code governs the design?',
+        'How long does installation take?',
+        'What soil conditions is it suitable for?',
+      ],
+    },
+    'ground-mounted-solar': {
+      heading: 'Questions about ground-mounted solar',
+      opener: 'Is PEN available for ground-mounted solar today?',
+      picks: [
+        'What is PEN Foundation?',
+        'Is excavation required?',
+        'Does the site need water or heavy plant?',
+        'What soil conditions is it suitable for?',
+      ],
+    },
   },
-  'eco-resorts-and-farmstays': {
-    heading: 'Questions about eco-resorts and farmstays',
-    opener: 'Why use PEN for an eco-resort or farmstay?',
-    picks: [
-      'Is excavation required?',
-      'Does the site need water or heavy plant?',
-      'What soil conditions is it suitable for?',
-      'Does it count towards green building credit?',
-    ],
-  },
-  'modular-and-prefab': {
-    heading: 'Questions about modular and prefab',
-    opener: 'Why use PEN under modular and prefab buildings?',
-    picks: [
-      'Why is it called “pre-engineered”?',
-      'Is it suitable for permanent structures?',
-      'How long does installation take?',
-      'How many units will my project need?',
-    ],
-  },
-  'low-span-industrial': {
-    heading: 'Questions about industrial sheds',
-    opener: 'Why use PEN for sheds and light industrial buildings?',
-    picks: [
-      'What loads can it carry, and how is that verified?',
-      'What code governs the design?',
-      'How long does installation take?',
-      'What soil conditions is it suitable for?',
-    ],
-  },
-  'ground-mounted-solar': {
-    heading: 'Questions about ground-mounted solar',
-    opener: 'Is PEN available for ground-mounted solar today?',
-    picks: [
-      'What is PEN Foundation?',
-      'Is excavation required?',
-      'Does the site need water or heavy plant?',
-      'What soil conditions is it suitable for?',
-    ],
-  },
-};
+);
 
 function applicationFaq(item: ApplicationItem) {
   const audience = applicationAudiences[item.slug];

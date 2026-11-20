@@ -7,6 +7,7 @@ import p from '../../styles/page.module.css';
 import t from '../../styles/theme.module.css';
 import { toCard } from './article';
 import { BlogIndex } from './BlogIndex';
+import { blogsPageCopy } from '../pageCopy';
 
 /**
  * /blogs — the engineering journal's index.
@@ -20,26 +21,22 @@ export function BlogsPage() {
   return (
     <>
       <PageHero
-        kicker="Blogs"
-        title="Notes from the engineering journal"
-        lead="Working papers on load paths, soil behaviour and what changes when a foundation is driven instead of poured."
+        kicker={blogsPageCopy.hero.kicker}
+        title={blogsPageCopy.hero.title}
+        lead={blogsPageCopy.hero.lead}
         facts={[
           { label: 'Articles', value: String(ARTICLES.length) },
           { label: 'Subjects', value: String(subjects) },
         ]}
-        // STAND-IN photo from PEN's existing imagery; replace with this page's own.
-        image={{
-          src: '/media/projects/devagiri/readers.jpg',
-          alt: 'Readers with books in a library built on PEN foundations',
-        }}
+        image={blogsPageCopy.hero.image}
       />
 
       <section className={cx(p.section, p.light)} aria-labelledby="blogs-index-title">
         <div className={t.gutter}>
           <SectionHead
             id="blogs-index-title"
-            chip="The journal"
-            heading="Every article, by subject"
+            chip={blogsPageCopy.index.chip}
+            heading={blogsPageCopy.index.heading}
           />
           <BlogIndex articles={ARTICLES.map(toCard)} />
         </div>

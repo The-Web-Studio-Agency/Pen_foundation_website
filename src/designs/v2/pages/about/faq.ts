@@ -8,6 +8,7 @@ import {
 } from '@/features/about';
 
 import type { FaqTab } from '../../components/FaqSection';
+import { cms } from '@/lib/cms/store';
 
 /**
  * The About page FAQ. The questions are UI framing written for this page;
@@ -21,7 +22,7 @@ const feature = (number: string) => {
   return hit.body;
 };
 
-export const aboutFaq = {
+const _aboutFaqDefault = {
   chip: 'FAQ',
   heading: 'Questions about PEN Foundation',
   cta: { label: 'Ask an engineer directly', href: '/contact#contact-form' },
@@ -47,3 +48,5 @@ export const aboutFaq = {
     },
   ] satisfies FaqTab[],
 };
+/** Editable in the admin (/web-admin). */
+export const aboutFaq = cms('about.faq', _aboutFaqDefault);

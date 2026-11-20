@@ -7,6 +7,7 @@ import p from '../../styles/page.module.css';
 import t from '../../styles/theme.module.css';
 import s from './docs.module.css';
 import { RelatedLinks } from './RelatedLinks';
+import { docsPageCopy } from '../pageCopy';
 
 function FileIcon() {
   return (
@@ -33,19 +34,15 @@ export function DocsPage() {
   return (
     <>
       <PageHero
-        kicker="Docs"
+        kicker={docsPageCopy.hero.kicker}
         title={documents.heading}
-        lead="Certificates, datasheets and guides for the PEN Foundation system. Each file is listed here as soon as it is published."
-        actions={[{ label: 'Browse the library', href: '#library' }]}
+        lead={docsPageCopy.hero.lead}
+        actions={[{ label: docsPageCopy.hero.action, href: '#library' }]}
         facts={[
-          { label: 'Available now', value: String(published.length) },
-          { label: 'In preparation', value: String(pending) },
+          { label: docsPageCopy.hero.availableLabel, value: String(published.length) },
+          { label: docsPageCopy.hero.pendingLabel, value: String(pending) },
         ]}
-        // STAND-IN photo from PEN's existing imagery; replace with this page's own.
-        image={{
-          src: '/media/projects/black-langur/pl_truss.jpg',
-          alt: 'A steel roof truss on a cleared site among trees',
-        }}
+        image={docsPageCopy.hero.image}
       />
 
       <section
@@ -56,9 +53,9 @@ export function DocsPage() {
         <div className={t.gutter}>
           <SectionHead
             id="docs-library-title"
-            chip="Library"
-            heading="Every document in one place"
-            lead="Available files open as PDFs. The rest are being prepared and will appear here once they are published."
+            chip={docsPageCopy.library.chip}
+            heading={docsPageCopy.library.heading}
+            lead={docsPageCopy.library.lead}
             split
           />
 
@@ -72,7 +69,7 @@ export function DocsPage() {
                       <FileIcon />
                     </span>
                     <span className={cx(t.mono, s.status, live ? s.statusLive : s.statusSoon)}>
-                      {live ? 'Available' : 'Coming soon'}
+                      {live ? docsPageCopy.library.available : docsPageCopy.library.soon}
                     </span>
                   </div>
                   <div className={s.cardText}>
@@ -81,7 +78,7 @@ export function DocsPage() {
                   </div>
                   {live && (
                     <span className={cx(t.mono, s.action)} aria-hidden>
-                      Download
+                      {docsPageCopy.library.download}
                       <span className={s.actionIcon}>
                         <ArrowDown size={14} />
                       </span>
@@ -116,7 +113,7 @@ export function DocsPage() {
         id="docs-related-title"
         items={[
           { label: 'Certifications', href: '/certifications', body: certificate.heading },
-          { label: 'Blogs', href: '/blogs', body: 'Notes from the engineering journal' },
+          { label: 'Blogs', href: '/blogs', body: docsPageCopy.related.blogsBody },
         ]}
       />
     </>

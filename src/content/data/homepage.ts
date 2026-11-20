@@ -15,6 +15,7 @@ import type {
   StatementContent,
   WhyPenContent,
 } from '@/types/homepage';
+import { cms } from '@/lib/cms/store';
 
 /**
  * Home page copy. One module, because `arch:check`'s sibling rule for this
@@ -491,7 +492,7 @@ export const howItWorks: ProcessContent = {
  * development or project-qualified use until the solar-specific product and
  * economics are fully validated."
  */
-export const applications: ApplicationsContent = {
+const _applicationsDefault: ApplicationsContent = {
   id: 'applications',
   // HANDOFF headline, verbatim.
   heading: 'Where PEN Foundation is being specified',
@@ -543,6 +544,8 @@ export const applications: ApplicationsContent = {
   note: 'PEN is engineered for suitable low-rise construction. Structures above G+2 are on the development roadmap, not in the current product. Every project requires review of loads, soil and site conditions before the system is specified.',
   cta: { label: 'Check PEN for my project', href: '#contact' },
 };
+/** Editable in the admin (/web-admin). */
+export const applications = cms('applications.items', _applicationsDefault);
 
 /* -------------------------------------------------------------------------- */
 /* PROOF — projects already in the ground                                     */
@@ -725,7 +728,7 @@ export const validationLogos = [
  * until one exact duration is signed off. A day count derived from an
  * unreconciled rate is exactly what that instruction rules out.
  */
-export const calculator: CalculatorContent = {
+const _calculatorDefault: CalculatorContent = {
   // HANDOFF section heading, verbatim — already the heading here.
   heading: 'What could PEN mean for your project?',
   body: {
@@ -791,6 +794,8 @@ export const calculator: CalculatorContent = {
     href: '#contact',
   },
 };
+/** Editable in the admin (/web-admin). */
+export const calculator = cms('home.estimator', _calculatorDefault);
 
 /* -------------------------------------------------------------------------- */
 /* IN ACTION — media grid                                                     */

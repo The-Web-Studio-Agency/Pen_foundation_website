@@ -54,8 +54,9 @@ const SHOT_SVH = PLAY_SVH + HOLD_SVH;
 /** Share of each shot's scroll that plays; the rest is the hold. */
 const PLAY_SHARE = PLAY_SVH / SHOT_SVH;
 
-const { film } = openingV2;
-const SHOTS = film.beats.length;
+/** Timing is tied to the film file itself, so it is fixed when the module loads. */
+const timing = openingV2.film;
+const SHOTS = timing.beats.length;
 const PINNED_SVH = ACT_SVH + SHOTS * SHOT_SVH;
 /** Share of the pinned range that belongs to the 3D act. */
 const SPLIT = ACT_SVH / PINNED_SVH;
@@ -72,13 +73,13 @@ const toFilm = (p: number) => range(p, SPLIT, 1);
  * beat's scroll the footage runs over the first PLAY_SVH, then stays on the
  * shot's last frame for HOLD_SVH.
  */
-const SKIPPED_SHOTS = film.sourceShots - SHOTS;
+const SKIPPED_SHOTS = timing.sourceShots - SHOTS;
 const toFootageTime = (p: number, duration: number) => {
   const pos = toFilm(p) * SHOTS;
   const shot = Math.min(SHOTS - 1, Math.floor(pos));
   const played = Math.min((pos - shot) / PLAY_SHARE, 1);
-  const shotLength = duration / film.sourceShots;
-  const start = shot === 0 ? film.skipSeconds : (shot + SKIPPED_SHOTS) * shotLength;
+  const shotLength = duration / timing.sourceShots;
+  const start = shot === 0 ? timing.skipSeconds : (shot + SKIPPED_SHOTS) * shotLength;
   const end = (shot + SKIPPED_SHOTS + 1) * shotLength;
   return start + played * (end - start);
 };
@@ -111,6 +112,8 @@ class CanvasBoundary extends Component<{ children: ReactNode }, { failed: boolea
  * scroll.
  */
 export function Opening() {
+  // Copy and media read at render, so admin edits show without a rebuild.
+  const { film } = openingV2;
   const sizerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);

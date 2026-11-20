@@ -6,7 +6,9 @@
  * for Open Graph, contact details, social handles.
  */
 
-export const siteConfig = {
+import { cms } from '@/lib/cms/store';
+
+const _siteConfigDefault = {
   name: 'PEN Foundation',
   shortName: 'PEN',
   tagline: 'Pre-Engineered Nail Foundation System',
@@ -57,5 +59,7 @@ export const siteConfig = {
     href: 'https://thewebstudio.agency',
   },
 } as const;
+/** Editable in the admin (/web-admin). */
+export const siteConfig = cms('global.site', _siteConfigDefault);
 
 export type SiteConfig = typeof siteConfig;

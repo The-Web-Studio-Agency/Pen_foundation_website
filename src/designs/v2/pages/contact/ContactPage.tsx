@@ -9,6 +9,7 @@ import p from '../../styles/page.module.css';
 import t from '../../styles/theme.module.css';
 import { EnquiryForm } from './EnquiryForm';
 import s from './contact.module.css';
+import { contactPageCopy } from '../pageCopy';
 
 /**
  * /contact, top to bottom:
@@ -22,10 +23,9 @@ import s from './contact.module.css';
  * (`footerContact`); the number from config/site.ts via both.
  */
 
-const telHref = `tel:${footerContact.phone.replace(/[^\d+]/g, '')}`;
-const whatsappHref = `https://wa.me/${whatsappNumber}`;
-
 export function ContactPage() {
+  const telHref = `tel:${footerContact.phone.replace(/[^\d+]/g, '')}`;
+  const whatsappHref = `https://wa.me/${whatsappNumber()}`;
   const lines = [
     { label: 'Call', value: footerContact.phone, href: telHref, external: false },
     { label: 'WhatsApp', value: footerContact.phone, href: whatsappHref, external: true },
@@ -34,19 +34,15 @@ export function ContactPage() {
   return (
     <>
       <PageHero
-        kicker="Contact"
+        kicker={contactPageCopy.hero.kicker}
         title={hero.infoHeading}
         lead={hero.infoBody}
         crumbs={[{ label: 'Home', href: '/' }, { label: 'Contact' }]}
         actions={[
-          { label: 'Send an enquiry', href: '#contact-form' },
-          { label: 'Call us', href: telHref, tone: 'ghost' },
+          { label: contactPageCopy.hero.enquiryLabel, href: '#contact-form' },
+          { label: contactPageCopy.hero.callLabel, href: telHref, tone: 'ghost' },
         ]}
-        // STAND-IN photo from PEN's existing imagery; replace with this page's own.
-        image={{
-          src: '/media/projects/black-langur/inst_3.jpg',
-          alt: 'An installation crew working together on site',
-        }}
+        image={contactPageCopy.hero.image}
       />
 
       <section
@@ -57,14 +53,14 @@ export function ContactPage() {
         <div className={cx(t.gutter, s.formGrid)}>
           <SectionHead
             id="contact-form-title"
-            chip="Enquiry"
+            chip={contactPageCopy.form.chip}
             heading={footerContact.prompt}
             className={s.formHead}
           />
 
           <div className={s.formDetails}>
             <div className={s.helps} data-reveal style={stagger(3)}>
-              <p className={cx(t.mono, s.helpsLabel)}>[ How we can help ]</p>
+              <p className={cx(t.mono, s.helpsLabel)}>[ {contactPageCopy.form.helpsLabel} ]</p>
               <ul className={s.helpList}>
                 {hero.bullets.map((bullet) => (
                   <li key={bullet} className={s.helpItem}>

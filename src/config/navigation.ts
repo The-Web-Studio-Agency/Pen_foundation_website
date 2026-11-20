@@ -1,4 +1,5 @@
 import { applications } from '@/content/data/homepage';
+import { cms } from '@/lib/cms/store';
 
 export interface NavMegaMenuItem {
   label: string;
@@ -38,7 +39,7 @@ export interface FooterLinkColumn {
  */
 export const applicationHref = (slug: string) => `/applications/${slug}`;
 
-export const applicationImages: Record<string, { src: string; alt: string }> = {
+const _applicationImagesDefault: Record<string, { src: string; alt: string }> = {
   residential: {
     src: '/media/images/storysection3.png',
     alt: 'A timber-framed house raised on PEN nodes, their nails splayed into the ground beneath it',
@@ -65,6 +66,8 @@ export const applicationImages: Record<string, { src: string; alt: string }> = {
     alt: 'A row of ground-mounted solar panels on a gravel bed in a landscaped garden',
   },
 };
+/** Editable in the admin (/web-admin). */
+export const applicationImages = cms('applications.images', _applicationImagesDefault);
 
 /**
  * Primary navigation, in display order. An item is a dropdown when it has
@@ -74,7 +77,7 @@ export const applicationImages: Record<string, { src: string; alt: string }> = {
  * Applications lists the six applications, each to its own page; Resources
  * holds Blogs, Docs, Certifications and Gallery.
  */
-export const primaryNav: NavItem[] = [
+const _primaryNavDefault: NavItem[] = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
   { label: 'Technology', href: '/technology' },
@@ -104,6 +107,8 @@ export const primaryNav: NavItem[] = [
   },
   { label: 'Contact', href: '/contact' },
 ];
+/** Editable in the admin (/web-admin). */
+export const primaryNav = cms('global.navigation', _primaryNavDefault);
 
 /**
  * Call-to-action buttons in the header pill.
@@ -114,9 +119,11 @@ export const primaryNav: NavItem[] = [
  * handoff names rather than the previous Demo / Contact pair — Contact has its
  * own primary-nav entry now, and "Demo" was never language this document uses.
  */
-export const navActions = [
+const _navActionsDefault = [
   { label: 'Request Assessment', href: '/contact#contact-form', emphasis: 'primary' },
 ] as const;
+/** Editable in the admin (/web-admin). */
+export const navActions = cms('global.navActions', _navActionsDefault);
 
 /**
  * Footer link columns. Moved out of lib/data/content.ts, where the contact
@@ -160,7 +167,7 @@ export const footerColumns: FooterLinkColumn[] = [
 ];
 
 /** Direct-contact block in the footer. */
-export const footerContact = {
+const _footerContactDefault = {
   heading: 'Reach Us',
   prompt: 'Ready to build? Let’s talk about your next project.',
   /** The prompt is a link in the footer — this is where it goes. */
@@ -168,6 +175,8 @@ export const footerContact = {
   phone: '+91 7356177577',
   phoneNote: 'Give us a call today.',
 } as const;
+/** Editable in the admin (/web-admin). */
+export const footerContact = cms('global.contact', _footerContactDefault);
 
 /**
  * Closing call to action, now owned by the site footer.

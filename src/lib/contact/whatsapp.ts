@@ -15,7 +15,7 @@ import { formFields } from '@/content/data/contact';
  */
 
 /** `wa.me` wants the number bare: country code, digits, no `+` and no spaces. */
-export const whatsappNumber = siteConfig.phone.replace(/\D/g, '');
+export const whatsappNumber = () => siteConfig.phone.replace(/\D/g, '');
 
 /** Field values keyed by the `name` in `formFields`. */
 export type EnquiryValues = Record<string, string>;
@@ -43,5 +43,5 @@ export function buildEnquiryMessage(values: EnquiryValues, subject = 'enquiry'):
  * URL covers both without sniffing the platform.
  */
 export function buildWhatsAppUrl(values: EnquiryValues, subject?: string): string {
-  return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(buildEnquiryMessage(values, subject))}`;
+  return `https://wa.me/${whatsappNumber()}?text=${encodeURIComponent(buildEnquiryMessage(values, subject))}`;
 }

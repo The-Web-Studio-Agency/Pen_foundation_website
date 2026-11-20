@@ -4,16 +4,16 @@ import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
 
 import { landing, LANDING_PHONE } from '@/content/data/landing';
 import { campaignParams, trackCall, trackLead } from '@/lib/analytics/track';
+import { submitLead } from '@/lib/contact/submitLead';
 import { whatsappNumber } from '@/lib/contact/whatsapp';
 
 import { ChevronRight, cx } from '../../components/primitives';
 import t from '../../styles/theme.module.css';
 import s from './landing.module.css';
 
-const { fields, types } = landing.form;
-
 /** The source's form, as one message to WhatsApp, with the ad source appended. */
 function buildMessage(values: Record<string, string>, formId: string) {
+  const { fields } = landing.form;
   const lines = (Object.keys(fields) as (keyof typeof fields)[])
     .map((key) => {
       const value = values[key]?.trim();
@@ -51,6 +51,7 @@ export function LeadForm({
   note: string;
 }) {
   const uid = useId();
+  const { fields, types } = landing.form;
   const [url, setUrl] = useState<string | null>(null);
   const [opened, setOpened] = useState(false);
   const ackRef = useRef<HTMLHeadingElement>(null);
@@ -67,7 +68,15 @@ export function LeadForm({
 
     trackLead({ form_id: formId, project_type: values.type, ...campaignParams() });
 
-    const link = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(buildMessage(values, formId))}`;
+    // Into the admin's leads datasheet, keyed by the labels the visitor saw.
+    const labelled: Record<string, string> = {};
+    for (const key of Object.keys(fields) as (keyof typeof fields)[]) {
+      const value = values[key]?.trim();
+      if (value) labelled[fields[key].label] = value;
+    }
+    submitLead(`landing-${formId.replace(/^lp-/, '')}`, labelled);
+
+    const link = `https://wa.me/${whatsappNumber()}?text=${encodeURIComponent(buildMessage(values, formId))}`;
     const win = window.open(link, '_blank');
     if (win) win.opener = null;
     setUrl(link);

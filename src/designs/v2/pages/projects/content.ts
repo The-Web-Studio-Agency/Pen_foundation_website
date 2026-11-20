@@ -22,6 +22,7 @@ import { applications, proof } from '@/content/data/homepage';
 import { PROJECTS, type Project } from '@/content/data/projects';
 
 import { assets } from '../../assets';
+import { cms } from '@/lib/cms/store';
 
 export const ASSESSMENT = { label: 'Request Assessment', href: '/contact#contact-form' };
 
@@ -121,7 +122,7 @@ export function projectsForApplication(slug: string): Project[] {
 
 /* ---- /projects/[slug] ---------------------------------------------------- */
 
-export const caseStudyLabels = {
+const _caseStudyLabelsDefault = {
   crumbs: { home: 'Home', projects: 'Projects' },
   challenge: 'The challenge',
   siteConditions: 'Site conditions',
@@ -154,10 +155,12 @@ export const caseStudyLabels = {
     excavated: { label: 'Soil excavated', value: '0 m³' },
   },
 };
+/** Editable in the admin (/web-admin). */
+export const caseStudyLabels = cms('projects.labels', _caseStudyLabelsDefault);
 
 /* ---- /projects ----------------------------------------------------------- */
 
-export const projectsIndex = {
+const _projectsIndexDefault = {
   hero: {
     kicker: 'Projects',
     title: proof.heading,
@@ -177,3 +180,5 @@ export const projectsIndex = {
     note: applications.note,
   },
 };
+/** Editable in the admin (/web-admin). */
+export const projectsIndex = cms('projects.page', _projectsIndexDefault);

@@ -1,3 +1,4 @@
+import { cms } from '@/lib/cms/store';
 export type Category =
   'Engineering' | 'Innovation' | 'Construction' | 'Research' | 'Sustainability' | 'Testing';
 
@@ -16,7 +17,7 @@ export interface Article {
   pullQuote?: string;
 }
 
-export const ARTICLES: Article[] = [
+const _ARTICLESDefault: Article[] = [
   {
     slug: 'why-driven-beats-poured',
     title: 'Why driven beats poured',
@@ -96,3 +97,5 @@ export const ARTICLES: Article[] = [
     ],
   },
 ];
+/** Editable in the admin (/web-admin). */
+export const ARTICLES = cms('blog.articles', _ARTICLESDefault);

@@ -21,7 +21,6 @@ const SOLID_FROM_TOP = new Set(['/technology']);
 const CLOSE_DELAY_MS = 160;
 
 const cta = navActions[0];
-const phoneHref = `tel:${footerContact.phone.replace(/\s+/g, '')}`;
 
 function PhoneGlyph() {
   return (
@@ -73,6 +72,7 @@ function isCurrent(pathname: string, item: NavItem) {
  */
 export function SiteHeader() {
   const pathname = usePathname();
+  const phoneHref = `tel:${footerContact.phone.replace(/\s+/g, '')}`;
   const base = useId();
   const [pill, setPill] = useState(false);
   const [open, setOpen] = useState(false);

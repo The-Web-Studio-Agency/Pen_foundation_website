@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 
 import { fontVariables } from '@/config/fonts';
 import { rootMetadata } from '@/config/seo';
+import { allContent } from '@/lib/cms/server';
 import { AppProviders } from '@/providers/AppProviders';
 import './globals.css';
 
@@ -54,6 +55,14 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
     <html lang="en" className={`${fontVariables} antialiased`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: ENTRY_FLAG_SCRIPT }} />
+        {/* The admin's saved content, for client components to render from
+            (lib/cms/store.ts). Written before any script runs, so the
+            browser renders exactly what the server did. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.__PEN_CMS__=${JSON.stringify(allContent()).replace(/</g, '\\u003c')};`,
+          }}
+        />
         <noscript>
           <style dangerouslySetInnerHTML={{ __html: NO_SCRIPT_STYLES }} />
         </noscript>

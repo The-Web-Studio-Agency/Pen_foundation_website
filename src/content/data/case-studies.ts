@@ -10,6 +10,8 @@
  * page. Sections a study doesn't have (a load chart, a video) are optional.
  */
 
+import { cms } from '@/lib/cms/store';
+
 const BL = '/media/projects/black-langur';
 
 export interface StoryImage {
@@ -988,6 +990,8 @@ export const devagiri: CaseStory = {
   },
 };
 
-export const CASE_STORIES: CaseStory[] = [blackLangur, devagiri];
+const _CASE_STORIESDefault: CaseStory[] = [blackLangur, devagiri];
+/** Editable in the admin (/web-admin). */
+export const CASE_STORIES = cms('projects.stories', _CASE_STORIESDefault);
 
 export const storyFor = (slug: string) => CASE_STORIES.find((s) => s.slug === slug);

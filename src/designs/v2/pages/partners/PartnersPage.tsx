@@ -10,82 +10,13 @@ import { ButtonLink, Chip, cx, stagger } from '../../components/primitives';
 import p from '../../styles/page.module.css';
 import t from '../../styles/theme.module.css';
 import { EnquiryForm } from '../contact/EnquiryForm';
+import { partnersFacts, partnersPhotos, partnersTopics } from '../pageCopy';
 import s from './partners.module.css';
 
 /** A source value still reading "[PHONE]" and the like. */
 const isPlaceholder = (value: string) => /^\s*\[.*\]\s*$/.test(value);
 
 type Photo = { src: string; alt: string; contain?: boolean };
-
-/*
- * STAND-IN photographs from PEN's existing imagery, chosen to match each
- * block. Replace with the partners' own photos as they are supplied.
- */
-const PHOTOS = {
-  provider: {
-    src: '/media/images/homepage/Benglaru-Farmhouse.png',
-    alt: 'A farmhouse in the Bengaluru region built on PEN foundations',
-  },
-  reseller: {
-    src: '/media/images/pen.png',
-    alt: 'A PEN node with its four nail pipes, bolts and carbide tips',
-    contain: true,
-  },
-  installers: {
-    src: '/media/projects/black-langur/inst_3.jpg',
-    alt: 'An installation crew working together to drive a PEN nail',
-  },
-  steps: [
-    {
-      src: '/media/projects/black-langur/plan_family.jpg',
-      alt: 'A foundation layout drawing with PEN points marked',
-    },
-    {
-      src: '/media/projects/black-langur/inst_2.jpg',
-      alt: 'Installers learning to drive a nail pipe through a PEN node',
-    },
-    {
-      src: '/media/projects/devagiri/install-crop.jpg',
-      alt: 'A PEN node installed into a cut in an existing floor',
-    },
-    {
-      src: '/media/images/homepage/capability-02-poster.webp',
-      alt: 'A completed PEN node set in prepared ground',
-    },
-  ],
-  why: [
-    {
-      src: '/media/images/pen.png',
-      alt: 'A PEN node with its four nail pipes, bolts and carbide tips',
-      contain: true,
-    },
-    {
-      src: '/media/projects/devagiri/plan_install.jpg',
-      alt: 'Photos of a PEN installation in progress on site',
-    },
-    {
-      src: '/media/projects/black-langur/plan_node.jpg',
-      alt: 'An engineering section drawing of a PEN node and its nails',
-      contain: true,
-    },
-  ],
-} satisfies Record<string, Photo | Photo[]>;
-
-/** Figures quoted elsewhere on the site, unchanged, as trust signals. */
-const FACTS = [
-  { value: '2.0–2.6×', label: 'Enhancement Factor of soil bearing capacity' },
-  { value: 'IS 2911', label: 'Part 4, the code the design follows' },
-  { value: 'GRIHA', label: 'Listed in the GRIHA Product Catalogue' },
-];
-
-/** Options for the partner enquiry form (UI labels, not claims). */
-const PARTNER_TOPICS = [
-  'Become a solution provider',
-  'Become a reseller',
-  'Apply as a certified installer',
-  'Find an authorised partner near me',
-  'Something else',
-];
 
 function Photo({ photo, className, sizes }: { photo: Photo; className?: string; sizes: string }) {
   return (
@@ -179,7 +110,7 @@ export function PartnersPage() {
       <section className={cx(p.light, s.trustBand)} aria-label="Why PEN is trusted">
         <div className={cx(t.gutter, s.trustGrid)}>
           <ul className={s.facts}>
-            {FACTS.map((fact, i) => (
+            {partnersFacts.map((fact, i) => (
               <li key={fact.value} className={s.fact} data-reveal style={stagger(i)}>
                 <span className={s.factValue}>{fact.value}</span>
                 <span className={s.factLabel}>{fact.label}</span>
@@ -223,7 +154,7 @@ export function PartnersPage() {
                 id="partners-providers"
               />
               {c.providers.items.map((partner) => (
-                <PartnerCard key={partner.name} partner={partner} photo={PHOTOS.provider} />
+                <PartnerCard key={partner.name} partner={partner} photo={partnersPhotos.provider} />
               ))}
             </div>
             <div className={s.group}>
@@ -234,7 +165,12 @@ export function PartnersPage() {
                 id="partners-resellers"
               />
               {c.resellers.items.map((partner) => (
-                <PartnerCard key={partner.name} partner={partner} photo={PHOTOS.reseller} accent />
+                <PartnerCard
+                  key={partner.name}
+                  partner={partner}
+                  photo={partnersPhotos.reseller}
+                  accent
+                />
               ))}
             </div>
           </div>
@@ -253,7 +189,7 @@ export function PartnersPage() {
           />
           <div className={s.soon} data-reveal>
             <Photo
-              photo={PHOTOS.installers}
+              photo={partnersPhotos.installers}
               className={s.soonPhoto}
               sizes="(min-width: 64rem) 45vw, 100vw"
             />
@@ -270,7 +206,7 @@ export function PartnersPage() {
             {c.installers.steps.map((step, i) => (
               <li key={step.title} data-reveal style={stagger(i)}>
                 <Photo
-                  photo={PHOTOS.steps[i]}
+                  photo={partnersPhotos.steps[i]}
                   className={s.stepPhoto}
                   sizes="(min-width: 64rem) 22vw, 50vw"
                 />
@@ -293,7 +229,7 @@ export function PartnersPage() {
             {c.why.items.map((item, i) => (
               <li key={item.title} data-reveal style={stagger(i)}>
                 <Photo
-                  photo={PHOTOS.why[i]}
+                  photo={partnersPhotos.why[i]}
                   className={s.whyPhoto}
                   sizes="(min-width: 64rem) 30vw, 100vw"
                 />
@@ -336,7 +272,7 @@ export function PartnersPage() {
             </p>
           </div>
           <div className={s.joinForm} data-reveal style={stagger(1)}>
-            <EnquiryForm topics={PARTNER_TOPICS} subject="partner enquiry" />
+            <EnquiryForm topics={partnersTopics} subject="partner enquiry" />
           </div>
         </div>
       </section>

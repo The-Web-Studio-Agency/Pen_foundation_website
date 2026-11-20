@@ -21,3 +21,6 @@ next-env.d.ts
 .DS_Store
 *.log
 .vercel
+
+# CMS runtime data — admin edits, uploads and form leads (personal data)
+cms-data/
