@@ -126,10 +126,15 @@ const CAMERA_Z = 16;
  * after release, and the tilt eases back to level.
  */
 export function PenCanvas(props: PenCanvasProps) {
+  // Phones: fewer pixels per frame, so the GPU leaves room for the scroll
+  // itself. The model still reads sharp on a small screen.
+  const [dpr] = useState<[number, number]>(() =>
+    window.matchMedia('(pointer: coarse), (max-width: 48rem)').matches ? [1, 1.25] : [1, 1.75],
+  );
   return (
     <Canvas
       className={s.canvas}
-      dpr={[1, 1.75]}
+      dpr={dpr}
       camera={{ fov: FOV, position: [0, 0, CAMERA_Z], near: 0.1, far: 100 }}
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
     >

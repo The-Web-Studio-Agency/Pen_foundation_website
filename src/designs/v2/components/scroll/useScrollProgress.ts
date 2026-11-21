@@ -12,6 +12,12 @@ export interface ProgressSource {
 
 /** Share of the remaining gap closed per 60fps frame — the "trails the wheel" feel. */
 const DAMPING = 0.11;
+/**
+ * Touch screens already scroll with their own momentum; adding the wheel's
+ * trail on top makes pinned scenes lag behind the finger and feel stuck. So
+ * on touch the animation follows the scroll much more closely.
+ */
+const DAMPING_TOUCH = 0.4;
 const EPSILON = 0.00005;
 
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
@@ -75,6 +81,7 @@ export function useScrollProgress(
       return range <= 0 ? 0 : clamp01(-rect.top / range);
     };
 
+    const damping = window.matchMedia('(pointer: coarse)').matches ? DAMPING_TOUCH : DAMPING;
     let frame = 0;
     let last = 0;
     let running = false;
@@ -83,7 +90,7 @@ export function useScrollProgress(
       const delta = last ? Math.min(now - last, 64) : 16.7;
       last = now;
       const goal = target();
-      const next = damp(value.current, goal, DAMPING, delta);
+      const next = damp(value.current, goal, damping, delta);
       const settled = Math.abs(next - goal) < EPSILON;
       publish(settled ? goal : next);
       if (settled) {

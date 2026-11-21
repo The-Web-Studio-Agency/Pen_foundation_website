@@ -625,3 +625,21 @@
     transition: none;
   }
 }
+
+/* Phones and tablets: a 30px blur re-renders everything under the bar on
+   every scroll frame, which mobile GPUs feel. A lighter blur over a slightly
+   denser glass looks the same at this size and scrolls smoothly. The open
+   menu panel is near-opaque, so its blur was never visible. */
+@media (max-width: 63.99rem) {
+  .bar[data-pill] .inner,
+  .bar[data-menu]:not([data-pill]) .inner {
+    background-color: rgba(1, 40, 47, 0.86);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+
+  .bar[data-pill] .panel {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}

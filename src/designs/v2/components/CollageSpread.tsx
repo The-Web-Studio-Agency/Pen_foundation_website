@@ -95,14 +95,24 @@ export function CollageSpread({ sectionId }: { sectionId: string }) {
     const request = () => {
       if (!frame) frame = requestAnimationFrame(update);
     };
+    // Below desktop the collage is a plain grid: listen to scroll only while
+    // the spread can actually run, so phones do no work per scroll frame.
+    let listening = false;
+    const sync = () => {
+      const want = desktop.matches && !reduced;
+      if (want && !listening) window.addEventListener('scroll', request, { passive: true });
+      if (!want && listening) window.removeEventListener('scroll', request);
+      listening = want;
+    };
     const onResize = () => {
+      sync();
       measure();
       request();
     };
 
     measure();
     update();
-    window.addEventListener('scroll', request, { passive: true });
+    sync();
     window.addEventListener('resize', onResize);
     desktop.addEventListener('change', onResize);
     return () => {
