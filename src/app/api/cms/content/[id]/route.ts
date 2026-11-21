@@ -18,7 +18,8 @@ export async function GET(request: NextRequest, { params }: Ctx) {
 
 /** Save a new version. The shape must match the original's. */
 export async function PUT(request: NextRequest, { params }: Ctx) {
-  if (!adminFrom(request)) return unauthorized();
+  const user = adminFrom(request);
+  if (!user) return unauthorized();
   const { id } = await params;
   if (!getEntry(id)) return NextResponse.json({ error: 'Unknown section.' }, { status: 404 });
   const body = (await request.json().catch(() => null)) as { value?: unknown } | null;
@@ -32,7 +33,7 @@ export async function PUT(request: NextRequest, { params }: Ctx) {
   ) {
     return NextResponse.json({ error: 'That content has the wrong shape.' }, { status: 400 });
   }
-  writeContent(id, body.value);
+  await writeContent(id, body.value, user);
   refreshSite();
   return NextResponse.json({ ok: true });
 }
@@ -41,7 +42,7 @@ export async function PUT(request: NextRequest, { params }: Ctx) {
 export async function DELETE(request: NextRequest, { params }: Ctx) {
   if (!adminFrom(request)) return unauthorized();
   const { id } = await params;
-  resetContent(id);
+  await resetContent(id, defaultsFor(id));
   refreshSite();
   return NextResponse.json({ ok: true });
 }

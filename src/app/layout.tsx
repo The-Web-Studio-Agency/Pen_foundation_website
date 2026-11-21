@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 import { fontVariables } from '@/config/fonts';
 import { rootMetadata } from '@/config/seo';
-import { allContent } from '@/lib/cms/server';
+import { allContent, contentReady } from '@/lib/cms/server';
 import { AppProviders } from '@/providers/AppProviders';
 import './globals.css';
 
@@ -44,7 +44,10 @@ const NO_SCRIPT_STYLES = `[data-preloader]{display:none!important}`;
  * `app/(site)/layout.tsx` (via `SiteChrome`), so routes outside that group, such
  * as the /home-v2 design concept, render with their own chrome instead.
  */
-export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+  // Normally already loaded at startup (src/instrumentation.ts); this covers a
+  // cold start where the first request beats it.
+  await contentReady();
   return (
     /* `suppressHydrationWarning`: ENTRY_FLAG_SCRIPT below stamps
        `data-pen-entered` on this element before React hydrates, so on a return

@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Empty enquiry.' }, { status: 400 });
   }
 
-  addLead({
+  await addLead({
     source: clip(body.source, 60) || 'unknown',
     page: clip(body.page, 300),
     fields,

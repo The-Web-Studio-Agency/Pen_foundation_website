@@ -7,7 +7,7 @@ const STATUSES: LeadStatus[] = ['new', 'contacted', 'qualified', 'closed'];
 
 export async function GET(request: NextRequest) {
   if (!adminFrom(request)) return unauthorized();
-  return NextResponse.json({ leads: readLeads() });
+  return NextResponse.json({ leads: await readLeads() });
 }
 
 /** PATCH { id, status?, note? } */
@@ -22,7 +22,7 @@ export async function PATCH(request: NextRequest) {
   if (body.status && !STATUSES.includes(body.status)) {
     return NextResponse.json({ error: 'Unknown status.' }, { status: 400 });
   }
-  updateLead(body.id, {
+  await updateLead(body.id, {
     ...(body.status ? { status: body.status } : {}),
     ...(body.note !== undefined ? { note: String(body.note).slice(0, 2000) } : {}),
   });
@@ -34,6 +34,6 @@ export async function DELETE(request: NextRequest) {
   if (!adminFrom(request)) return unauthorized();
   const id = request.nextUrl.searchParams.get('id');
   if (!id) return NextResponse.json({ error: 'Missing lead.' }, { status: 400 });
-  deleteLead(id);
+  await deleteLead(id);
   return NextResponse.json({ ok: true });
 }

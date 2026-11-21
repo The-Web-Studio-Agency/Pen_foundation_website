@@ -19,9 +19,9 @@ function thisWeek(dates: string[]) {
 
 export default async function Page() {
   const user = await requireAdmin();
-  const leads = readLeads();
+  const leads = await readLeads();
   const edited = Object.keys(allContent());
-  const uploads = listMedia().filter((m) => m.uploaded).length;
+  const uploads = (await listMedia()).filter((m) => m.uploaded).length;
   const recentlyEdited = ENTRIES.filter((e) => readContent(e.id) !== undefined).slice(0, 6);
 
   const stats = [

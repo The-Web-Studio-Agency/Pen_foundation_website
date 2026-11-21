@@ -20,6 +20,6 @@ export async function POST(request: NextRequest) {
   if (file.size > MAX_UPLOAD_BYTES) {
     return NextResponse.json({ error: 'Files must be 15 MB or smaller.' }, { status: 400 });
   }
-  const url = saveUpload(file.name, Buffer.from(await file.arrayBuffer()));
+  const url = await saveUpload(file.name, Buffer.from(await file.arrayBuffer()));
   return NextResponse.json({ url });
 }

@@ -319,6 +319,13 @@ export function getEntry(id: string) {
   return ENTRIES.find((entry) => entry.id === id);
 }
 
+/** Every section's original, for storing the whole site in MongoDB (syncSeeds). */
+export function allOriginals() {
+  return ENTRIES.map((entry) => ({ id: entry.id, value: defaultsFor(entry.id) })).filter(
+    (entry) => entry.value !== undefined,
+  );
+}
+
 /** A plain JSON copy of an entry's original value. */
 export function defaultsFor(id: string): unknown {
   const value = getDefault(id);

@@ -21,7 +21,7 @@ export default async function Page() {
           </p>
         </div>
       </div>
-      <LeadsTable initial={readLeads()} />
+      <LeadsTable initial={await readLeads()} />
     </>
   );
 }
