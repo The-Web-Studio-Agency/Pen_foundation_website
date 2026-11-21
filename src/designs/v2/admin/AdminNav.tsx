@@ -10,6 +10,7 @@ import s from './admin.module.css';
 
 const LINKS = [
   { href: '/web-admin/dashboard', label: 'Dashboard' },
+  { href: '/web-admin/analytics', label: 'Analytics' },
   { href: '/web-admin/content', label: 'Page content' },
   { href: '/web-admin/blogs', label: 'Blog articles' },
   { href: '/web-admin/projects', label: 'Projects' },

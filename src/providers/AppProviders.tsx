@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { MotionProvider } from './MotionProvider';
+import { VisitTracker } from './VisitTracker';
 
 /**
  * The single provider the root layout mounts.
@@ -14,5 +15,10 @@ import { MotionProvider } from './MotionProvider';
  * push the whole tree into the client bundle.
  */
 export function AppProviders({ children }: { children: ReactNode }) {
-  return <MotionProvider>{children}</MotionProvider>;
+  return (
+    <MotionProvider>
+      {children}
+      <VisitTracker />
+    </MotionProvider>
+  );
 }

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import s from '@/designs/v2/admin/admin.module.css';
 import { ENTRIES } from '@/designs/v2/admin/registry';
 import { cx } from '@/designs/v2/components/primitives';
+import { analyticsEnabled, live, summary } from '@/lib/cms/analytics';
 import { requireAdmin } from '@/lib/cms/auth';
 import { allContent, listMedia, readContent, readLeads } from '@/lib/cms/server';
 import { ARTICLES } from '@/content/data/research';
@@ -17,6 +18,24 @@ function thisWeek(dates: string[]) {
   return dates.filter((d) => new Date(d).getTime() > since).length;
 }
 
+/** Live visitors and today / this week, or nothing without the database. */
+async function traffic() {
+  if (!analyticsEnabled()) return [];
+  try {
+    const [periods, now] = await Promise.all([summary(), live()]);
+    return [
+      { label: 'On the website now', value: now.count, href: '/web-admin/analytics' },
+      ...periods.slice(0, 3).map((p) => ({
+        label: `Visitors ${p.label.toLowerCase()}`,
+        value: p.visitors.toLocaleString('en-IN'),
+        href: '/web-admin/analytics',
+      })),
+    ];
+  } catch {
+    return [];
+  }
+}
+
 export default async function Page() {
   const user = await requireAdmin();
   const leads = await readLeads();
@@ -25,6 +44,7 @@ export default async function Page() {
   const recentlyEdited = ENTRIES.filter((e) => readContent(e.id) !== undefined).slice(0, 6);
 
   const stats = [
+    ...(await traffic()),
     { label: 'Leads, all time', value: leads.length, href: '/web-admin/leads' },
     {
       label: 'New leads this week',

@@ -47,7 +47,7 @@ interface Shared {
 }
 const shared = ((globalThis as unknown as { __penCms?: Shared }).__penCms ??= {});
 
-async function db(): Promise<Db> {
+export async function db(): Promise<Db> {
   const uri = process.env.MONGODB_URI;
   if (!uri) throw new Error('MONGODB_URI is not set.');
   shared.client ??= new MongoClient(uri, { serverSelectionTimeoutMS: 5000 })

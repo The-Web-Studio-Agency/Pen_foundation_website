@@ -916,3 +916,280 @@ button.mediaItem:hover {
   text-align: center;
   color: var(--a-soft);
 }
+
+/* ---- analytics ---------------------------------------------------------------- */
+
+.analytics {
+  --a-chart: #0d5c63;
+  --a-chart-on: #03222a;
+  --a-chart-soft: rgba(13, 92, 99, 0.1);
+  transition: opacity 0.2s;
+}
+
+.loading {
+  opacity: 0.6;
+}
+
+.live {
+  margin-bottom: 1rem;
+}
+
+.liveHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.liveDot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: var(--a-line-strong);
+}
+
+.liveDotOn {
+  background: var(--a-ok);
+  box-shadow: 0 0 0 0 rgba(31, 122, 77, 0.5);
+  animation: a-live 2s infinite;
+}
+
+@keyframes a-live {
+  70% {
+    box-shadow: 0 0 0 0.6rem rgba(31, 122, 77, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(31, 122, 77, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .liveDotOn {
+    animation: none;
+  }
+}
+
+.liveCount {
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.periods {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.period {
+  display: grid;
+  gap: 0.25rem;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.period[aria-pressed='true'] {
+  border-color: var(--a-chart);
+  box-shadow: inset 0 0 0 1px var(--a-chart);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: -0.5rem 0 1.25rem;
+}
+
+.chip {
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--a-line-strong);
+  border-radius: 999px;
+  background: var(--a-panel);
+  font: inherit;
+  font-size: 0.8125rem;
+  color: inherit;
+  cursor: pointer;
+}
+
+.chip:hover {
+  border-color: var(--a-danger);
+}
+
+/* Bar chart: one series, so one hue; recessive grid; tooltip on hover. */
+.chart {
+  position: relative;
+  padding-left: 2.5rem;
+}
+
+.chartGrid {
+  position: absolute;
+  inset: 0 0 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.chartGridLine {
+  position: relative;
+  border-top: 1px solid var(--a-line);
+  height: 0;
+}
+
+.chartGridLine span {
+  position: absolute;
+  left: 0;
+  top: -0.5rem;
+  font-size: 0.6875rem;
+  color: var(--a-soft);
+}
+
+.chartBars {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 13rem;
+}
+
+.chartCol {
+  flex: 1 1 0;
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+  min-width: 0;
+  outline: none;
+  cursor: default;
+}
+
+.chartBar {
+  width: 100%;
+  min-height: 1px;
+  border-radius: 4px 4px 0 0;
+  background: var(--a-chart);
+  transition: background 0.15s;
+}
+
+.chartCol:hover .chartBar,
+.chartCol:focus-visible .chartBar,
+.chartBarOn {
+  background: var(--a-chart-on);
+}
+
+.chartTip {
+  position: absolute;
+  top: 0;
+  z-index: 2;
+  display: grid;
+  gap: 0.1rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--a-line);
+  border-radius: 0.5rem;
+  background: var(--a-panel);
+  box-shadow: 0 0.5rem 1.5rem -0.5rem rgba(3, 34, 42, 0.25);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.chartAxis {
+  display: flex;
+  gap: 2px;
+  height: 1.5rem;
+  padding-top: 0.4rem;
+  font-size: 0.6875rem;
+  color: var(--a-soft);
+}
+
+.chartAxis span {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: visible;
+  white-space: nowrap;
+}
+
+.breakdowns {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 64rem) {
+  .breakdowns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.breakdownHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.breakdown {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.breakdownRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  min-height: 2.25rem;
+  padding: 0.35rem 0.6rem;
+  border: 0;
+  border-radius: 0.4rem;
+  background: transparent;
+  font: inherit;
+  font-size: 0.875rem;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.breakdownRow:hover {
+  background: rgba(3, 34, 42, 0.04);
+}
+
+.breakdownBar {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 0.4rem;
+  background: var(--a-chart-soft);
+}
+
+.breakdownName {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.breakdownHint {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--a-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.breakdownValue {
+  position: relative;
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
