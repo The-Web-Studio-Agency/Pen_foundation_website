@@ -10,7 +10,10 @@ import { CONTENT_TYPES, readUpload } from '@/lib/cms/server';
  */
 export async function GET(_request: Request, { params }: { params: Promise<{ path: string[] }> }) {
   const name = path.basename((await params).path.join('/'));
-  const data = await readUpload(name);
+  const data = await readUpload(name).catch((error: Error) => {
+    console.error('[cms] Could not read an upload:', error.message);
+    return null;
+  });
   if (!data) return new NextResponse('Not found', { status: 404 });
   const type = CONTENT_TYPES[path.extname(name).toLowerCase()] ?? 'application/octet-stream';
   return new NextResponse(new Uint8Array(data), {

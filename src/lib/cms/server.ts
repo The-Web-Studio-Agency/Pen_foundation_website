@@ -59,6 +59,32 @@ export async function db(): Promise<Db> {
   return (await shared.client).db(process.env.MONGODB_DB || 'pen_foundation_cms');
 }
 
+/**
+ * Null when the database answers, else a plain-English reason and the
+ * driver's own message, for the admin to show instead of crashing.
+ */
+export async function databaseProblem(): Promise<{ reason: string; detail: string } | null> {
+  if (!usingMongo()) return null;
+  try {
+    await (await db()).command({ ping: 1 });
+    return null;
+  } catch (error) {
+    const detail = (error as Error).message ?? String(error);
+    const reason = /bad auth|authentication failed|auth failed/i.test(detail)
+      ? 'Atlas rejected the username or password inside MONGODB_URI. Check the database user (Security → Database Access) and that the password in the link has no < > around it.'
+      : /ENOTFOUND|querySrv|ENODATA|getaddrinfo/i.test(detail)
+        ? 'The cluster address inside MONGODB_URI could not be found. Copy the connection string again from Atlas (Connect → Drivers).'
+        : /Invalid scheme|Invalid connection string|URI|must be|parse/i.test(detail)
+          ? 'MONGODB_URI is not a valid connection string. It must start with mongodb+srv:// and have no quotes or spaces around it.'
+          : /timed out|ETIMEDOUT|ECONNREFUSED|ReplicaSetNoPrimary|Server selection|whitelist|IP/i.test(
+                detail,
+              )
+            ? 'Atlas did not answer. Usually this is Network Access: add 0.0.0.0/0 (Allow access from anywhere) in Atlas → Security → Network Access.'
+            : 'The database could not be reached.';
+    return { reason, detail: detail.slice(0, 500) };
+  }
+}
+
 interface ContentDoc {
   _id: string;
   value: unknown;

@@ -25,6 +25,8 @@ const PenCanvas = dynamic(() => import('./PenCanvas').then((m) => m.PenCanvas), 
 /* ==========================================================================
    TIMING — every knob for the opening's scroll choreography lives here.
    Scroll distances are in svh: 100 = one screen height of scrolling.
+   On touch screens the whole pin is shortened in opening3d.module.css
+   (every value below keeps its share of it).
    ========================================================================== */
 const TIMING = {
   /** Scroll for the whole 3D act (headline out → model grows → dive). */

@@ -17,6 +17,13 @@
   height: calc(100svh + var(--pin, 0svh));
 }
 
+/* Touch screens: the same sequence over a shorter pin (see opening3d.module.css). */
+@media (pointer: coarse), (max-width: 48rem) {
+  .sizer {
+    height: calc(100svh + var(--pin, 0svh) * 0.6);
+  }
+}
+
 .stage {
   --g: 0;
   --c: 0;
@@ -374,6 +381,11 @@
     align-self: flex-start;
     padding: 0.7rem 1rem;
     border-radius: var(--hv2-radius-sm);
+    /* A live blur over the playing film re-renders every video frame, which
+       phones feel while scrolling; a denser glass reads the same here. */
+    background: rgba(12, 38, 43, 0.84);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
   .statCaption,
   .range {
