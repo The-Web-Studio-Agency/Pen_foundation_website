@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface LoopVideoProps {
   src: string;
@@ -16,13 +16,33 @@ interface LoopVideoProps {
  * `prefers-reduced-motion` — the poster frame stands in. Decorative: hidden
  * from assistive tech, because every section that uses one carries its message
  * in text.
+ *
+ * Nothing is downloaded, not even the poster, until the film is within about
+ * a screen of the viewport, so films further down never compete with the
+ * first screen for bandwidth.
  */
 export function LoopVideo({ src, poster, className }: LoopVideoProps) {
   const ref = useRef<HTMLVideoElement>(null);
+  const [near, setNear] = useState(false);
 
   useEffect(() => {
     const video = ref.current;
     if (!video) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setNear(true);
+        io.disconnect();
+      },
+      { rootMargin: '120% 0px' },
+    );
+    io.observe(video);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const video = ref.current;
+    if (!video || !near) return;
 
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (reduced.matches) return;
@@ -40,14 +60,14 @@ export function LoopVideo({ src, poster, className }: LoopVideoProps) {
     );
     io.observe(video);
     return () => io.disconnect();
-  }, []);
+  }, [near]);
 
   return (
     <video
       ref={ref}
       className={className}
-      src={src}
-      poster={poster}
+      src={near ? src : undefined}
+      poster={near ? poster : undefined}
       muted
       loop
       playsInline

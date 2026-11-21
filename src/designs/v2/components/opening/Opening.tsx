@@ -9,6 +9,7 @@ import {
   useEffect,
   useRef,
   useState,
+  useSyncExternalStore,
 } from 'react';
 
 import { openingV2 } from '../../content';
@@ -25,8 +26,6 @@ const PenCanvas = dynamic(() => import('./PenCanvas').then((m) => m.PenCanvas), 
 /* ==========================================================================
    TIMING — every knob for the opening's scroll choreography lives here.
    Scroll distances are in svh: 100 = one screen height of scrolling.
-   On touch screens the whole pin is shortened in opening3d.module.css
-   (every value below keeps its share of it).
    ========================================================================== */
 const TIMING = {
   /** Scroll for the whole 3D act (headline out → model grows → dive). */
@@ -45,46 +44,76 @@ const TIMING = {
    */
   HOLD_SVH: 25,
 
+  /**
+   * Touch screens: a flick covers far less of the page than a wheel, so the
+   * full-length pin reads as the page being stuck. Phones get a shorter 3D
+   * act and shorter holds; the film itself keeps PLAY_SVH, so it scrubs at
+   * the same, smooth pace everywhere.
+   */
+  TOUCH: { ACT_SVH: 120, HOLD_SVH: 8 },
+
   /** Caption fade-in, as fractions of its shot's scroll (play + hold). */
   TEXT_IN: [0.04, 0.2] as const,
   /** Caption fade-out, as fractions of its shot's scroll (play + hold). */
   TEXT_OUT: [0.9, 0.995] as const,
 };
 
-const { ACT_SVH, PLAY_SVH, HOLD_SVH, TEXT_IN, TEXT_OUT } = TIMING;
-const SHOT_SVH = PLAY_SVH + HOLD_SVH;
-/** Share of each shot's scroll that plays; the rest is the hold. */
-const PLAY_SHARE = PLAY_SVH / SHOT_SVH;
+const { TEXT_IN, TEXT_OUT } = TIMING;
 
 /** Timing is tied to the film file itself, so it is fixed when the module loads. */
 const timing = openingV2.film;
 const SHOTS = timing.beats.length;
-const PINNED_SVH = ACT_SVH + SHOTS * SHOT_SVH;
-/** Share of the pinned range that belongs to the 3D act. */
-const SPLIT = ACT_SVH / PINNED_SVH;
-
-/** Overall progress → 0..1 across the film act's scroll. */
-const toFilm = (p: number) => range(p, SPLIT, 1);
+const SKIPPED_SHOTS = timing.sourceShots - SHOTS;
 
 /**
- * Overall progress → seconds into hero.mp4, with holds. The film is cut into
- * `sourceShots` equal shots and its script is timed that way. The first shot
- * carries the page headline, so it is not a beat here: the film starts
- * `skipSeconds` in, and that leftover footage plays as part of the first
- * beat's shot. Every later beat spans its own source shot exactly. Within each
- * beat's scroll the footage runs over the first PLAY_SVH, then stays on the
- * shot's last frame for HOLD_SVH.
+ * The pinned range for one set of distances: its length, the share that
+ * belongs to the 3D act, and the progress → film-time mapping.
+ *
+ * The film is cut into `sourceShots` equal shots and its script is timed that
+ * way. The first shot carries the page headline, so it is not a beat here:
+ * the film starts `skipSeconds` in, and that leftover footage plays as part of
+ * the first beat's shot. Every later beat spans its own source shot exactly.
+ * Within each beat's scroll the footage runs over the first PLAY_SVH, then
+ * stays on the shot's last frame for HOLD_SVH.
  */
-const SKIPPED_SHOTS = timing.sourceShots - SHOTS;
-const toFootageTime = (p: number, duration: number) => {
-  const pos = toFilm(p) * SHOTS;
-  const shot = Math.min(SHOTS - 1, Math.floor(pos));
-  const played = Math.min((pos - shot) / PLAY_SHARE, 1);
-  const shotLength = duration / timing.sourceShots;
-  const start = shot === 0 ? timing.skipSeconds : (shot + SKIPPED_SHOTS) * shotLength;
-  const end = (shot + SKIPPED_SHOTS + 1) * shotLength;
-  return start + played * (end - start);
+function choreography(act: number, play: number, hold: number) {
+  const shot = play + hold;
+  const pinnedSvh = act + SHOTS * shot;
+  const split = act / pinnedSvh;
+  const playShare = play / shot;
+  const toFilm = (p: number) => range(p, split, 1);
+  const toFootageTime = (p: number, duration: number) => {
+    const pos = toFilm(p) * SHOTS;
+    const index = Math.min(SHOTS - 1, Math.floor(pos));
+    const played = Math.min((pos - index) / playShare, 1);
+    const shotLength = duration / timing.sourceShots;
+    const start = index === 0 ? timing.skipSeconds : (index + SKIPPED_SHOTS) * shotLength;
+    const end = (index + SKIPPED_SHOTS + 1) * shotLength;
+    return start + played * (end - start);
+  };
+  return { pinnedSvh, split, toFilm, toFootageTime };
+}
+
+const FULL = choreography(TIMING.ACT_SVH, TIMING.PLAY_SVH, TIMING.HOLD_SVH);
+const TOUCH = choreography(TIMING.TOUCH.ACT_SVH, TIMING.PLAY_SVH, TIMING.TOUCH.HOLD_SVH);
+
+const TOUCH_QUERY = '(pointer: coarse), (max-width: 48rem)';
+/** Phones: start the 3D scene after this long if the visitor has not touched the page yet. */
+const START_3D_MS = 4000;
+const subscribeTouch = (onChange: () => void) => {
+  const mq = window.matchMedia(TOUCH_QUERY);
+  mq.addEventListener('change', onChange);
+  return () => mq.removeEventListener('change', onChange);
 };
+/** The touch pacing on phones and tablets; the full one on the server and desktop. */
+function useChoreography() {
+  const touch = useSyncExternalStore(
+    subscribeTouch,
+    () => window.matchMedia(TOUCH_QUERY).matches,
+    () => false,
+  );
+  return touch ? TOUCH : FULL;
+}
 
 /** If WebGL is unavailable or the model fails, keep the poster and the copy. */
 class CanvasBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
@@ -123,18 +152,42 @@ export function Opening() {
   const counterRef = useRef<HTMLSpanElement>(null);
 
   const reduced = useReducedMotion();
+  const { pinnedSvh, split, toFilm, toFootageTime } = useChoreography();
   const progress = useScrollProgress(sizerRef, { enabled: !reduced, fallback: 0 });
 
   const [ready, setReady] = useState(false);
   const [graceOver, setGraceOver] = useState(false);
   const onReady = useCallback(() => setReady(true), []);
 
-  // Model first, film second: start fetching the 16 MB film once the model is
-  // up, or after a short grace period if WebGL never arrives.
+  // Phones: setting up the 3D scene is seconds of solid work on a phone's
+  // CPU, and doing it during page load holds back the headline and the first
+  // taps. So on touch screens the model starts on the visitor's first touch,
+  // scroll or key, or after START_3D_MS, whichever comes first; the headline
+  // sits on the stage's own backdrop meanwhile and the model fades in as
+  // usual. Desktop starts it straight away.
+  const [start3d, setStart3d] = useState(false);
   useEffect(() => {
+    const go = () => setStart3d(true);
+    if (!window.matchMedia(TOUCH_QUERY).matches) {
+      const frame = requestAnimationFrame(go);
+      return () => cancelAnimationFrame(frame);
+    }
+    const events = ['pointerdown', 'touchstart', 'scroll', 'wheel', 'keydown'] as const;
+    const timer = window.setTimeout(go, START_3D_MS);
+    for (const e of events) window.addEventListener(e, go, { once: true, passive: true });
+    return () => {
+      window.clearTimeout(timer);
+      for (const e of events) window.removeEventListener(e, go);
+    };
+  }, []);
+
+  // Model first, film second: start fetching the film once the model is up,
+  // or after a short grace period if WebGL never arrives.
+  useEffect(() => {
+    if (!start3d) return;
     const id = window.setTimeout(() => setGraceOver(true), 2500);
     return () => window.clearTimeout(id);
-  }, []);
+  }, [start3d]);
   const filmSrc = !reduced && (ready || graceOver) ? film.src : undefined;
 
   useFilmScrub(videoRef, progress, toFootageTime, Boolean(filmSrc) && !reduced);
@@ -145,7 +198,7 @@ export function Opening() {
     return progress.subscribe((p) => {
       const stage = stageRef.current;
       if (!stage) return;
-      const ph = range(p, 0, SPLIT);
+      const ph = range(p, 0, split);
       const pf = toFilm(p);
       stage.style.setProperty('--ph', ph.toFixed(4));
       stage.style.setProperty('--pf', pf.toFixed(4));
@@ -169,14 +222,14 @@ export function Opening() {
         counterRef.current.textContent = String(shot + 1).padStart(2, '0');
       }
     });
-  }, [progress]);
+  }, [progress, split, toFilm]);
 
   return (
     <section className={s.section} aria-labelledby="hv2-hero-title">
       <div
         ref={sizerRef}
         className={s.sizer}
-        style={{ '--hv2-pinned': `${PINNED_SVH}svh` } as CSSProperties}
+        style={{ '--hv2-pinned': `${pinnedSvh}svh` } as CSSProperties}
       >
         <div ref={stageRef} className={cx(s.stage, ready && s.stageReady)}>
           {/* ---- act 1: the model -------------------------------------- */}
@@ -189,15 +242,17 @@ export function Opening() {
 
           <div className={s.canvasLayer} aria-hidden>
             <CanvasBoundary>
-              <PenCanvas
-                src={openingV2.model}
-                progress={progress}
-                split={SPLIT}
-                reduced={reduced}
-                hud={openingV2.hud}
-                onReady={onReady}
-                dragTarget={stageRef}
-              />
+              {start3d && (
+                <PenCanvas
+                  src={openingV2.model}
+                  progress={progress}
+                  split={split}
+                  reduced={reduced}
+                  hud={openingV2.hud}
+                  onReady={onReady}
+                  dragTarget={stageRef}
+                />
+              )}
             </CanvasBoundary>
           </div>
 

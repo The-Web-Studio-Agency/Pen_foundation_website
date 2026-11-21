@@ -17,6 +17,9 @@ export const fontSans = localFont({
   ],
   variable: '--font-suisse',
   display: 'swap',
+  // Not preloaded: the current design sets its text in Geist (designs/v2/fonts.ts),
+  // so these are fetched only by a page that actually uses them.
+  preload: false,
 });
 
 export const fontMono = localFont({

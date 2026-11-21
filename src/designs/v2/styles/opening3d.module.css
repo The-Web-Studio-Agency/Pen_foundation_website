@@ -19,16 +19,6 @@
   height: calc(100svh + var(--hv2-pinned, 0svh));
 }
 
-/* Touch screens: a flick covers far less of the page than a wheel does, so
-   at full length the pinned opening (about seven screens) reads as the page
-   being stuck. Every beat of the choreography is a fraction of this height,
-   so shortening it keeps the whole sequence, just at a phone's pace. */
-@media (pointer: coarse), (max-width: 48rem) {
-  .sizer {
-    height: calc(100svh + var(--hv2-pinned, 0svh) * 0.55);
-  }
-}
-
 .stage {
   --ph: 0;
   --pf: 0;
