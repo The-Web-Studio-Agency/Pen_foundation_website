@@ -3,9 +3,9 @@
 out
 
 # Local-only working material, never part of the site.
-.archive/
-docs/
-fetch_data_from_docs/
+/.archive/
+/docs/
+/fetch_data_from_docs/
 
 # Cruft
 *.tsbuildinfo
