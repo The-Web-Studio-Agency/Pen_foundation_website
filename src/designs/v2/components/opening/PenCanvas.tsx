@@ -131,9 +131,24 @@ export function PenCanvas(props: PenCanvasProps) {
   const [dpr] = useState<[number, number]>(() =>
     window.matchMedia('(pointer: coarse), (max-width: 48rem)').matches ? [1, 1.25] : [1, 1.75],
   );
+
+  // Whether to draw at all. Held here and passed as the Canvas prop, because
+  // the Canvas re-applies its `frameloop` prop whenever it re-renders: set
+  // imperatively from inside, a later re-render (the model loading, say)
+  // quietly switched drawing back on and it then ran forever off screen,
+  // costing the phone's GPU through every section below.
+  const { progress = STILL, split = 1, paused } = props;
+  const [covered, setCovered] = useState(false);
+  useEffect(
+    () => progress.subscribe((p) => setCovered(range(p, 0, split) >= 0.999)),
+    [progress, split],
+  );
+  const frameloop = covered || paused ? 'never' : 'always';
+
   return (
     <Canvas
       className={s.canvas}
+      frameloop={frameloop}
       dpr={dpr}
       camera={{ fov: FOV, position: [0, 0, CAMERA_Z], near: 0.1, far: 100 }}
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
@@ -280,7 +295,6 @@ function Stage({
   split = 1,
   fit = HERO_FIT,
   satellites: showSatellites = true,
-  paused,
   hudMode = 'cycle',
   tone = 'dark',
   reduced,
@@ -292,7 +306,6 @@ function Stage({
   const light = tone === 'light';
   const camera = useThree((st) => st.camera);
   const size = useThree((st) => st.size);
-  const setFrameloop = useThree((st) => st.setFrameloop);
 
   /* ---- build: normalised main model, satellites, glow overlays ---------- */
 
@@ -510,20 +523,7 @@ function Stage({
     return () => window.clearInterval(id);
   }, [hud.length, reduced, hudMode]);
 
-  // Stop rendering entirely once the film has covered the canvas.
-  useEffect(
-    () =>
-      progress.subscribe((p) => {
-        setFrameloop(range(p, 0, split) >= 0.999 ? 'never' : 'always');
-      }),
-    [progress, split, setFrameloop],
-  );
-
-  // Off screen: no frames at all.
-  useEffect(() => {
-    if (paused === undefined) return;
-    setFrameloop(paused ? 'never' : 'always');
-  }, [paused, setFrameloop]);
+  // Whether frames are drawn at all is decided in PenCanvas (frameloop).
 
   /* ---- per frame -------------------------------------------------------- */
 

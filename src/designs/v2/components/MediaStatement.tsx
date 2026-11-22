@@ -6,7 +6,7 @@ import { statementV2 } from '../content';
 import s from '../styles/statement.module.css';
 import t from '../styles/theme.module.css';
 import { LoopVideo } from './LoopVideo';
-import { cx } from './primitives';
+import { Chip, cx } from './primitives';
 import { useReducedMotion } from './scroll/useReducedMotion';
 import { range, smooth, useScrollProgress } from './scroll/useScrollProgress';
 
@@ -120,13 +120,31 @@ export function MediaStatement() {
 
             <div className={cx(s.copy, t.gutter)}>
               <div className={s.copyMain}>
-                <p className={s.kicker}>
-                  <span className={s.kickerRule} aria-hidden />
-                  <span>{statementV2.kicker}</span>
-                </p>
+                <div className={s.kicker}>
+                  <Chip>{statementV2.kicker}</Chip>
+                </div>
                 <p id="hv2-statement-text" className={s.text}>
                   {statementV2.text}
                 </p>
+                {/* Phones: the five points as a list in place of the statement
+                    (which stays for screen readers) and the cards over the film. */}
+                <ul className={s.points}>
+                  {statementV2.hotspots.map((spot) => (
+                    <li key={spot.label}>
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden>
+                        <circle cx="10" cy="10" r="9.25" stroke="currentColor" strokeWidth="1.5" />
+                        <path
+                          d="M6 10.4l2.6 2.6L14 7.6"
+                          stroke="currentColor"
+                          strokeWidth="1.75"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      {spot.label}
+                    </li>
+                  ))}
+                </ul>
               </div>
 
               <div className={s.stat}>
