@@ -1,6 +1,7 @@
-import { NextResponse, type NextRequest } from 'next/server';
+import { after, NextResponse, type NextRequest } from 'next/server';
 
-import { addLead } from '@/lib/cms/server';
+import { addLead, type Lead } from '@/lib/cms/server';
+import { sendLeadEmail } from '@/lib/email/leadEmail';
 
 /**
  * Public: the site's forms post every enquiry here as well as opening
@@ -8,6 +9,11 @@ import { addLead } from '@/lib/cms/server';
  *
  * Light abuse guards: a hidden "website" field real visitors never fill,
  * length caps, and a per-address limit of 20 submissions an hour.
+ *
+ * Each enquiry is also emailed to the team (lib/email/leadEmail.ts) once the
+ * response has gone, so the visitor never waits on the mail server. The email
+ * goes even if saving to the database fails, so the lead still reaches
+ * someone.
  */
 
 const recent = new Map<string, number[]>();
@@ -52,11 +58,31 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Empty enquiry.' }, { status: 400 });
   }
 
-  await addLead({
+  const input = {
     source: clip(body.source, 60) || 'unknown',
     page: clip(body.page, 300),
     fields,
     campaign: clean(body.campaign, 10, 300),
-  });
-  return NextResponse.json({ ok: true });
+  };
+
+  let lead: Lead;
+  let saved = true;
+  try {
+    lead = await addLead(input);
+  } catch (error) {
+    console.error('[leads] could not save the enquiry:', error);
+    saved = false;
+    lead = { id: '', createdAt: new Date().toISOString(), status: 'new', ...input };
+  }
+
+  const site = request.nextUrl.origin;
+  after(() =>
+    sendLeadEmail(lead, site).catch((error) => {
+      console.error('[leads] could not email the enquiry:', error);
+    }),
+  );
+
+  return saved
+    ? NextResponse.json({ ok: true })
+    : NextResponse.json({ error: 'Could not save.' }, { status: 500 });
 }
