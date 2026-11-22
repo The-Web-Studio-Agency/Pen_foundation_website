@@ -22,13 +22,14 @@ export async function POST(request: NextRequest) {
     username?: string;
     password?: string;
   };
-  if (!checkCredentials(body.username ?? '', body.password ?? '')) {
+  const role = checkCredentials(body.username ?? '', body.password ?? '');
+  if (!role) {
     recordFailure(key);
     return NextResponse.json({ error: 'Incorrect username or password.' }, { status: 401 });
   }
 
   clearFailures(key);
-  const session = createSession(body.username!.trim());
+  const session = createSession(body.username!.trim(), role);
   const response = NextResponse.json({ ok: true });
   response.cookies.set(session.name, session.value, session.options);
   return response;

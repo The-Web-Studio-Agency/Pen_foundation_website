@@ -9,13 +9,15 @@ import { LandingPage } from '@/designs/v2/pages/landing/LandingPage';
  * enquire. It is not linked from the site, not in the sitemap, and marked
  * noindex so it never competes with the real pages in search.
  */
-export const metadata = createMetadata({
-  title: 'Request a Project Assessment',
-  description:
-    'PEN Foundation is a patented Pre-Engineered Nail Foundation System designed for suitable low-rise construction. Zero conventional excavation. No foundation curing. Installed in hours.',
-  path: '/landing-page',
-  noIndex: true,
-});
+export function generateMetadata() {
+  return createMetadata({
+    title: 'Request a Project Assessment',
+    description:
+      'PEN Foundation is a patented Pre-Engineered Nail Foundation System designed for suitable low-rise construction. Zero conventional excavation. No foundation curing. Installed in hours.',
+    path: '/landing-page',
+    noIndex: true,
+  });
+}
 
 export default function Page() {
   return <LandingPage />;

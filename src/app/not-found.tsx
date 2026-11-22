@@ -1,13 +1,15 @@
+import type { Metadata } from 'next';
+
 import { SiteChrome } from '@/components/layout/SiteChrome';
-import { createMetadata } from '@/config/seo';
 import { NotFoundHero } from '@/designs/v2/components/page/NotFoundHero';
 
-export const metadata = createMetadata({
+/* A fixed object rather than createMetadata (which reads the SEO team's
+   overrides and so is async): a missing page is never indexed anyway. */
+export const metadata: Metadata = {
   title: 'Page not found',
   description: 'The page you were looking for is not here.',
-  path: '/404',
-  noIndex: true,
-});
+  robots: { index: false, follow: false },
+};
 
 /**
  * 404 for URLs that match no route. It renders under the root layout only —

@@ -18,8 +18,25 @@ const LINKS = [
   { href: '/web-admin/leads', label: 'Leads', count: 'newLeads' as const },
 ];
 
+/** Only for the SEO team's account. */
+const SEO_LINKS = [
+  { href: '/web-admin/seo', label: 'Page titles & meta', exact: true },
+  { href: '/web-admin/seo/tracking', label: 'Tracking & pixels' },
+  { href: '/web-admin/seo/site', label: 'Verification & site' },
+  { href: '/web-admin/seo/files', label: 'Files (robots, sitemap, llms)' },
+];
+
 /** The admin sidebar: sections, the new-leads count, the site and sign out. */
-export function AdminNav({ user, newLeads }: { user: string; newLeads: number }) {
+export function AdminNav({
+  user,
+  newLeads,
+  seo = false,
+}: {
+  user: string;
+  newLeads: number;
+  /** The SEO team's account: adds the SEO section. */
+  seo?: boolean;
+}) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -41,7 +58,7 @@ export function AdminNav({ user, newLeads }: { user: string; newLeads: number })
         />
         <span className={s.brandText}>
           <b>PEN Foundation</b>
-          <span>Content admin</span>
+          <span>{seo ? 'SEO admin' : 'Content admin'}</span>
         </span>
       </Link>
 
@@ -60,6 +77,27 @@ export function AdminNav({ user, newLeads }: { user: string; newLeads: number })
             </Link>
           );
         })}
+
+        {seo && (
+          <>
+            <span className={s.navGroup}>SEO</span>
+            {SEO_LINKS.map((link) => {
+              const current = link.exact
+                ? pathname === link.href
+                : pathname === link.href || pathname.startsWith(`${link.href}/`);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={s.navLink}
+                  aria-current={current ? 'page' : undefined}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </>
+        )}
       </nav>
 
       <div className={s.sidebarFoot}>

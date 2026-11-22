@@ -1,13 +1,22 @@
-import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 
 import { fontVariables } from '@/config/fonts';
 import { rootMetadata } from '@/config/seo';
 import { allContent, contentReady } from '@/lib/cms/server';
+import { trackingTags } from '@/lib/seo/settings';
 import { AppProviders } from '@/providers/AppProviders';
+import { TrackingTags } from '@/providers/TrackingTags';
 import './globals.css';
 
-export const metadata: Metadata = rootMetadata;
+/** Includes the SEO team's verification codes (see config/seo.ts). */
+export function generateMetadata() {
+  return rootMetadata();
+}
+
+/** The browser copy of the admin's content. The SEO settings stay on the
+    server: the pages read them there, and the tags get only what they need. */
+const publicContent = () =>
+  Object.fromEntries(Object.entries(allContent()).filter(([id]) => !id.startsWith('seo.')));
 
 /**
  * Runs before the first paint, ahead of hydration.
@@ -63,7 +72,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             browser renders exactly what the server did. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `window.__PEN_CMS__=${JSON.stringify(allContent()).replace(/</g, '\\u003c')};`,
+            __html: `window.__PEN_CMS__=${JSON.stringify(publicContent()).replace(/</g, '\\u003c')};`,
           }}
         />
         <noscript>
@@ -72,6 +81,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       </head>
       <body>
         <AppProviders>{children}</AppProviders>
+        <TrackingTags tags={trackingTags()} />
       </body>
     </html>
   );

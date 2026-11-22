@@ -28,6 +28,23 @@ const nextConfig: NextConfig = {
       { source: '/home-v2', destination: '/', permanent: false },
     ];
   },
+
+  async rewrites() {
+    /*
+     * Files the SEO team adds in the admin (ads.txt, verification .html,
+     * .well-known/security.txt, …). `fallback`: only when no page, route or
+     * public file already answers the address.
+     */
+    const file = ':name([A-Za-z0-9][A-Za-z0-9._-]*\\.(?:txt|xml|html|json|webmanifest))';
+    return {
+      beforeFiles: [],
+      afterFiles: [],
+      fallback: [
+        { source: `/${file}`, destination: '/seo-file/:name' },
+        { source: `/.well-known/${file}`, destination: '/seo-file/.well-known/:name' },
+      ],
+    };
+  },
 };
 
 export default nextConfig;
