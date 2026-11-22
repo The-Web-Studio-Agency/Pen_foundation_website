@@ -295,3 +295,145 @@
     transition: none;
   }
 }
+
+/* ---- phones and tablets: one simple flow -------------------------------
+   Slider, then the results straight under it so they change in view while
+   dragging, then the button. The working is folded away beneath; the project
+   type (context for an assessment, it changes no figure) is left out. */
+
+.basisFold {
+  display: none;
+}
+
+@media (max-width: 63.99rem) {
+  .calc {
+    gap: 0.75rem;
+  }
+
+  .inputs {
+    gap: 1.25rem;
+    padding: 1.5rem 1.25rem 1.25rem;
+  }
+
+  .panelTitle,
+  .typeField,
+  .basisWide,
+  .noteMinor {
+    display: none;
+  }
+
+  .areaValue {
+    font-size: 2.5rem;
+  }
+
+  /* A bigger thumb and track: easy to catch with a thumb. */
+  .range {
+    height: 2.5rem;
+  }
+  .range::-webkit-slider-runnable-track {
+    height: 0.5rem;
+  }
+  .range::-webkit-slider-thumb {
+    width: 2rem;
+    height: 2rem;
+    margin-top: -0.75rem;
+  }
+  .range::-moz-range-track,
+  .range::-moz-range-progress {
+    height: 0.5rem;
+  }
+  .range::-moz-range-thumb {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  .rangeEnds {
+    margin-top: -0.75rem;
+  }
+
+  .results {
+    gap: 1.25rem;
+    padding: 0.5rem 1.25rem 1.25rem;
+  }
+
+  /* The three results as rows: label on the left, figure on the right. */
+  .cards {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .card,
+  .cardAccent {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 1rem;
+    padding: 1.1rem 0;
+    border: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 0;
+    background: none;
+    color: inherit;
+  }
+  .card:last-child {
+    border-bottom: 0;
+  }
+  /* The label gives way first; the figure wraps only if it must. */
+  .card dt,
+  .cardAccent dt {
+    flex: 1 1 0;
+    min-width: 5.5rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .card dd,
+  .cardWide .value {
+    flex: 0 1 auto;
+  }
+  .card dd {
+    gap: 0.35rem;
+    justify-items: end;
+    text-align: right;
+  }
+  .value {
+    font-size: 1.625rem;
+  }
+  /* CO₂e: the trees line runs full width under the row. */
+  .cardWide dd {
+    display: contents;
+  }
+  .cardWide .value {
+    justify-self: end;
+  }
+  .cardWide .note {
+    flex-basis: 100%;
+    text-align: left;
+    margin-top: 0.25rem;
+  }
+  .cardAccent .value {
+    font-size: 2.25rem;
+    color: var(--hv2-accent-bright);
+  }
+  .cardAccent .note {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .cta {
+    justify-self: stretch;
+    justify-content: space-between;
+  }
+
+  .basisFold {
+    display: block;
+    padding: 0 0.25rem;
+  }
+  .basisFold summary {
+    padding: 0.75rem 0;
+    font-size: 0.75rem;
+    color: var(--hv2-ink-soft);
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+    cursor: pointer;
+  }
+  .basisFold .basis {
+    padding-top: 0.5rem;
+    border-top: 0;
+  }
+}

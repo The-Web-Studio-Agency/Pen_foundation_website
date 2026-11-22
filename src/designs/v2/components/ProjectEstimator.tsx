@@ -87,7 +87,7 @@ export function ProjectEstimator() {
               </div>
             </div>
 
-            <div className={s.field}>
+            <div className={cx(s.field, s.typeField)}>
               <p id={`${id}-type`} className={cx(t.mono, s.fieldLabel)}>
                 Project type
               </p>
@@ -106,7 +106,7 @@ export function ProjectEstimator() {
               </div>
             </div>
 
-            <ul className={s.basis}>
+            <ul className={cx(s.basis, s.basisWide)}>
               {c.basis.map((line) => (
                 <li key={line}>{line}</li>
               ))}
@@ -119,14 +119,14 @@ export function ProjectEstimator() {
                 <dt className={t.mono}>{c.unitsLabel}</dt>
                 <dd>
                   <span className={s.value}>{formatCountRange(est.unitsMin, est.unitsMax)}</span>
-                  <span className={cx(t.mono, s.note)}>{c.unitsNote}</span>
+                  <span className={cx(t.mono, s.note, s.noteMinor)}>{c.unitsNote}</span>
                 </dd>
               </div>
               <div className={s.card}>
                 <dt className={t.mono}>{c.programmeLabel}</dt>
                 <dd>
                   <span className={s.value}>{c.programmeValue}</span>
-                  <span className={cx(t.mono, s.note)}>{c.programmeNote}</span>
+                  <span className={cx(t.mono, s.note, s.noteMinor)}>{c.programmeNote}</span>
                 </dd>
               </div>
               <div className={cx(s.card, s.cardWide)}>
@@ -149,6 +149,17 @@ export function ProjectEstimator() {
               {c.cta.label}
             </ButtonLink>
           </div>
+
+          {/* Phones: the working behind the figures, folded away under the
+              results instead of between the slider and them. */}
+          <details className={s.basisFold}>
+            <summary className={t.mono}>How these figures are worked out</summary>
+            <ul className={s.basis}>
+              {c.basis.map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </ul>
+          </details>
         </div>
       </div>
     </section>
